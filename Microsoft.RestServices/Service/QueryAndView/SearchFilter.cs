@@ -1,5 +1,6 @@
 ﻿namespace Microsoft.RestServices.Exchange
 {
+    using System;
     using System.Collections.Generic;
     using System.Text;
 
@@ -46,18 +47,21 @@
         #region Filter implementations
 
         /// <summary>
-        /// Is equal to filter.
+        /// Simple propertyname / propertyvalue matching.
         /// </summary>
-        public sealed class IsEqualTo : SearchFilter
+        public abstract class SimplePropertyMatchingFilter : SearchFilter
         {
             /// <summary>
-            /// Create new instance of <see cref="IsEqualTo"/>.
+            /// Create new instance of <see cref="SearchFilter.SimplePropertyMatchingFilter"/>
             /// </summary>
-            /// <param name="propertyName">Property name.</param>
+            /// <param name="filterOperator">Filter operator.</param>
             /// <param name="propertyValue">Property value.</param>
-            public IsEqualTo(string propertyName, string propertyValue)
-                : base(FilterOperator.eq)
+            /// <param name="propertyName">Property name.</param>
+            protected SimplePropertyMatchingFilter(string propertyName, string propertyValue, FilterOperator filterOperator) 
+                : base(filterOperator)
             {
+                ArgumentValidator.ThrowIfNullOrEmpty(propertyName, nameof(propertyName));
+                ArgumentValidator.ThrowIfNullOrEmpty(propertyValue, nameof(propertyValue));
                 this.PropertyName = propertyName;
                 this.PropertyValue = propertyValue;
             }
@@ -73,9 +77,105 @@
             public string PropertyValue { get; }
 
             /// <inheritdoc cref="SearchFilter.ToString(System.Text.StringBuilder)"/>
-            protected internal override void ToString(StringBuilder sb)
+            protected internal sealed override void ToString(StringBuilder sb)
             {
                 sb.AppendFormat("{0} {1} '{2}'", this.PropertyName, this.FilterOperator, this.PropertyValue);
+            }
+        }
+
+        /// <summary>
+        /// Is equal to filter.
+        /// </summary>
+        public sealed class IsEqualTo : SimplePropertyMatchingFilter
+        {
+            /// <summary>
+            /// Create new instance of <see cref="IsEqualTo"/>.
+            /// </summary>
+            /// <param name="propertyName">Property name.</param>
+            /// <param name="propertyValue">Property value.</param>
+            public IsEqualTo(string propertyName, string propertyValue)
+                : base(propertyName, propertyValue, FilterOperator.eq)
+            {
+            }
+        }
+
+        /// <summary>
+        /// Is greater than filter.
+        /// </summary>
+        public sealed class IsGreaterThan : SimplePropertyMatchingFilter
+        {
+            /// <summary>
+            /// Create new instance of <see cref="SearchFilter.IsGreaterThan"/>
+            /// </summary>
+            /// <param name="propertyName">Property name.</param>
+            /// <param name="propertyValue">Property value.</param>
+            public IsGreaterThan(string propertyName, string propertyValue) 
+                : base(propertyName, propertyValue, FilterOperator.gt)
+            {
+            }
+        }
+
+        /// <summary>
+        /// Is greater than or equal to filter.
+        /// </summary>
+        public sealed class IsGreaterThanOrEqualTo : SimplePropertyMatchingFilter
+        {
+            /// <summary>
+            /// Create new instance of <see cref="SearchFilter.IsGreaterThanOrEqualTo"/>
+            /// </summary>
+            /// <param name="propertyName">Property name.</param>
+            /// <param name="propertyValue">Property value.</param>
+            public IsGreaterThanOrEqualTo(string propertyName, string propertyValue)
+                : base(propertyName, propertyValue, FilterOperator.ge)
+            {
+            }
+        }
+
+        /// <summary>
+        /// Is less than filter.
+        /// </summary>
+        public sealed class IsLessThan : SimplePropertyMatchingFilter
+        {
+            /// <summary>
+            /// Create new instance of <see cref="SearchFilter.IsLessThan"/>
+            /// </summary>
+            /// <param name="propertyName">Property name.</param>
+            /// <param name="propertyValue">Property value.</param>
+            public IsLessThan(string propertyName, string propertyValue)
+                : base(propertyName, propertyValue, FilterOperator.lt)
+            {
+            }
+        }
+
+        /// <summary>
+        /// Is less than or equal to filter.
+        /// </summary>
+        public sealed class IsLessThanOrEqualTo : SimplePropertyMatchingFilter
+        {
+            /// <summary>
+            /// Create new instance of <see cref="SearchFilter.IsLessThanOrEqualTo"/>
+            /// </summary>
+            /// <param name="propertyName">Property name.</param>
+            /// <param name="propertyValue">Property value.</param>
+            public IsLessThanOrEqualTo(string propertyName, string propertyValue)
+                : base(propertyName, propertyValue, FilterOperator.le)
+            {
+            }
+        }
+
+        /// <summary>
+        /// Not equal to filter.
+        /// </summary>
+        public sealed class NotEqualTo : SimplePropertyMatchingFilter
+        {
+            /// <summary>
+            /// Create new instance of <see cref="SearchFilter.NotEqualTo"/>
+            /// </summary>
+            /// <param name="propertyName">Property name.</param>
+            /// <param name="propertyValue">Property value.</param>
+            public NotEqualTo(string propertyName, string propertyValue)
+                : base(propertyName, propertyValue, FilterOperator.ne)
+            {
             }
         }
 
@@ -97,6 +197,12 @@
             public SearchFilterCollection(FilterOperator filterOperator, params SearchFilter[] searchFilters) 
                 : base(filterOperator)
             {
+                // search collection can only have 'or' or 'and' operator
+                if (!(filterOperator == FilterOperator.and || filterOperator == FilterOperator.or))
+                {
+                    throw new ArgumentException($"Search filter collection can only contain 'and' or 'or' operator. Actual: '{filterOperator}'.");
+                }
+
                 this.searchFilters = new List<SearchFilter>();
                 if (null != searchFilters && searchFilters.Length > 0)
                 {
