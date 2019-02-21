@@ -5,6 +5,7 @@
     using System.Collections.ObjectModel;
     using System.Net;
     using System.Net.Http;
+    using System.Net.Http.Headers;
     using Microsoft.RestServices.Exchange;
     using Microsoft.Graph;
     using Mocks;
@@ -545,12 +546,12 @@
 
             service.UserAgent = "abc";
             Assert.AreEqual(
-                "abc (ExchangeRestClient)", 
+                "abc-ExchangeRestClient", 
                 service.UserAgent);
 
             service.UserAgent = "";
             Assert.AreEqual(
-                "abc (ExchangeRestClient)", 
+                "abc-ExchangeRestClient", 
                 service.UserAgent);
         }
 
@@ -799,6 +800,34 @@
             mailFolder.DisplayName = "FolderAbc";
 
             mailFolder.Update();
+
+            HttpWebRequestClientProvider.Instance.Reset();
+        }
+
+        [TestMethod]
+        public void TestServiceIsAppendingUserAgent()
+        {
+            MockHttpClient mock = new MockHttpClient(HttpStatusCode.OK, "{}");
+            HttpWebRequestClientProvider.Instance.RegisterHttpClientProvider(mock.MockClient);
+
+            mock.InlineAssertation = (httpRequestMessage) =>
+            {
+                Assert.IsNotNull(httpRequestMessage.Headers.UserAgent);
+                Assert.AreEqual(
+                    1, 
+                    httpRequestMessage.Headers.UserAgent.Count);
+
+                foreach (ProductInfoHeaderValue value in httpRequestMessage.Headers.UserAgent)
+                {
+                    Assert.AreEqual(
+                        "Tst-ExchangeRestClient", 
+                        value.Product.Name);
+                }
+            };
+
+            ExchangeService service = Helper.Service;
+            service.UserAgent = "Tst";
+            service.GetInboxRules();
 
             HttpWebRequestClientProvider.Instance.Reset();
         }

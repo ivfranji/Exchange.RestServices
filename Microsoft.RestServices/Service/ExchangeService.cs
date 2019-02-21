@@ -6,6 +6,7 @@
     using System.Net;
     using System.Net.Http.Headers;
     using System.Text;
+    using System.Text.RegularExpressions;
     using Microsoft.Graph;
 
     /// <summary>
@@ -137,8 +138,12 @@
             set
             {
                 if (!string.IsNullOrEmpty(value))
-                {
-                    this.userAgent = $"{value} ({ExchangeService.defaultUserAgent})";
+                { 
+                    Regex userAgentRegex = new Regex("^[a-zA-Z]+$");
+                    if (userAgentRegex.IsMatch(value))
+                    {
+                        this.userAgent = $"{value}-{ExchangeService.defaultUserAgent}";
+                    }
                 }
             }
         }
@@ -1295,6 +1300,7 @@
 
             webRequest.Authorization = authenticationHeader;
             webRequest.SetProxyServer(this.ProxyServer);
+            webRequest.UserAgent = this.UserAgent;
 
             if (this.HasPreferences)
             {
