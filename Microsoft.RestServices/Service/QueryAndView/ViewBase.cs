@@ -10,11 +10,6 @@
     public abstract class ViewBase
     {
         /// <summary>
-        /// Extended property filter collection.
-        /// </summary>
-        private SearchFilter.SearchFilterCollection extendedPropertyCollection;
-
-        /// <summary>
         /// Queries.
         /// </summary>
         private List<IQuery> queries;
@@ -33,8 +28,8 @@
         /// Create new instance of <see cref="Search.ViewBase{T}"/>
         /// </summary>
         /// <param name="pageSize">Page size.</param>
-        protected ViewBase(int pageSize, Type type)
-            : this(pageSize, 0, type)
+        protected ViewBase(int pageSize, Type type, PropertySet propertySet)
+            : this(pageSize, 0, type, propertySet)
         {
         }
 
@@ -43,7 +38,7 @@
         /// </summary>
         /// <param name="pageSize">Page size.</param>
         /// <param name="offset">Offset.</param>
-        protected ViewBase(int pageSize, int offset, Type type)
+        protected ViewBase(int pageSize, int offset, Type type, PropertySet propertySet)
         {
             ArgumentValidator.ThrowIfNull(type, nameof(type));
             this.PageQuery = new PageQuery(offset, pageSize);
@@ -52,8 +47,7 @@
             this.selectablePropertyList = new SelectablePropertyList(type);
             this.selectProperties = new List<string>();
             this.Type = type;
-            this.extendedPropertyCollection = new SearchFilter.SearchFilterCollection(FilterOperator.or);
-
+            this.PropertySet = propertySet;
             this.ExpandProperties = new List<string>();
         }
 
@@ -61,6 +55,11 @@
         /// Type view is holding.
         /// </summary>
         internal Type Type { get; }
+
+        /// <summary>
+        /// Property set.
+        /// </summary>
+        public PropertySet PropertySet { get; }
 
         /// <summary>
         /// Create filter with select.
@@ -112,112 +111,31 @@
             get
             {
                 CompositeQuery compositeQuery = new CompositeQuery(new IQuery[] { this.PageQuery });
-                if (this.FilterWithSelect)
+                if (this.PropertySet.Properties != null)
                 {
-                    compositeQuery.Add(new SelectQuery(this.selectProperties.ToArray()));
+                    compositeQuery.Add(this.PropertySet.Properties);
                 }
 
-                string expandFilter = string.Empty;
+                ExpandQuery expandQuery = null;
                 if (this.ExpandFilter)
                 {
-                    expandFilter = string.Join(",", this.ExpandProperties);
+                    expandQuery = new ExpandQuery(string.Join(",", this.ExpandProperties));
                 }
 
-                if (!this.extendedPropertyCollection.CollectionEmpty)
+                if (this.PropertySet.ExpandQuery != null)
                 {
-                    string extendedPropertyFilter = $"singleValueExtendedProperties({this.extendedPropertyCollection.Query})";
-                    if (string.IsNullOrEmpty(expandFilter))
-                    {
-                        expandFilter = extendedPropertyFilter;
-                    }
-                    else
-                    {
-                        expandFilter = $"{expandFilter},{extendedPropertyFilter}";
-                    }
+                    expandQuery = new ExpandQuery(
+                        expandQuery, 
+                        this.PropertySet.ExpandQuery);
                 }
 
-                if (!string.IsNullOrEmpty(expandFilter))
+                if (expandQuery != null)
                 {
-                    compositeQuery.Add(new ExpandQuery(expandFilter));
+                    compositeQuery.Add(expandQuery);
                 }
 
                 return compositeQuery;
             }
-        }
-
-        /// <summary>
-        /// Returns list of properties to be included in request. If list empty it will include all properties of entity.
-        /// </summary>
-        public IReadOnlyCollection<string> SelectProperties
-        {
-            get { return this.selectProperties.AsReadOnly(); }
-        }
-
-        /// <summary>
-        /// Include set of properties in the query.
-        /// </summary>
-        /// <param name="properties">Properties to include in request.</param>
-        public void SelectProperty(string[] properties)
-        {
-            ArgumentValidator.ThrowIfNullOrEmptyArray(properties, nameof(properties));
-            for (int i = 0; i < properties.Length; i++)
-            {
-                this.SelectProperty(properties[i]);
-            }
-        }
-
-        /// <summary>
-        /// Select particular property to be included in request.
-        /// </summary>
-        /// <param name="propertyName">Property name.</param>
-        public void SelectProperty(string propertyName)
-        {
-            if (!this.selectablePropertyList.ContainsProperty(propertyName))
-            {
-                throw new ArgumentException($"Property '{propertyName}' doesn't exist for entity.");
-            }
-
-            if (!this.PropertyInTheList(propertyName))
-            {
-                this.selectProperties.Add(propertyName);
-            }
-        }
-
-        /// <summary>
-        /// Select single value extended property.
-        /// </summary>
-        /// <param name="extendedProperty">Extended property.</param>
-        public void SelectProperty(ExtendedPropertyDefinition extendedProperty)
-        {
-            ArgumentValidator.ThrowIfNull(extendedProperty, nameof(extendedProperty));
-
-            SearchFilter filter = new SearchFilter.IsEqualTo(
-                "Id", $"{extendedProperty.Definition}");
-
-            this.extendedPropertyCollection.AddFilter(filter);
-        }
-
-        /// <summary>
-        /// Test if property within the list.
-        /// </summary>
-        /// <param name="propertyName">Property name.</param>
-        /// <returns></returns>
-        private bool PropertyInTheList(string propertyName)
-        {
-            if (this.selectProperties.Count == 0)
-            {
-                return false;
-            }
-
-            foreach (string property in this.selectProperties)
-            {
-                if (property.Equals(propertyName, StringComparison.OrdinalIgnoreCase))
-                {
-                    return true;
-                }
-            }
-
-            return false;
         }
     }
 }

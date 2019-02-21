@@ -22,7 +22,7 @@
         /// <param name="pageSize">Page size.</param>
         /// <param name="offset">Offset.</param>
         public MessageView(int pageSize, int offset, bool expandAttachments)
-            : base(pageSize, offset, typeof(Message))
+            : base(pageSize, offset, typeof(Message), new MessagePropertySet())
         {
             if (expandAttachments)
             {

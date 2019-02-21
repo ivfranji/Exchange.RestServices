@@ -38,7 +38,7 @@
                 extendedPropertyDefinition.Definition);
 
             Assert.IsTrue(
-                extendedPropertyDefinition.PropertyValueType == PropertyValueType.MultiValue);
+                extendedPropertyDefinition.PropertyValueType == PropertyValueType.MultiValueExtendedProperties);
 
             extendedPropertyDefinition = new ExtendedPropertyDefinition(
                 MapiPropertyType.Boolean,
@@ -50,7 +50,7 @@
                 extendedPropertyDefinition.Definition);
 
             Assert.IsTrue(
-                extendedPropertyDefinition.PropertyValueType == PropertyValueType.SingleValue);
+                extendedPropertyDefinition.PropertyValueType == PropertyValueType.SingleValueExtendedProperties);
         }
     }
 }

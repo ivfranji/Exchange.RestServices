@@ -29,20 +29,20 @@
 
             Assert.ThrowsException<ArgumentException>(() =>
             {
-                messageView.SelectProperty("unknown-message-property");
+                messageView.PropertySet.Add("unknown-message-property");
             });
 
-            messageView.SelectProperty(
-                new []{"Body", "hasAttachments"});
+            messageView.PropertySet.Add(new[] { "Body", "HasAttachments"});
 
+            // First class properties will always be returned through this property set - Id, IsRead,Subject,ParentFolderId
             Assert.AreEqual(
-                "$top=10&$skip=12&$select=Body,hasAttachments&$expand=attachments", 
+                "$top=10&$skip=12&$select=Id,IsRead,Subject,ParentFolderId,Body,HasAttachments&$expand=attachments", 
                 messageView.ViewQuery.Query);
 
-            messageView.SelectProperty(new ExtendedPropertyDefinition(MapiPropertyType.String, 0x4001));
-
+            messageView.PropertySet.Add(new ExtendedPropertyDefinition(MapiPropertyType.String, 0x4001));
+            
             Assert.AreEqual(
-                "$top=10&$skip=12&$select=Body,hasAttachments&$expand=attachments,singleValueExtendedProperties($filter=Id eq 'String 0x4001')",
+                "$top=10&$skip=12&$select=Id,IsRead,Subject,ParentFolderId,Body,HasAttachments&$expand=attachments,SingleValueExtendedProperties($filter=Id eq 'String 0x4001')",
                 messageView.ViewQuery.Query);
 
             messageView = new MessageView(
@@ -50,9 +50,9 @@
                 12,
                 false);
 
-            messageView.SelectProperty(new ExtendedPropertyDefinition(MapiPropertyType.String, 0x4001));
+            messageView.PropertySet.Add(new ExtendedPropertyDefinition(MapiPropertyType.String, 0x4001));
             Assert.AreEqual(
-                "$top=10&$skip=12&$expand=singleValueExtendedProperties($filter=Id eq 'String 0x4001')",
+                "$top=10&$skip=12&$expand=SingleValueExtendedProperties($filter=Id eq 'String 0x4001')",
                 messageView.ViewQuery.Query);
         }
     }

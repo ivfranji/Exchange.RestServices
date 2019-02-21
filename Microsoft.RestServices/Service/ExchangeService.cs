@@ -573,9 +573,9 @@
                     syncToken);
             }
 
-            if (null != propertySet && null != propertySet.SelectProperties)
+            if (null != propertySet && null != propertySet.Properties)
             {
-                syncQuery.SelectedProperties = propertySet.SelectProperties;
+                syncQuery.SelectedProperties = propertySet.Properties;
             }
 
             SyncRequestBase<SyncResponseCollection<OutlookItem>> request = new SyncRequestBase<SyncResponseCollection<OutlookItem>>(
@@ -860,9 +860,9 @@
                     syncToken);
             }
 
-            if (null != propertySet && null != propertySet.SelectProperties)
+            if (null != propertySet && null != propertySet.Properties)
             {
-                syncQuery.SelectedProperties = propertySet.SelectProperties;
+                syncQuery.SelectedProperties = propertySet.Properties;
             }
 
             SyncRequestBase<SyncResponseCollection<MailFolder>> request = new SyncRequestBase<SyncResponseCollection<MailFolder>>(

@@ -1,6 +1,7 @@
 ﻿namespace Microsoft.RestServices.Exchange
 {
     using Microsoft.Graph;
+    using Service.QueryAndView;
 
     /// <inheritdoc />
     /// <summary>
@@ -23,7 +24,7 @@
         /// <param name="pageSize">Page size.</param>
         /// <param name="offset">Offset.</param>
         public EventView(int pageSize, int offset) 
-            : base(pageSize, offset, typeof(Event))
+            : base(pageSize, offset, typeof(Event), new EventPropertySet())
         {
         }
     }

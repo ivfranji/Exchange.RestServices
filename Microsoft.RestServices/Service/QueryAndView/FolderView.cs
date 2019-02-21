@@ -12,7 +12,7 @@
         /// </summary>
         /// <param name="pageSize">Page size.</param>
         public FolderView(int pageSize)
-            : base(pageSize, typeof(MailFolder))
+            : this(pageSize, 0)
         {
         }
 
@@ -22,7 +22,7 @@
         /// <param name="pageSize">Page size.</param>
         /// <param name="offset">Offset.</param>
         public FolderView(int pageSize, int offset)
-            : base(pageSize, offset, typeof(MailFolder))
+            : base(pageSize, offset, typeof(MailFolder), new MailFolderPropertySet())
         {
         }
     }

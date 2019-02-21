@@ -87,7 +87,9 @@
     <Compile Include="Service\PropertyChangeTracking\PropertyBag.cs" />
     <Compile Include="Service\PropertyChangeTracking\PropertyDefinition.cs" />
     <Compile Include="Service\QueryAndView\CompositeQuery.cs" />
+    <Compile Include="Service\QueryAndView\EventPropertySet.cs" />
     <Compile Include="Service\QueryAndView\EventView.cs" />
+    <Compile Include="Service\QueryAndView\ExpandExtendedPropertyQuery.cs" />
     <Compile Include="Service\QueryAndView\ExpandQuery.cs" />
     <Compile Include="Service\QueryAndView\FilterAndPageQuery.cs" />
     <Compile Include="Service\QueryAndView\FilterOperator.cs" />
@@ -102,9 +104,13 @@
     <Compile Include="Service\QueryAndView\ISelectQuery.cs" />
     <Compile Include="Service\QueryAndView\ISyncQuery.cs" />
     <Compile Include="Service\QueryAndView\ISyncToken.cs" />
+    <Compile Include="Service\QueryAndView\MailFolderPropertySet.cs" />
+    <Compile Include="Service\QueryAndView\MessagePropertySet.cs" />
     <Compile Include="Service\QueryAndView\MessageView.cs" />
+    <Compile Include="Service\QueryAndView\OutlookTaskPropertySet.cs" />
     <Compile Include="Service\QueryAndView\OutlookTaskView.cs" />
     <Compile Include="Service\QueryAndView\PageQuery.cs" />
+    <Compile Include="Service\QueryAndView\PropertySet.cs" />
     <Compile Include="Service\QueryAndView\SearchFilter.cs" />
     <Compile Include="Service\QueryAndView\SelectAndPageQuery.cs" />
     <Compile Include="Service\QueryAndView\SelectQuery.cs" />

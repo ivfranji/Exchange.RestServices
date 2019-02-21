@@ -40,6 +40,18 @@
       <NamedTestSelector>
         <TestName>Microsoft.RestServices.Tests.Functional.AttachmentTests.CRUDAttachments</TestName>
       </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>Microsoft.RestServices.Tests.Functional.MailMessageFunctionalTests.GetMailMessageWithSingleExtendedProperty</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>Microsoft.RestServices.Tests.Functional.MailMessageFunctionalTests.GetMailMessageWithMultiValueExtendedProperty</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>Microsoft.RestServices.Tests.Functional.MailMessageFunctionalTests.GetMailMessageWithSingleExtendedProperties</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>Microsoft.RestServices.Tests.Functional.MailMessageFunctionalTests.CRUDExtendedProperties</TestName>
+      </NamedTestSelector>
     </IgnoredTests>
   </Settings>
 </ProjectConfiguration>

@@ -73,7 +73,9 @@
             {
                 if (value < 0)
                 {
-                    throw new ArgumentOutOfRangeException(nameof(this.Offset), "Offset must be zero or greater.");
+                    throw new ArgumentOutOfRangeException(
+                        nameof(this.Offset), 
+                        "Offset must be zero or greater.");
                 }
 
                 this.offset = value;
@@ -90,7 +92,8 @@
             {
                 if (value <= 0 || value > 50)
                 {
-                    throw new ArgumentOutOfRangeException(nameof(this.Offset),
+                    throw new ArgumentOutOfRangeException(
+                        nameof(this.PageSize),
                         "PageSize must be greater than zero or less / equal to 50");
                 }
 

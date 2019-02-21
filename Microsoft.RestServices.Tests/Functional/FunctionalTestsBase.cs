@@ -14,6 +14,11 @@
     public class FunctionalTestsBase
     {
         /// <summary>
+        /// Extended property constant.
+        /// </summary>
+        protected const string extendedPropertyGuid = "4d557659-9e3f-405e-8f6d-86d2d9d5c630";
+
+        /// <summary>
         /// Create new <see cref="ExchangeService"/>
         /// </summary>
         /// <param name="mailboxId">Mailbox id.</param>
@@ -174,27 +179,107 @@
     public class MailMessageFunctionalTests : FunctionalTestsBase
     {
         [TestMethod]
-        public void GetMailMessageWithExtendedProperty()
+        public void GetMailMessageWithSingleExtendedProperties()
         {
             ExchangeService exchangeService = this.GetExchangeService(AppConfig.MailboxB);
-            FindItemsResults<OutlookItem> findItemResults;
-            MessageView messageView = new MessageView(10);
-            messageView.SelectProperty(new ExtendedPropertyDefinition(MapiPropertyType.String, 0x0037));
-            messageView.SelectProperty("HasAttachments");
+            
+            MessageView messageView = new MessageView(1);
+            messageView.PropertySet.Add(new ExtendedPropertyDefinition(
+                MapiPropertyType.String, 
+                0x0037));
 
-            int counter = 0;
-            do
+            messageView.PropertySet.Add("HasAttachments");
+
             {
-                findItemResults = exchangeService.FindItems(WellKnownFolderName.Inbox, messageView);
+                FindItemsResults<OutlookItem> findItemResults = exchangeService.FindItems(
+                    WellKnownFolderName.Inbox, 
+                    messageView);
                 foreach (OutlookItem item in findItemResults)
                 {
                     Message msg = (Message) item;
-                    Assert.IsNotNull(msg.SingleValueExtendedProperties);
+                    Assert.AreEqual(
+                        1,
+                        msg.SingleValueExtendedProperties.Count);
                 }
 
                 messageView.Offset += messageView.PageSize;
-                counter++;
-            } while (findItemResults.MoreAvailable || counter == 3);
+                messageView.PropertySet.Add(
+                    new ExtendedPropertyDefinition(MapiPropertyType.Boolean, 
+                        0x0E1F));
+
+                findItemResults = exchangeService.FindItems(
+                    WellKnownFolderName.Inbox,
+                    messageView);
+                foreach (OutlookItem item in findItemResults)
+                {
+                    Message msg = (Message)item;
+                    Assert.AreEqual(
+                        2,
+                        msg.SingleValueExtendedProperties.Count);
+                }
+            }
+        }
+
+        [TestMethod]
+        public void CRUDExtendedProperties()
+        {
+            ExchangeService exchangeService = this.GetExchangeService(AppConfig.MailboxA);
+            string subject = Guid.NewGuid().ToString();
+
+            Message msg = new Message(exchangeService);
+            msg.Subject = subject;
+            msg.SingleValueExtendedProperties.Add(new SingleValueLegacyExtendedProperty()
+            {
+                Id = $"String {FunctionalTestsBase.extendedPropertyGuid} Name Blah",
+                Value = "BlahValue"
+            });
+
+            msg.MultiValueExtendedProperties.Add(new MultiValueLegacyExtendedProperty()
+            {
+                Id = $"StringArray {FunctionalTestsBase.extendedPropertyGuid} Name BlahArray",
+                Value = new List<string>()
+                {
+                    "A",
+                    "B",
+                    "C"
+                }
+            });
+
+            msg.Save(WellKnownFolderName.Inbox);
+
+            MessageView msgView = new MessageView(1);
+            msgView.PropertySet.Add(new ExtendedPropertyDefinition(
+                MapiPropertyType.String, 
+                "Blah", 
+                new Guid(FunctionalTestsBase.extendedPropertyGuid)));
+
+            msgView.PropertySet.Add(new ExtendedPropertyDefinition(
+                MapiPropertyType.StringArray,
+                "BlahArray",
+                new Guid(FunctionalTestsBase.extendedPropertyGuid)));
+
+            SearchFilter filter = new SearchFilter.IsEqualTo(
+                "Subject", 
+                subject);
+
+            FindItemsResults<OutlookItem> findItemsResults = exchangeService.FindItems(
+                WellKnownFolderName.Inbox, 
+                filter, 
+                msgView);
+
+            foreach (OutlookItem item in findItemsResults)
+            {
+                msg = (Message) item;
+                Assert.AreEqual(
+                    1, 
+                    msg.SingleValueExtendedProperties.Count);
+
+                Assert.AreEqual(
+                    1,
+                    msg.MultiValueExtendedProperties.Count);
+
+                msg.Delete();
+            }
         }
 
         [TestMethod]
@@ -562,6 +647,9 @@
         [TestMethod]
         public void CRUDAttachments()
         {
+            HttpWebRequestClientProvider.Instance.EnterLock();
+            HttpWebRequestClientProvider.Instance.Reset();
+
             ExchangeService exchangeService = this.GetExchangeService(AppConfig.MailboxA);
             exchangeService.Preferences.Add(new Preference("IdType=\"ImmutableId\""));
             Message msg = new Message(exchangeService);
@@ -580,6 +668,8 @@
             Attachment attachment = exchangeService.GetAttachment(attachmentId);
             Assert.IsNotNull(attachment);
             Assert.AreEqual("Test.txt", attachment.Name);
+
+            HttpWebRequestClientProvider.Instance.ExitLock();
         }
     }
 }

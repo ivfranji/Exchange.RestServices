@@ -131,10 +131,10 @@
 
                 return propertyType != null
                     ? propertyType.PropertyValueType
-                    : PropertyValueType.SingleValue;
+                    : PropertyValueType.SingleValueExtendedProperties;
             }
 
-            return PropertyValueType.SingleValue;
+            return PropertyValueType.SingleValueExtendedProperties;
         }
     }
 }

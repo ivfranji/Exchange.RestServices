@@ -8,11 +8,11 @@
         /// <summary>
         /// Single value.
         /// </summary>
-        SingleValue,
+        SingleValueExtendedProperties,
 
         /// <summary>
         /// Multi value.
         /// </summary>
-        MultiValue
+        MultiValueExtendedProperties
     }
 }

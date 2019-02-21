@@ -17,29 +17,29 @@
 
             Assert.ThrowsException<ArgumentException>(() =>
             {
-                folderView.SelectProperty("Non-ExistingProperty");
+                folderView.PropertySet.Add("Non-ExistingProperty");
             });
 
-            folderView.SelectProperty("DisplayName");
+            folderView.PropertySet.Add("DisplayName");
             Assert.AreEqual(
-                "$top=10&$skip=0&$select=DisplayName",
+                "$top=10&$skip=0&$select=Id,ChildFolderCount,DisplayName,TotalItemCount",
                 folderView.ViewQuery.Query);
 
             // Adding same property shouldn't change select
-            folderView.SelectProperty("DisplayName");
+            folderView.PropertySet.Add("DisplayName");
             Assert.AreEqual(
-                "$top=10&$skip=0&$select=DisplayName",
+                "$top=10&$skip=0&$select=Id,ChildFolderCount,DisplayName,TotalItemCount",
                 folderView.ViewQuery.Query);
 
-            folderView.SelectProperty(new []{ "ChildFolderCount", "ParentFolderId" });
+            folderView.PropertySet.Add(new[] { "ChildFolderCount", "ParentFolderId" });
             Assert.AreEqual(
-                "$top=10&$skip=0&$select=DisplayName,ChildFolderCount,ParentFolderId",
+                "$top=10&$skip=0&$select=Id,ChildFolderCount,DisplayName,TotalItemCount,ParentFolderId",
                 folderView.ViewQuery.Query);
 
             // Adding small letters to collection shouldn't change it
-            folderView.SelectProperty(new[] { "childFoldercount", "parentFolderId" });
+            folderView.PropertySet.Add(new[] { "childFoldercount", "parentFolderId" });
             Assert.AreEqual(
-                "$top=10&$skip=0&$select=DisplayName,ChildFolderCount,ParentFolderId",
+                "$top=10&$skip=0&$select=Id,ChildFolderCount,DisplayName,TotalItemCount,ParentFolderId",
                 folderView.ViewQuery.Query);
 
             Assert.AreEqual(
@@ -54,7 +54,7 @@
             folderView.PageSize = 44;
 
             Assert.AreEqual(
-                "$top=44&$skip=12&$select=DisplayName,ChildFolderCount,ParentFolderId",
+                "$top=44&$skip=12&$select=Id,ChildFolderCount,DisplayName,TotalItemCount,ParentFolderId",
                 folderView.ViewQuery.Query);
 
             folderView = new FolderView(
