@@ -71,7 +71,7 @@
 
             this.formatters.Add(
                 FormatterProvider.DateTimeFormatterName, 
-                new DateTimetFilterFormatter());
+                new DateTimeFilterFormatter());
         }
 
         /// <summary>

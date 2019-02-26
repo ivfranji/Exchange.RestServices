@@ -69,6 +69,13 @@
     <Compile Include="Service\Extensions\PropertyTypeValueAttribute.cs" />
     <Compile Include="Service\Extensions\PropertyValueType.cs" />
     <Compile Include="Service\FilterFormatter\BaseFormatter.cs" />
+    <Compile Include="Service\FilterFormatter\BoolFilterFormatter.cs" />
+    <Compile Include="Service\FilterFormatter\DateTimeFilterFormatter.cs" />
+    <Compile Include="Service\FilterFormatter\DateTimeOffsetFilterFormatter.cs" />
+    <Compile Include="Service\FilterFormatter\IFilterFormatter.cs" />
+    <Compile Include="Service\FilterFormatter\IntFilterFormatter.cs" />
+    <Compile Include="Service\FilterFormatter\RecipientFilterFormatter.cs" />
+    <Compile Include="Service\FilterFormatter\StringFilterFormatter.cs" />
     <Compile Include="Service\HttpCore\DeleteRequestBase.cs" />
     <Compile Include="Service\HttpCore\GetRequestBase.cs" />
     <Compile Include="Service\HttpCore\HttpRestUrl.cs" />
