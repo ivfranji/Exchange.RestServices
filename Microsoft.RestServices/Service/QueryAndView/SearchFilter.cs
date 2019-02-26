@@ -52,34 +52,50 @@
         public abstract class SimplePropertyMatchingFilter : SearchFilter
         {
             /// <summary>
+            /// Date time format.
+            /// </summary>
+            private const string dateTimeFormat = "yyyy-MM-ddThh:mm:ss";
+
+            /// <summary>
             /// Create new instance of <see cref="SearchFilter.SimplePropertyMatchingFilter"/>
             /// </summary>
             /// <param name="filterOperator">Filter operator.</param>
             /// <param name="propertyValue">Property value.</param>
-            /// <param name="propertyName">Property name.</param>
-            protected SimplePropertyMatchingFilter(string propertyName, string propertyValue, FilterOperator filterOperator) 
+            /// <param name="propertyDefinition">Property name.</param>
+            protected SimplePropertyMatchingFilter(PropertyDefinition propertyDefinition, object propertyValue, FilterOperator filterOperator)
                 : base(filterOperator)
             {
-                ArgumentValidator.ThrowIfNullOrEmpty(propertyName, nameof(propertyName));
-                ArgumentValidator.ThrowIfNullOrEmpty(propertyValue, nameof(propertyValue));
-                this.PropertyName = propertyName;
+                ArgumentValidator.ThrowIfNull(
+                    propertyDefinition,
+                    nameof(propertyDefinition));
+
+                ArgumentValidator.ThrowIfNull(
+                    propertyValue,
+                    nameof(propertyValue));
+
+                propertyDefinition.ValidateFormattingSupportedOrThrow(
+                    propertyValue);
+
+                this.PropertyDefinition = propertyDefinition;
                 this.PropertyValue = propertyValue;
             }
 
             /// <summary>
             /// Property name.
             /// </summary>
-            public string PropertyName { get; }
+            public PropertyDefinition PropertyDefinition { get; }
 
             /// <summary>
             /// Property value.
-            /// </summary>
-            public string PropertyValue { get; }
+            public object PropertyValue { get; }
 
-            /// <inheritdoc cref="SearchFilter.ToString(System.Text.StringBuilder)"/>
+            /// <inheritdoc cref="SearchFilter.ToString(StringBuilder)"/>
             protected internal sealed override void ToString(StringBuilder sb)
             {
-                sb.AppendFormat("{0} {1} '{2}'", this.PropertyName, this.FilterOperator, this.PropertyValue);
+                sb.Append(
+                    this.PropertyDefinition.FormatFilter(
+                        this.PropertyValue,
+                        this.FilterOperator));
             }
         }
 
@@ -91,10 +107,10 @@
             /// <summary>
             /// Create new instance of <see cref="IsEqualTo"/>.
             /// </summary>
-            /// <param name="propertyName">Property name.</param>
+            /// <param name="propertyDefinition">Property name.</param>
             /// <param name="propertyValue">Property value.</param>
-            public IsEqualTo(string propertyName, string propertyValue)
-                : base(propertyName, propertyValue, FilterOperator.eq)
+            public IsEqualTo(PropertyDefinition propertyDefinition, object propertyValue)
+                : base(propertyDefinition, propertyValue, FilterOperator.eq)
             {
             }
         }
@@ -107,10 +123,10 @@
             /// <summary>
             /// Create new instance of <see cref="SearchFilter.IsGreaterThan"/>
             /// </summary>
-            /// <param name="propertyName">Property name.</param>
+            /// <param name="propertyDefinition">Property name.</param>
             /// <param name="propertyValue">Property value.</param>
-            public IsGreaterThan(string propertyName, string propertyValue) 
-                : base(propertyName, propertyValue, FilterOperator.gt)
+            public IsGreaterThan(PropertyDefinition propertyDefinition, object propertyValue)
+                : base(propertyDefinition, propertyValue, FilterOperator.gt)
             {
             }
         }
@@ -123,10 +139,10 @@
             /// <summary>
             /// Create new instance of <see cref="SearchFilter.IsGreaterThanOrEqualTo"/>
             /// </summary>
-            /// <param name="propertyName">Property name.</param>
+            /// <param name="propertyDefinition">Property name.</param>
             /// <param name="propertyValue">Property value.</param>
-            public IsGreaterThanOrEqualTo(string propertyName, string propertyValue)
-                : base(propertyName, propertyValue, FilterOperator.ge)
+            public IsGreaterThanOrEqualTo(PropertyDefinition propertyDefinition, object propertyValue)
+                : base(propertyDefinition, propertyValue, FilterOperator.ge)
             {
             }
         }
@@ -139,10 +155,10 @@
             /// <summary>
             /// Create new instance of <see cref="SearchFilter.IsLessThan"/>
             /// </summary>
-            /// <param name="propertyName">Property name.</param>
+            /// <param name="propertyDefinition">Property name.</param>
             /// <param name="propertyValue">Property value.</param>
-            public IsLessThan(string propertyName, string propertyValue)
-                : base(propertyName, propertyValue, FilterOperator.lt)
+            public IsLessThan(PropertyDefinition propertyDefinition, object propertyValue)
+                : base(propertyDefinition, propertyValue, FilterOperator.lt)
             {
             }
         }
@@ -155,10 +171,10 @@
             /// <summary>
             /// Create new instance of <see cref="SearchFilter.IsLessThanOrEqualTo"/>
             /// </summary>
-            /// <param name="propertyName">Property name.</param>
+            /// <param name="propertyDefinition">Property name.</param>
             /// <param name="propertyValue">Property value.</param>
-            public IsLessThanOrEqualTo(string propertyName, string propertyValue)
-                : base(propertyName, propertyValue, FilterOperator.le)
+            public IsLessThanOrEqualTo(PropertyDefinition propertyDefinition, object propertyValue)
+                : base(propertyDefinition, propertyValue, FilterOperator.le)
             {
             }
         }
@@ -171,10 +187,10 @@
             /// <summary>
             /// Create new instance of <see cref="SearchFilter.NotEqualTo"/>
             /// </summary>
-            /// <param name="propertyName">Property name.</param>
+            /// <param name="propertyDefinition">Property name.</param>
             /// <param name="propertyValue">Property value.</param>
-            public NotEqualTo(string propertyName, string propertyValue)
-                : base(propertyName, propertyValue, FilterOperator.ne)
+            public NotEqualTo(PropertyDefinition propertyDefinition, object propertyValue)
+                : base(propertyDefinition, propertyValue, FilterOperator.ne)
             {
             }
         }
@@ -194,13 +210,14 @@
             /// </summary>
             /// <param name="filterOperator"></param>
             /// <param name="searchFilters"></param>
-            public SearchFilterCollection(FilterOperator filterOperator, params SearchFilter[] searchFilters) 
+            public SearchFilterCollection(FilterOperator filterOperator, params SearchFilter[] searchFilters)
                 : base(filterOperator)
             {
                 // search collection can only have 'or' or 'and' operator
                 if (!(filterOperator == FilterOperator.and || filterOperator == FilterOperator.or))
                 {
-                    throw new ArgumentException($"Search filter collection can only contain 'and' or 'or' operator. Actual: '{filterOperator}'.");
+                    throw new ArgumentException(
+                        $"Search filter collection can only contain 'and' or 'or' operator. Actual: '{filterOperator}'.");
                 }
 
                 this.searchFilters = new List<SearchFilter>();

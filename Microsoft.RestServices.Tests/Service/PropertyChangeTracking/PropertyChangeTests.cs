@@ -15,8 +15,8 @@
             // collections are always instantiated in background.
             Assert.IsNotNull(msg.ToRecipients);
             Assert.AreEqual(
-                msg.GetChangedProperties().Count,
-                0);
+                0,
+                msg.GetChangedProperties().Count);
 
             msg.ToRecipients = new List<Recipient>();
             Assert.IsTrue(msg.GetChangedProperties().Contains("ToRecipients"));

@@ -46,8 +46,10 @@
   <ItemGroup>
     <Compile Include="JsonCore\Deserializer.cs" />
     <Compile Include="JsonCore\Serializer.cs" />
+    <Compile Include="Model\GraphServicesModelSchema.cs" />
     <Compile Include="Model\GraphServicesModel.cs" />
     <Compile Include="Model\GraphServicesModelPartial.cs" />
+    <Compile Include="Schema\ObjectSchema.cs" />
     <Compile Include="Service\ActionAttribute.cs" />
     <Compile Include="Service\ActionMapper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -66,6 +68,7 @@
     <Compile Include="Service\Extensions\MapiPropertyType.cs" />
     <Compile Include="Service\Extensions\PropertyTypeValueAttribute.cs" />
     <Compile Include="Service\Extensions\PropertyValueType.cs" />
+    <Compile Include="Service\FilterFormatter\BaseFormatter.cs" />
     <Compile Include="Service\HttpCore\DeleteRequestBase.cs" />
     <Compile Include="Service\HttpCore\GetRequestBase.cs" />
     <Compile Include="Service\HttpCore\HttpRestUrl.cs" />
@@ -82,7 +85,7 @@
     <Compile Include="Service\Auth\IAuthorizationTokenProvider.cs" />
     <Compile Include="Service\IExchangeService.cs" />
     <Compile Include="Service\Preference.cs" />
-    <Compile Include="Service\PropertyChangeTracking\CollectionPropertyDefinition.cs" />
+    <Compile Include="Service\FilterFormatter\FormatterProvider.cs" />
     <Compile Include="Service\PropertyChangeTracking\IPropertyChangeTracking.cs" />
     <Compile Include="Service\PropertyChangeTracking\PropertyBag.cs" />
     <Compile Include="Service\PropertyChangeTracking\PropertyDefinition.cs" />

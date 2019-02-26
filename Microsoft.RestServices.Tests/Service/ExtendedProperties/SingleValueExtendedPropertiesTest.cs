@@ -14,7 +14,8 @@
             prop.Id = "String 0x4001001E";
 
             SearchFilter filter = new SearchFilter.IsEqualTo(
-                "Id", $"{{{prop.Id}}}");
+                SingleValueLegacyExtendedPropertyObjectSchema.Id, 
+                $"{{{prop.Id}}}");
             ExpandQuery expand = new ExpandQuery($"singleValueExtendedProperties({filter.Query})");
 
             Assert.AreEqual(

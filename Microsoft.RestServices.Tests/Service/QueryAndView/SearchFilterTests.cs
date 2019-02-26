@@ -1,6 +1,7 @@
 ﻿namespace Microsoft.RestServices.Tests.Service.QueryAndView
 {
     using System;
+    using Graph;
     using Microsoft.RestServices.Exchange;
     using VisualStudio.TestTools.UnitTesting;
 
@@ -11,7 +12,7 @@
         public void IsEqualToTest()
         {
             SearchFilter filter = new SearchFilter.IsEqualTo(
-                "IsRead", 
+                MessageObjectSchema.IsRead, 
                 "True");
 
             Assert.AreEqual(
@@ -19,7 +20,7 @@
                 FilterOperator.eq);
 
             Assert.AreEqual(
-                "$filter=IsRead eq 'True'"
+                "$filter=IsRead eq True"
                 ,filter.Query);
         }
 
@@ -27,7 +28,7 @@
         public void NotEqualToTest()
         {
             SearchFilter filter = new SearchFilter.NotEqualTo(
-                "Body",
+                MessageObjectSchema.Body,
                 "test body");
 
             Assert.AreEqual(
@@ -43,15 +44,15 @@
         public void IsGreaterThanTest()
         {
             SearchFilter filter = new SearchFilter.IsGreaterThan(
-                "DateReceived",
-                "19-02-01");
+                MessageObjectSchema.CreatedDateTime,
+                "2019-02-19");
 
             Assert.AreEqual(
                 filter.FilterOperator,
                 FilterOperator.gt);
 
             Assert.AreEqual(
-                "$filter=DateReceived gt '19-02-01'"
+                "$filter=CreatedDateTime gt 2019-02-19"
                 , filter.Query);
         }
 
@@ -59,15 +60,15 @@
         public void IsGreaterThanOrEqualTo()
         {
             SearchFilter filter = new SearchFilter.IsGreaterThanOrEqualTo(
-                "DateReceived",
-                "19-02-01");
+                MessageObjectSchema.CreatedDateTime,
+                "20-02-19");
 
             Assert.AreEqual(
                 filter.FilterOperator,
                 FilterOperator.ge);
 
             Assert.AreEqual(
-                "$filter=DateReceived ge '19-02-01'"
+                "$filter=CreatedDateTime ge 20-02-19"
                 , filter.Query);
         }
 
@@ -75,15 +76,15 @@
         public void IsLessThan()
         {
             SearchFilter filter = new SearchFilter.IsLessThan(
-                "Size",
-                "5");
+                MessageObjectSchema.ReceivedDateTime,
+                "19-02-2019");
 
             Assert.AreEqual(
                 filter.FilterOperator,
                 FilterOperator.lt);
 
             Assert.AreEqual(
-                "$filter=Size lt '5'"
+                "$filter=ReceivedDateTime lt 19-02-2019"
                 , filter.Query);
         }
 
@@ -91,15 +92,15 @@
         public void IsLessThanOrEqualTo()
         {
             SearchFilter filter = new SearchFilter.IsLessThanOrEqualTo(
-                "Size",
-                "5");
+                MailFolderObjectSchema.TotalItemCount,
+                5);
 
             Assert.AreEqual(
                 filter.FilterOperator,
                 FilterOperator.le);
 
             Assert.AreEqual(
-                "$filter=Size le '5'"
+                "$filter=TotalItemCount le 5"
                 , filter.Query);
         }
 
@@ -107,15 +108,15 @@
         public void TestSearchFilterCollection()
         {
             SearchFilter lessThanOrEqualTo = new SearchFilter.IsLessThanOrEqualTo(
-                "Size",
-                "5");
+                MailFolderObjectSchema.TotalItemCount,
+                5);
 
             SearchFilter greaterThan = new SearchFilter.IsGreaterThan(
-                "DateReceived",
-                "19-02-01");
+                MessageObjectSchema.CreatedDateTime,
+                new DateTimeOffset(new DateTime(2019, 2, 1)));
 
             SearchFilter notEqualTo = new SearchFilter.NotEqualTo(
-                "Body",
+                MessageObjectSchema.Body,
                 "test body");
 
             SearchFilter.SearchFilterCollection searchFilterCollection = new SearchFilter.SearchFilterCollection(
@@ -129,7 +130,7 @@
                 searchFilterCollection.FilterOperator);
 
             Assert.AreEqual(
-                "$filter=Size le '5' and DateReceived gt '19-02-01' and Body ne 'test body'",
+                "$filter=TotalItemCount le 5 and CreatedDateTime gt 2019-02-01T12:00:00 and Body ne 'test body'",
                 searchFilterCollection.Query);
 
             Assert.ThrowsException<ArgumentException>(() =>
@@ -148,8 +149,32 @@
                 searchFilterCollection.FilterOperator);
 
             Assert.AreEqual(
-                "$filter=Size le '5' or DateReceived gt '19-02-01' or Body ne 'test body'",
+                "$filter=TotalItemCount le 5 or CreatedDateTime gt 2019-02-01T12:00:00 or Body ne 'test body'",
                 searchFilterCollection.Query);
+        }
+
+        [TestMethod]
+        public void TestRecipientFilter()
+        {
+            SearchFilter recipientFilter = new SearchFilter.IsEqualTo(
+                MessageObjectSchema.From,
+                "a@b.com");
+
+            Assert.AreEqual(
+                "$filter=From/EmailAddress/Address eq 'a@b.com'",
+                recipientFilter.Query);
+
+            recipientFilter = new SearchFilter.IsEqualTo(
+                MessageObjectSchema.From,
+                "A B");
+
+            Assert.AreEqual(
+                "$filter=From/EmailAddress/Name eq 'A B'",
+                recipientFilter.Query);
+
+            recipientFilter = new SearchFilter.IsEqualTo(
+                MessageObjectSchema.ToRecipients,
+                "A B");
         }
     }
 }

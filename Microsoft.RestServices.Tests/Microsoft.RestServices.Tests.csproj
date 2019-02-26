@@ -80,6 +80,7 @@
     <Compile Include="Service\Preferences\PreferencesTests.cs" />
     <Compile Include="Service\PropertyChangeTracking\PropertyBagTests.cs" />
     <Compile Include="Service\PropertyChangeTracking\PropertyChangeTests.cs" />
+    <Compile Include="Service\PropertyChangeTracking\PropertyDefinitionTests.cs" />
     <Compile Include="Service\QueryAndView\CompositeQueryTests.cs" />
     <Compile Include="Service\QueryAndView\ExpandQueryTests.cs" />
     <Compile Include="Service\QueryAndView\FolderViewTests.cs" />

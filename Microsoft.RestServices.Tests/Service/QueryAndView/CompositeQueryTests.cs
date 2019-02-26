@@ -1,5 +1,6 @@
 ﻿namespace Microsoft.RestServices.Tests.Service.QueryAndView
 {
+    using Graph;
     using Microsoft.RestServices.Exchange;
     using VisualStudio.TestTools.UnitTesting;
 
@@ -11,7 +12,7 @@
         {
             SelectQuery selectQuery = new SelectQuery(new []{ "Body", "IsRead" });
             SearchFilter searchFilter = new SearchFilter.IsEqualTo(
-                "Body", 
+                MessageObjectSchema.Body, 
                 "test");
 
             CompositeQuery compositeQuery = new CompositeQuery(
@@ -53,7 +54,7 @@
         public void TestFilterAndPageQueryProperties()
         {
             SearchFilter filter = new SearchFilter.IsEqualTo(
-                "HmHm", 
+                MailFolderObjectSchema.DisplayName, 
                 "MhMh");
 
             PageQuery pageQuery = new PageQuery(
@@ -65,7 +66,7 @@
                 pageQuery);
 
             Assert.AreEqual(
-                "$filter=HmHm eq 'MhMh'&$top=11&$skip=14",
+                "$filter=DisplayName eq 'MhMh'&$top=11&$skip=14",
                 query.Query);
         }
     }

@@ -2,22 +2,36 @@
 {
     using System;
     using System.Collections.Generic;
+    using Graph;
 
     /// <summary>
     /// Property definition.
     /// </summary>
-    internal class PropertyDefinition
+    public class PropertyDefinition
     {
+        /// <summary>
+        /// Object formatter.
+        /// </summary>
+        private static FormatterProvider formatterProvider = new FormatterProvider();
+
         /// <summary>
         /// Create new instance of <see cref="PropertyDefinition"/>.
         /// </summary>
         /// <param name="name">Name of the property.</param>
         /// <param name="type">Type of the property.</param>
-        public PropertyDefinition(string name, Type type)
+        internal PropertyDefinition(string name, Type type)
         {
             this.Name = name;
             this.Type = type;
-            this.Changed = false;
+
+            if ( this.Type.IsValueType )
+            {
+                this.DefaultValue = Activator.CreateInstance(this.Type);
+            }
+            else
+            {
+                this.DefaultValue = null;
+            }
         }
 
         /// <summary>
@@ -31,9 +45,9 @@
         public Type Type { get; }
 
         /// <summary>
-        /// Is changed.
+        /// Default value.
         /// </summary>
-        public bool Changed { get; set; }
+        public object DefaultValue { get; }
 
         /// <summary>
         /// Is value type.
@@ -75,10 +89,52 @@
             return this.Name.GetHashCode();
         }
 
+        /// <summary>
+        /// To String impl.
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            return this.Name;
+        }
+
+        /// <summary>
+        /// Format filter.
+        /// </summary>
+        /// <param name="obj">Object.</param>
+        /// <param name="filterOperator">Filter operator.</param>
+        /// <returns></returns>
+        internal string FormatFilter(object obj, FilterOperator filterOperator)
+        {
+            IFilterFormatter formatter = PropertyDefinition.formatterProvider[this.Type.FullName];
+            return formatter.Format(
+                obj, 
+                filterOperator, 
+                this);
+        }
+
+        /// <summary>
+        /// Validate if formatting between types is supported.
+        /// </summary>
+        /// <param name="inputObject"></param>
+        internal void ValidateFormattingSupportedOrThrow(object inputObject)
+        {
+            ArgumentValidator.ThrowIfNull(
+                inputObject, 
+                nameof(inputObject));
+
+            if (inputObject is string || this.Type.IsInstanceOfType(inputObject))
+            {
+                return;
+            }
+
+            throw new ArgumentException(
+                $"Cannot format type '{inputObject.GetType().FullName}' with definition '{this.Type.FullName}'.");
+        }
+
         internal static bool IsGenericList(Type type)
         {
             ArgumentValidator.ThrowIfNull(type, nameof(type));
-
             foreach (Type typeInterface in type.GetInterfaces())
             {
                 if (typeInterface.IsGenericType && typeInterface.GetGenericTypeDefinition() == typeof(ICollection<>))

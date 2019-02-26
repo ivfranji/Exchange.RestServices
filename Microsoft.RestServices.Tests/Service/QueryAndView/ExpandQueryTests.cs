@@ -1,5 +1,6 @@
 ﻿namespace Microsoft.RestServices.Tests.Service.QueryAndView
 {
+    using Graph;
     using Microsoft.RestServices.Exchange;
     using VisualStudio.TestTools.UnitTesting;
 
@@ -44,12 +45,12 @@
             SearchFilter.SearchFilterCollection filterCollection = new SearchFilter.SearchFilterCollection(FilterOperator.and);
             filterCollection.AddFilter(
                 new SearchFilter.IsEqualTo(
-                    "Id", 
+                    SingleValueLegacyExtendedPropertyObjectSchema.Id, 
                     extendedProperty1.Definition));
 
             filterCollection.AddFilter(
                 new SearchFilter.IsEqualTo(
-                    "Id",
+                    SingleValueLegacyExtendedPropertyObjectSchema.Id,
                     extendedProperty2.Definition));
 
             ExpandQuery expandQueryAttach = new ExpandQuery("attachments");

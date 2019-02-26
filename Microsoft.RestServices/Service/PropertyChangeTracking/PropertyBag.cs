@@ -14,12 +14,7 @@
         /// <summary>
         /// List of properties linked with values.
         /// </summary>
-        private Dictionary<PropertyDefinition, object> propertyValue;
-
-        /// <summary>
-        /// List of properties.
-        /// </summary>
-        private Dictionary<string, PropertyDefinition> propertyList;
+        private Dictionary<PropertyDefinition, ObjectChangeTracking> propertyValue;
 
         /// <summary>
         /// Type property bag is holding.
@@ -27,20 +22,84 @@
         private Type type;
 
         /// <summary>
-        /// Create new instance of <see cref="PropertyBag"/>.
+        /// Object schema.
         /// </summary>
-        /// <param name="type">Type.</param>
-        public PropertyBag(Type type)
+        private ObjectSchema objectSchema;
+
+        ///// <summary>
+        ///// Create new instance of <see cref="PropertyBag"/>.
+        ///// </summary>
+        ///// <param name="type">Type.</param>
+        //internal PropertyBag(Type type)
+        //{
+        //    this.type = type;
+        //    this.IsNew = false;
+        //    this.InitializeBag();
+        //}
+
+        internal PropertyBag(ObjectSchema schema)
         {
-            this.type = type;
+            this.objectSchema = schema;
+            this.InitializeBag(this.objectSchema);
             this.IsNew = false;
-            this.InitializeBag();
         }
 
         /// <summary>
         /// Indicate bag is new.
         /// </summary>
         internal bool IsNew { get; private set; }
+
+        /// <summary>
+        /// Get value based on property definition.
+        /// </summary>
+        /// <param name="key">Property definition.</param>
+        /// <returns></returns>
+        public object this[PropertyDefinition key]
+        {
+            get
+            {
+                if (this.propertyValue.ContainsKey(key))
+                {
+                    return this.propertyValue[key].Value;
+                }
+
+                throw new KeyNotFoundException(nameof(key));
+            }
+            set
+            {
+                if (this.propertyValue.ContainsKey(key))
+                {
+                    if (value != null)
+                    {
+                        Type valueType = value.GetType();
+                        if (key.IsList && PropertyDefinition.IsGenericList(valueType))
+                        {
+                            this.InitializeCollectionProperty(
+                                key,
+                                value);
+
+                            this.propertyValue[key].Changed = true;
+                        }
+                        else if (key.Type != valueType)
+                        {
+                            throw new InvalidOperationException("Attempted to store wrong type to the dictionary.");
+                        }
+                        else
+                        {
+                            this.propertyValue[key].Value = value;
+                        }
+                    }
+                    else
+                    {
+                        this.propertyValue[key].Value = key.DefaultValue;
+                    }
+                }
+                else
+                {
+                    throw new KeyNotFoundException(nameof(key));
+                }
+            }
+        }
 
         /// <summary>
         /// Indexer for pulling out values.
@@ -51,55 +110,12 @@
         {
             get
             {
-                if (this.propertyList.ContainsKey(key))
-                {
-                    return this.propertyValue[this.propertyList[key]];
-                }
-
-                throw new KeyNotFoundException(nameof(key));
+                return this[this.GetPropertyDefinitionByName(key)];
             }
 
             set
             {
-                if (this.propertyList.ContainsKey(key))
-                {
-                    PropertyDefinition def = this.propertyList[key];
-                    if (value != null)
-                    {
-                        Type valueType = value.GetType();
-                        if (def.IsList && PropertyDefinition.IsGenericList(valueType))
-                        {
-                            this.InitializeCollectionProperty(
-                                def,
-                                value);
-                        }
-                        else if (def.Type != valueType)
-                        {
-                            throw new InvalidOperationException("Attempted to store wrong type to the dictionary.");
-                        }
-                        else
-                        {
-                            this.propertyValue[def] = value;
-                        }
-                    }
-                    else
-                    {
-                        if (def.IsValueType)
-                        {
-                            this.propertyValue[def] = Activator.CreateInstance(def.Type);
-                        }
-                        else
-                        {
-                            this.propertyValue[def] = null;
-                        }
-                    }
-
-                    def.Changed = true;
-                }
-                else
-                {
-                    throw new KeyNotFoundException(nameof(key));
-                }
+                this[this.GetPropertyDefinitionByName(key)] = value;
             }
         }
 
@@ -108,7 +124,7 @@
         /// </summary>
         public void Clear()
         {
-            this.InitializeBag();
+            this.InitializeBag(this.objectSchema);
         }
 
         /// <summary>
@@ -118,8 +134,8 @@
         /// <returns></returns>
         internal bool IsPropertyChanged(string key)
         {
-            PropertyDefinition def = this.propertyList[key];
-            return def.Changed;
+            PropertyDefinition def = this.GetPropertyDefinitionByName(key);
+            return this.propertyValue[def].Changed;
         }
 
         /// <summary>
@@ -127,9 +143,14 @@
         /// </summary>
         internal void ResetChangeTracking()
         {
-            foreach (string key in this.propertyList.Keys)
+            //foreach (string key in this.propertyList.Keys)
+            //{
+            //    this.propertyList[key].Changed = false;
+            //}
+
+            foreach ( PropertyDefinition key in this.propertyValue.Keys )
             {
-                this.propertyList[key].Changed = false;
+                this.propertyValue[key].Changed = false;
             }
         }
 
@@ -149,12 +170,12 @@
         public IList<string> GetChangedProperties()
         {
             List<string> changedProperties = new List<string>();
-
-            foreach (string property in this.propertyList.Keys)
+            foreach ( PropertyDefinition prop in this.propertyValue.Keys )
             {
-                if (this.propertyList[property].Changed)
+                ObjectChangeTracking objectChangeTracking = this.propertyValue[prop];
+                if ( objectChangeTracking.Changed )
                 {
-                    changedProperties.Add(property);
+                    changedProperties.Add(prop.Name);
                 }
             }
 
@@ -164,32 +185,29 @@
         /// <summary>
         /// Initialize bag.
         /// </summary>
-        private void InitializeBag()
+        private void InitializeBag(ObjectSchema bagSchema)
         {
-            this.propertyValue = new Dictionary<PropertyDefinition, object>();
-            this.propertyList = new Dictionary<string, PropertyDefinition>();
-
-            PropertyInfo[] properties = this.type.GetProperties((BindingFlags.Public | BindingFlags.Instance));
-            foreach (PropertyInfo propertyInfo in properties)
+            this.propertyValue = new Dictionary<PropertyDefinition, ObjectChangeTracking>();
+            if (bagSchema != null)
             {
-                PropertyDefinition def = new PropertyDefinition(propertyInfo.Name, propertyInfo.PropertyType);
-                if (def.IsValueType)
+                foreach (string key in bagSchema.Keys)
                 {
-                    this.propertyValue[def] = Activator.CreateInstance(def.Type);
+                    PropertyDefinition def = bagSchema[key];
+                    if (def.IsList)
+                    {
+                        this.InitializeCollectionProperty(
+                            def, 
+                            null);
+                    }
+                    else
+                    {
+                        this.propertyValue[def] = new ObjectChangeTracking(def.DefaultValue);
+                    }
                 }
-                else if (def.IsList)
-                {
-                    def = new CollectionPropertyDefinition(propertyInfo.Name, propertyInfo.PropertyType);
-                    this.InitializeCollectionProperty(
-                        def, 
-                        null);
-                }
-                else
-                {
-                    this.propertyValue[def] = null;
-                }
-
-                this.propertyList.Add(def.Name, def);
+            }
+            else
+            {
+                throw new ArgumentNullException(nameof(bagSchema));
             }
         }
 
@@ -204,17 +222,91 @@
             Type constructedObservableCollection = observableCollectionType.MakeGenericType(def.GetListUnderlyingType());
             if (value != null)
             {
-                this.propertyValue[def] = Activator.CreateInstance(
-                    constructedObservableCollection, 
-                    value);
+                this.propertyValue[def] = new ObjectChangeTracking(
+                    Activator.CreateInstance(
+                    constructedObservableCollection,
+                    value));
             }
             else
             {
-                this.propertyValue[def] = Activator.CreateInstance(constructedObservableCollection);
+                this.propertyValue[def] = new ObjectChangeTracking(
+                    Activator.CreateInstance(constructedObservableCollection));
             }
             
-            INotifyCollectionChanged notifyCollectionChanged = (INotifyCollectionChanged)this.propertyValue[def];
-            ((CollectionPropertyDefinition)def).RegisterChangeListener(notifyCollectionChanged);
+            INotifyCollectionChanged notifyCollectionChanged = (INotifyCollectionChanged)this.propertyValue[def].Value;
+            this.propertyValue[def].RegisterListChangeListener(notifyCollectionChanged);
+        }
+
+        /// <summary>
+        /// Get property definition by name.
+        /// </summary>
+        /// <param name="propertyName"></param>
+        /// <returns></returns>
+        private PropertyDefinition GetPropertyDefinitionByName(string propertyName)
+        {
+            foreach (KeyValuePair<PropertyDefinition, ObjectChangeTracking> pair in this.propertyValue)
+            {
+                if ( pair.Key.Name == propertyName )
+                {
+                    return pair.Key;
+                }
+            }
+
+            throw new KeyNotFoundException($"Key doesn't exist: '{propertyName}'.");
+        }
+
+        /// <summary>
+        /// Track object changes.
+        /// </summary>
+        private class ObjectChangeTracking
+        {
+            /// <summary>
+            /// Object value.
+            /// </summary>
+            private object value;
+
+            /// <summary>
+            /// Observable collection.
+            /// </summary>
+            private INotifyCollectionChanged CollectionChanged { get; set; }
+
+            /// <summary>
+            /// Create new instance of <see cref="ObjectChangeTracking"/>
+            /// </summary>
+            /// <param name="objectValue">Object value.</param>
+            public ObjectChangeTracking(object objectValue)
+            {
+                this.value = objectValue;
+                this.Changed = false;
+            }
+
+            /// <summary>
+            /// Object value.
+            /// </summary>
+            public object Value
+            {
+                get { return this.value; }
+                set
+                {
+                    this.value = value;
+                    this.Changed = true;
+                }
+            }
+
+            /// <summary>
+            /// Indicate if object changed.
+            /// </summary>
+            public bool Changed { get; set; }
+
+            /// <summary>
+            /// Register collection changed.
+            /// </summary>
+            /// <param name="collectionChanged"></param>
+            public void RegisterListChangeListener(INotifyCollectionChanged collectionChanged)
+            {
+                this.CollectionChanged = collectionChanged;
+                this.CollectionChanged.CollectionChanged += (sender, args) => { this.Changed = true; };
+            }
         }
     }
 }

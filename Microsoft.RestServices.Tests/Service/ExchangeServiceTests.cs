@@ -664,7 +664,9 @@
 
             service.FindFolders(
                 new FolderId("MyTestFolder"),
-                new SearchFilter.IsEqualTo("DisplayName", "subFolder"),
+                new SearchFilter.IsEqualTo(
+                    MailFolderObjectSchema.DisplayName, 
+                    "subFolder"),
                 new FolderView(10));
 
             HttpWebRequestClientProvider.Instance.Reset();

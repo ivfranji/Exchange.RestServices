@@ -144,12 +144,12 @@
             {
                 case PropertyValueType.SingleValueExtendedProperties:
                     this.singleValueExtendedProperties.AddFilter(new SearchFilter.IsEqualTo(
-                        "Id",
+                        SingleValueLegacyExtendedPropertyObjectSchema.Id,
                         extendedProperty.Definition));
                     break;
                 case PropertyValueType.MultiValueExtendedProperties:
                     this.multiValueExtendedProperties.AddFilter(new SearchFilter.IsEqualTo(
-                        "Id",
+                        MultiValueLegacyExtendedPropertyObjectSchema.Id,
                         extendedProperty.Definition));
                     break;
             }

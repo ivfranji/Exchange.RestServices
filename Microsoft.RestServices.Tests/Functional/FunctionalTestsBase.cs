@@ -121,10 +121,25 @@
         [TestMethod]
         public void SyncMailFoldersTest()
         {
+            string folder1Name = "TempSyncFolder1";
+            string folder2Name = "TempSyncFolder2";
+
             HttpWebRequestClientProvider.Instance.EnterLock();
             HttpWebRequestClientProvider.Instance.Reset();
-
             ExchangeService exchangeService = this.GetExchangeService(AppConfig.MailboxA);
+
+            FindFoldersResults findFolders = exchangeService.FindFolders(
+                WellKnownFolderName.MsgFolderRoot,
+                new FolderView(30));
+
+            foreach (MailFolder mailFolder in findFolders)
+            {
+                if (mailFolder.DisplayName == folder1Name || 
+                    mailFolder.DisplayName == folder2Name)
+                {
+                    mailFolder.Delete();
+                }
+            }
 
             string syncState = null;
             int counter = 0;
@@ -141,11 +156,11 @@
             Assert.IsFalse(sync.MoreAvailable);
 
             MailFolder folder1 = new MailFolder(exchangeService);
-            folder1.DisplayName = "TestFolderSync1";
+            folder1.DisplayName = folder1Name;
             folder1.Save(WellKnownFolderName.MsgFolderRoot);
 
             MailFolder folder2 = new MailFolder(exchangeService);
-            folder2.DisplayName = "TestFolderSync2";
+            folder2.DisplayName = folder2Name;
             folder2.Save(WellKnownFolderName.MsgFolderRoot);
 
             sync = exchangeService.SyncFolderHierarchy(syncState);
@@ -259,7 +274,7 @@
                 new Guid(FunctionalTestsBase.extendedPropertyGuid)));
 
             SearchFilter filter = new SearchFilter.IsEqualTo(
-                "Subject", 
+                MessageObjectSchema.Subject, 
                 subject);
 
             FindItemsResults<OutlookItem> findItemsResults = exchangeService.FindItems(
@@ -313,7 +328,9 @@
             Thread.Sleep(5000); // allow some time for email to be delivered
             MessageView messageView = new MessageView(10);
             FolderId inbox = new FolderId(WellKnownFolderName.Inbox);
-            SearchFilter subjectFilter = new SearchFilter.IsEqualTo("Subject", messageSubject);
+            SearchFilter subjectFilter = new SearchFilter.IsEqualTo(
+                MessageObjectSchema.Subject, 
+                messageSubject);
 
             FindItemsResults<OutlookItem> messages = exchangeService.FindItems(inbox, subjectFilter, messageView);
 
@@ -323,7 +340,9 @@
 
             Thread.Sleep(5000); // allow some time for email to be delivered
 
-            subjectFilter = new SearchFilter.IsEqualTo("Subject", $"Re: {messageSubject}");
+            subjectFilter = new SearchFilter.IsEqualTo(
+                MessageObjectSchema.Subject, 
+                $"Re: {messageSubject}");
             exchangeService.MailboxId = new MailboxId(AppConfig.MailboxA);
             messages = exchangeService.FindItems(inbox, subjectFilter, messageView);
 
@@ -335,10 +354,23 @@
         [TestMethod]
         public void SyncMessagesTest()
         {
+            string folderName = "TempSyncFolder";
             ExchangeService exchangeService = this.GetExchangeService(AppConfig.MailboxA);
 
+            FindFoldersResults findFolders = exchangeService.FindFolders(
+                WellKnownFolderName.MsgFolderRoot,
+                new FolderView(30));
+
+            foreach (MailFolder mailFolder in findFolders)
+            {
+                if (mailFolder.DisplayName == folderName)
+                {
+                    mailFolder.Delete();
+                }
+            }
+
             MailFolder folder = new MailFolder(exchangeService);
-            folder.DisplayName = "TempSyncFolder";
+            folder.DisplayName = folderName;
             folder.Save(WellKnownFolderName.MsgFolderRoot);
 
             for (int i = 0; i < 10; i++)
@@ -405,7 +437,9 @@
                 syncCollection.TotalCount == 4);
 
             int changes = syncCollection.Items.Count(i => i.ChangeType == SyncChangeType.Deleted);
-            Assert.IsTrue(changes == 2);
+            Assert.AreEqual(
+                2, 
+                changes);
 
             changes = syncCollection.Items.Count(i => i.ChangeType == SyncChangeType.ReadFlagChanged);
             Assert.IsTrue(changes == 2);
@@ -502,6 +536,7 @@
         {
             ExchangeService exchangeService = this.GetExchangeService(AppConfig.MailboxB);
             FolderId calendarFolderId = new CalendarFolderId("me");
+            string subject = Guid.NewGuid().ToString();
 
             Event calendarEvent = new Event(exchangeService);
             calendarEvent.Body = new ItemBody()
@@ -510,7 +545,7 @@
                 ContentType = BodyType.Html
             };
 
-            calendarEvent.Subject = "Test subject";
+            calendarEvent.Subject = subject;
             calendarEvent.Start = new DateTimeTimeZone()
             {
                 DateTime = this.GetFormattedDateTime(),
@@ -519,7 +554,7 @@
 
             calendarEvent.End = new DateTimeTimeZone()
             {
-                DateTime = this.GetFormattedDateTime(3),
+                DateTime = this.GetFormattedDateTime(5),
                 TimeZone = "Central European Standard Time"
             };
             
@@ -535,14 +570,23 @@
             };
 
             calendarEvent.Save(calendarFolderId);
-            
+            DateTime created = DateTime.Now;
+
             Thread.Sleep(5000); // allow item to be delivered to mailbox b
 
             exchangeService.MailboxId = new MailboxId(AppConfig.MailboxA);
-            SearchFilter filter = new SearchFilter.IsEqualTo("Subject", "Test subject");
-            FindItemsResults<OutlookItem> items = exchangeService.FindItems(calendarFolderId, filter, new EventView(10));
+            SearchFilter subjectFilter = new SearchFilter.IsEqualTo(
+                EventObjectSchema.Subject, 
+                subject);
 
-            Assert.IsTrue(items.TotalCount == 1);
+            FindItemsResults<OutlookItem> items = exchangeService.FindItems(
+                calendarFolderId, 
+                subjectFilter, 
+                new EventView(10));
+
+            Assert.AreEqual(
+                1,
+                items.TotalCount);
 
             Event meeting = (Event) items.Items[0];
             meeting.Decline(
@@ -560,7 +604,7 @@
         /// <returns></returns>
         private string GetFormattedDateTime(int hoursToAdd = 2)
         {
-            DateTime dateTime = DateTime.Now.AddHours(hoursToAdd);
+            DateTime dateTime = DateTime.UtcNow.AddHours(hoursToAdd);
             DateTime roundDateTime = new DateTime(
                 dateTime.Year, 
                 dateTime.Month, 
@@ -671,5 +715,26 @@
 
             HttpWebRequestClientProvider.Instance.ExitLock();
         }
+
+        public void T()
+        {
+
+            ExchangeService exchangeService = new ExchangeService(
+                "<bearerToken>", 
+                "testmbx@test.com");
+
+            Message message = new Message(exchangeService);
+            message.Subject = "test subject";
+            message.Body = new ItemBody()
+            {
+                ContentType = BodyType.Html,
+                Content = "Body of the message"
+            };
+
+            message.Save(WellKnownFolderName.Inbox);
+        }
     }
+
+
+    
 }

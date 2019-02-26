@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Reflection;
     using Microsoft.RestServices.Exchange;
     using Newtonsoft.Json;
 
@@ -22,7 +23,23 @@
         /// </summary>
         protected Entity()
         {
-            this.propertyBag = new PropertyBag(this.GetType());
+            Type schemaType = Assembly.GetExecutingAssembly().GetType(
+                this.GetType().FullName + "ObjectSchema");
+            if (schemaType != null)
+            {
+                object instance = Activator.CreateInstance(schemaType);
+                if (instance is ObjectSchema)
+                {
+                    this.propertyBag = new PropertyBag(instance as ObjectSchema);
+                }
+            }
+
+            // TODO: THrow
+            //else
+            //{
+            //    this.propertyBag = new PropertyBag(this.GetType());
+            //}
+
         }
 
         /// <summary>
