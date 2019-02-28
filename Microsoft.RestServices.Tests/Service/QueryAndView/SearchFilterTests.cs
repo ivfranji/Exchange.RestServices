@@ -130,7 +130,7 @@
                 searchFilterCollection.FilterOperator);
 
             Assert.AreEqual(
-                "$filter=TotalItemCount le 5 and CreatedDateTime gt 2019-02-01T12:00:00 and Body ne 'test body'",
+                "$filter=TotalItemCount le 5 and CreatedDateTime gt 2019-02-01T12:00:00Z and Body ne 'test body'",
                 searchFilterCollection.Query);
 
             Assert.ThrowsException<ArgumentException>(() =>
@@ -149,7 +149,7 @@
                 searchFilterCollection.FilterOperator);
 
             Assert.AreEqual(
-                "$filter=TotalItemCount le 5 or CreatedDateTime gt 2019-02-01T12:00:00 or Body ne 'test body'",
+                "$filter=TotalItemCount le 5 or CreatedDateTime gt 2019-02-01T12:00:00Z or Body ne 'test body'",
                 searchFilterCollection.Query);
         }
 
