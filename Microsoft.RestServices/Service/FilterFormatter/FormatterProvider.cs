@@ -1,6 +1,8 @@
 ﻿namespace Microsoft.RestServices.Exchange
 {
+    using System;
     using System.Collections.Generic;
+    using System.Reflection;
 
     /// <summary>
     /// List of formatters.
@@ -11,31 +13,6 @@
         /// String formatter name.
         /// </summary>
         private const string StringFormatterName = "System.String";
-
-        /// <summary>
-        /// String formatter name.
-        /// </summary>
-        private const string BooleanFormatterName = "System.Boolean";
-
-        /// <summary>
-        /// Microsoft graph recipient formatter name.
-        /// </summary>
-        private const string MicrosoftGraphRecipientFormatterName = "Microsoft.Graph.Recipient";
-
-        /// <summary>
-        /// Int formatter name.
-        /// </summary>
-        private const string IntFormatterName = "System.Int32";
-
-        /// <summary>
-        /// Date time offset formatter name.
-        /// </summary>
-        private const string DateTimeOffsetFormatterName = "System.DateTimeOffset";
-
-        /// <summary>
-        /// Date time formatter name.
-        /// </summary>
-        private const string DateTimeFormatterName = "System.DateTime";
 
         /// <summary>
         /// Formatters supported.
@@ -49,29 +26,18 @@
         {
             this.formatters = new Dictionary<string, IFilterFormatter>();
 
-            this.formatters.Add(
-                FormatterProvider.BooleanFormatterName, 
-                new BoolFilterFormatter());
+            Type baseFilterFormatterType = typeof(BaseFilterFormatter);
 
-            this.formatters.Add(
-                FormatterProvider.StringFormatterName, 
-                new StringFilterFormatter());
-
-            this.formatters.Add(
-                FormatterProvider.MicrosoftGraphRecipientFormatterName, 
-                new RecipientFilterFormatter());
-
-            this.formatters.Add(
-                FormatterProvider.IntFormatterName, 
-                new IntFilterFormatter());
-
-            this.formatters.Add(
-                FormatterProvider.DateTimeOffsetFormatterName, 
-                new DateTimeOffsetFilterFormatter());
-
-            this.formatters.Add(
-                FormatterProvider.DateTimeFormatterName, 
-                new DateTimeFilterFormatter());
+            foreach (Type type in Assembly.GetAssembly(baseFilterFormatterType).GetTypes())
+            {
+                if (type.IsClass && 
+                    !type.IsAbstract && 
+                    type.IsSubclassOf(baseFilterFormatterType))
+                {
+                    IFilterFormatter formatter = (BaseFilterFormatter) Activator.CreateInstance(type);
+                    this.formatters.Add(formatter.Type, formatter);
+                }
+            }
         }
 
         /// <summary>

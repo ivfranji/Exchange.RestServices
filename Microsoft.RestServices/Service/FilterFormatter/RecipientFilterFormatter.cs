@@ -7,6 +7,12 @@
     /// </summary>
     internal sealed class RecipientFilterFormatter : BaseFilterFormatter
     {
+        /// <inheritdoc cref="BaseFilterFormatter.Type"/>
+        public override string Type
+        {
+            get { return typeof(Microsoft.Graph.Recipient).FullName; }
+        }
+
         /// <inheritdoc cref="BaseFilterFormatter.QuoteRequired"/>
         protected override bool QuoteRequired
         {

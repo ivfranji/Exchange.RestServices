@@ -5,6 +5,12 @@
     /// </summary>
     internal sealed class StringFilterFormatter : BaseFilterFormatter
     {
+        /// <inheritdoc cref="BaseFilterFormatter.Type"/>
+        public override string Type
+        {
+            get { return typeof(string).FullName; }
+        }
+
         /// <inheritdoc cref="BaseFilterFormatter.QuoteRequired"/>
         protected override bool QuoteRequired
         {

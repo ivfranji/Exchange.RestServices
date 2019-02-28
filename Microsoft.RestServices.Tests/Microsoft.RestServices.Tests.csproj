@@ -75,6 +75,8 @@
     <Compile Include="Service\ExchangeServiceTests.cs" />
     <Compile Include="Service\ExtendedProperties\SingleValueExtendedPropertiesTest.cs" />
     <Compile Include="Service\Extensions\ExtendedPropertyTests.cs" />
+    <Compile Include="Service\FilterFormatter\FilterFormattersTests.cs" />
+    <Compile Include="Service\FilterFormatter\FormatterProviderTests.cs" />
     <Compile Include="Service\Json\DeserializerTests.cs" />
     <Compile Include="Service\Json\SerializerTests.cs" />
     <Compile Include="Service\Preferences\PreferencesTests.cs" />

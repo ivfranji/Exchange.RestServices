@@ -7,6 +7,9 @@
     /// </summary>
     internal abstract class BaseFilterFormatter : IFilterFormatter
     {
+        /// <inheritdoc cref="IFilterFormatter.Type"/>
+        public abstract string Type { get; }
+
         /// <summary>
         /// Indicate if quotes are required around value.
         /// </summary>

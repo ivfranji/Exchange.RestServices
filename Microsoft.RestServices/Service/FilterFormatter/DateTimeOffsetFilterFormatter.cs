@@ -7,10 +7,16 @@
     /// </summary>
     internal sealed class DateTimeOffsetFilterFormatter : BaseFilterFormatter
     {
+        /// <inheritdoc cref="BaseFilterFormatter.Type"/>
+        public override string Type
+        {
+            get { return typeof(DateTimeOffset).FullName; }
+        }
+
         /// <summary>
         /// Date time format.
         /// </summary>
-        private const string dateTimeFormat = "yyyy-MM-ddThh:mm:ss";
+        private const string dateTimeFormat = "yyyy-MM-ddThh:mm:ssZ";
 
         /// <inheritdoc cref="BaseFilterFormatter.FormatInternal"/>
         protected override string FormatInternal(object obj, FilterOperator filterOperator, PropertyDefinition propertyDefinition)

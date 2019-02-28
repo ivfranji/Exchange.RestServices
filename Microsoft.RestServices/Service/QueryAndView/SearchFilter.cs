@@ -52,11 +52,6 @@
         public abstract class SimplePropertyMatchingFilter : SearchFilter
         {
             /// <summary>
-            /// Date time format.
-            /// </summary>
-            private const string dateTimeFormat = "yyyy-MM-ddThh:mm:ss";
-
-            /// <summary>
             /// Create new instance of <see cref="SearchFilter.SimplePropertyMatchingFilter"/>
             /// </summary>
             /// <param name="filterOperator">Filter operator.</param>
@@ -92,8 +87,7 @@
             /// <inheritdoc cref="SearchFilter.ToString(StringBuilder)"/>
             protected internal sealed override void ToString(StringBuilder sb)
             {
-                sb.Append(
-                    this.PropertyDefinition.FormatFilter(
+                sb.Append(this.PropertyDefinition.FormatFilter(
                         this.PropertyValue,
                         this.FilterOperator));
             }
