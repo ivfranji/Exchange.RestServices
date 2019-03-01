@@ -1,7 +1,6 @@
 ﻿namespace Microsoft.RestServices.Exchange
 {
     using System;
-    using System.Net;
     using System.Net.Http.Headers;
     
     /// <summary>
@@ -46,11 +45,5 @@
         /// <param name="headerName">Header name.</param>
         /// <param name="headerValue">Header value.</param>
         void SetRequestHeader(string headerName, string headerValue);
-
-        /// <summary>
-        /// Sets proxy server for a request.
-        /// </summary>
-        /// <param name="proxyServer"></param>
-        void SetProxyServer(IWebProxy proxyServer);
     }
 }

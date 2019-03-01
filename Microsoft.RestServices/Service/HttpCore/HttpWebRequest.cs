@@ -16,12 +16,7 @@
         /// X-AnchorMailbox header name.
         /// </summary>
         private const string XAnchorMailboxHeaderName = "X-AnchorMailbox";
-
-        /// <summary>
-        /// Proxy server associated with request.
-        /// </summary>
-        private IWebProxy proxyServer;
-
+        
         /// <summary>
         /// Request message.
         /// </summary>
@@ -120,38 +115,35 @@
                     this.RestUrl.XAnchorMailbox);
             }
 
-            using (IHttpWebRequestClient httpClient = HttpWebRequestClientProvider.Instance.GetClient())
-            {
-                httpClient.SetProxyServer(this.proxyServer);
-                HttpResponseMessage response = httpClient.SendAsync(this.httpRequestMessage).Result;
-                bool requestSuccessful = false;
-                string error = string.Empty;
-                string content = string.Empty;
+            IHttpWebRequestClient httpClient = HttpWebRequestClientProvider.Instance.GetClient();
+            HttpResponseMessage response = httpClient.SendAsync(this.httpRequestMessage).Result;
+            bool requestSuccessful = false;
+            string error = string.Empty;
+            string content = string.Empty;
 
-                if (response.Content != null)
+            if (response.Content != null)
+            {
+                content = response.Content.ReadAsStringAsync().Result;
+                if (response.IsSuccessStatusCode)
                 {
-                    content = response.Content.ReadAsStringAsync().Result;
-                    if (response.IsSuccessStatusCode)
-                    {
-                        requestSuccessful = true;
-                    }
-                    else
-                    {
-                        error = content;
-                    }
+                    requestSuccessful = true;
                 }
                 else
                 {
-                    error = "Http content empty.";
+                    error = content;
                 }
-                
-                return new HttpWebResponse(
-                    content, 
-                    requestSuccessful, 
-                    error, 
-                    response.Headers,
-                    response.StatusCode);
             }
+            else
+            {
+                error = "Http content empty.";
+            }
+            
+            return new HttpWebResponse(
+                content, 
+                requestSuccessful, 
+                error, 
+                response.Headers,
+                response.StatusCode);
         }
 
         /// <inheritdoc cref="IHttpWebRequest.SetRequestHeader"/>
@@ -163,12 +155,6 @@
             }
 
             this.Headers.Add(headerName, headerValue);
-        }
-
-        /// <inheritdoc cref="IHttpWebRequest.SetProxyServer"/>
-        public void SetProxyServer(IWebProxy proxyServer)
-        {
-            this.proxyServer = proxyServer;
         }
 
         /// <summary>

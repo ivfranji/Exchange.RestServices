@@ -80,10 +80,12 @@
     <Compile Include="Service\HttpCore\GetRequestBase.cs" />
     <Compile Include="Service\HttpCore\HttpRestUrl.cs" />
     <Compile Include="Service\HttpCore\HttpWebRequest.cs" />
+    <Compile Include="Service\HttpCore\HttpWebRequestClient.cs" />
     <Compile Include="Service\HttpCore\HttpWebRequestMethod.cs" />
     <Compile Include="Service\HttpCore\HttpWebResponse.cs" />
-    <Compile Include="Service\HttpCore\IHttpClient.cs" />
+    <Compile Include="Service\HttpCore\HttpWebRequestClientProvider.cs" />
     <Compile Include="Service\HttpCore\IHttpWebRequest.cs" />
+    <Compile Include="Service\HttpCore\IHttpWebRequestClient.cs" />
     <Compile Include="Service\HttpCore\IHttpWebResponse.cs" />
     <Compile Include="Service\HttpCore\PatchRequestBase.cs" />
     <Compile Include="Service\HttpCore\PostRequestBase.cs" />

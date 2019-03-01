@@ -188,7 +188,16 @@
             get { return this.httpResponseHeaders; }
         }
 
-        public IWebProxy ProxyServer { get; set; }
+        /// <summary>
+        /// Set or clear proxy server for requests.
+        /// </summary>
+        public IWebProxy ProxyServer
+        {
+            set
+            {
+                HttpWebRequestClientProvider.Instance.ProxyChanged(value);
+            }
+        }
 
         /// <summary>
         /// MailboxId.
@@ -1299,7 +1308,6 @@
                 nameof(authenticationHeader));
 
             webRequest.Authorization = authenticationHeader;
-            webRequest.SetProxyServer(this.ProxyServer);
             webRequest.UserAgent = this.UserAgent;
 
             if (this.HasPreferences)
