@@ -33,13 +33,10 @@
                     this.propertyBag = new PropertyBag(instance as ObjectSchema);
                 }
             }
-
-            // TODO: THrow
-            //else
-            //{
-            //    this.propertyBag = new PropertyBag(this.GetType());
-            //}
-
+            else
+            {
+                throw new NullReferenceException($"Cannot find schema definition '{this.GetType().FullName}ObjectSchema'.");
+            }
         }
 
         /// <summary>
@@ -71,6 +68,7 @@
             get { return this.propertyBag.IsNew; }
         }
         
+        [JsonProperty()]
         /// <summary>
         /// Mailbox id.
         /// </summary>
@@ -662,17 +660,6 @@
             this.PreValidateDelete();
             this.Service.DeleteInferenceClassificationOverride(this);
             this.propertyBag.Clear();
-        }
-    }
-
-
-    public partial class FileAttachment
-    {
-        [JsonProperty("@odata.type")]
-        public string OdataType
-        {
-            get { return "#microsoft.graph.fileAttachment"; }
-            set { }
         }
     }
 }
