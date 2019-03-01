@@ -572,7 +572,7 @@
             calendarEvent.Save(calendarFolderId);
             DateTime created = DateTime.Now;
 
-            Thread.Sleep(5000); // allow item to be delivered to mailbox b
+            Thread.Sleep(8000); // allow item to be delivered to mailbox b
 
             exchangeService.MailboxId = new MailboxId(AppConfig.MailboxA);
             SearchFilter subjectFilter = new SearchFilter.IsEqualTo(
@@ -613,7 +613,7 @@
                 dateTime.Minute - (dateTime.Minute % 15), 
                 0);
 
-            return roundDateTime.ToString("yyyy-MM-ddThh:mm:ss");
+            return roundDateTime.ToString("yyyy-MM-ddThh:mm:ssZ");
         }
     }
 
@@ -715,26 +715,5 @@
 
             HttpWebRequestClientProvider.Instance.ExitLock();
         }
-
-        public void T()
-        {
-
-            ExchangeService exchangeService = new ExchangeService(
-                "<bearerToken>", 
-                "testmbx@test.com");
-
-            Message message = new Message(exchangeService);
-            message.Subject = "test subject";
-            message.Body = new ItemBody()
-            {
-                ContentType = BodyType.Html,
-                Content = "Body of the message"
-            };
-
-            message.Save(WellKnownFolderName.Inbox);
-        }
     }
-
-
-    
 }

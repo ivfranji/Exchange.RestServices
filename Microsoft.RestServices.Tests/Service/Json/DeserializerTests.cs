@@ -179,11 +179,10 @@
             Assert.AreEqual(
                 1, 
                 msg.Attachments.Count);
-
             ItemAttachment messageAttach = (ItemAttachment) msg.Attachments[0];
             Event messageAttachEvent = (Event) messageAttach.Item;
             Assert.AreEqual(
-                2, 
+                2,
                 messageAttachEvent.Attendees.Count);
 
             Assert.IsNotNull(messageAttachEvent.Start.DateTime);

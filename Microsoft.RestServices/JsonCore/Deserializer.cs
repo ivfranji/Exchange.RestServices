@@ -21,20 +21,7 @@
         /// </summary>
         private Deserializer()
         {
-            this.Settings = new JsonSerializerSettings()
-            {
-                NullValueHandling = NullValueHandling.Ignore,
-                TypeNameHandling = TypeNameHandling.All,
-                ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor
-            };
-
-            this.Settings.Converters.Add(new AttachmentConverter());
         }
-
-        /// <summary>
-        /// Deserializer settings.
-        /// </summary>
-        private JsonSerializerSettings Settings { get; }
 
         /// <summary>
         /// Singleton instance.
@@ -63,20 +50,21 @@
         /// <returns></returns>
         public T Deserialize<T>(string content, Type type)
         {
-            if (null == type)
+            JsonSerializerSettings settings = new JsonSerializerSettings()
             {
-                return JsonConvert.DeserializeObject<T>(content, this.Settings);
-            }
-            else
+                NullValueHandling = NullValueHandling.Ignore,
+                TypeNameHandling = TypeNameHandling.All,
+                ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor
+            };
+
+            settings.Converters.Add(new AttachmentConverter());
+            if (null != type)
             {
-                JsonConverter converter = new OutlookItemConverter(type);
-                this.Settings.Converters.Add(converter);
-
-                T deserialiedObject = JsonConvert.DeserializeObject<T>(content, this.Settings);
-
-                this.Settings.Converters.Remove(converter);
-                return deserialiedObject;
+                settings.Converters.Add(new OutlookItemConverter(type));
             }
+
+            return JsonConvert.DeserializeObject<T>(content, settings);
+            
         }
 
         /// <summary>
