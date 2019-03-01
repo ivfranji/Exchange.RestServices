@@ -1,8 +1,6 @@
 ﻿namespace Microsoft.RestServices.Exchange
 {
     using System;
-    using System.Collections.Generic;
-    using System.Collections.ObjectModel;
     using Microsoft.Graph;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;

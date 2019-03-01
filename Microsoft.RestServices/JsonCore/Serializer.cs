@@ -47,32 +47,47 @@
         /// <returns></returns>
         public string Serialize(IPropertyChangeTracking obj, Dictionary<string, object> additionalProperties, bool appendRootObject = true)
         {
+            /*
+               Two behaviors appendRootObject covers.
+               1. appendRootObject = false
+
+                {
+                    "Property1": "Value",
+                    "Property2": "Value",
+                    etc..
+                }
+
+                2. appendRootObject = true
+                It appends object name. For an instance, object Message with two properties
+
+                {
+                    "message": {
+                        "Property1": "Value",
+                        "Property2": "Value",
+                        etc...
+                    }
+                }
+            */
+
             JObject rootObject = new JObject();
-            string trackingName = obj.GetType().Name;
+            JObject appendObject = rootObject;
+
             if (appendRootObject)
             {
-                rootObject.Add(trackingName, new JObject());
+                appendObject = new JObject();
+                rootObject.Add(obj.GetType().Name, appendObject);
             }
 
             foreach (string changedProperty in obj.GetChangedProperties())
             {
                 object property = obj[changedProperty];
-
-                if (appendRootObject)
-                {
-                    rootObject[trackingName][changedProperty] = JToken.FromObject(
-                        property, 
-                        this.StringEnumSerializer);
-                }
-                else
-                {
-                    rootObject[changedProperty] = JToken.FromObject(
-                        property, 
-                        this.StringEnumSerializer);
-                }
+                appendObject[changedProperty] = JToken.FromObject(
+                    property, 
+                    this.StringEnumSerializer);
                 
             }
 
+            // Additional properties aren't part of initial object, for example "Comment" in SendMail.
             if (null != additionalProperties && additionalProperties.Count > 0)
             {
                 foreach (KeyValuePair<string, object> additionalProperty in additionalProperties)
@@ -98,11 +113,6 @@
                 {
                     NullValueHandling = NullValueHandling.Ignore
                 });
-        }
-
-        private void ProcessAttachment(Attachment attachment)
-        {
-
         }
     }
 }

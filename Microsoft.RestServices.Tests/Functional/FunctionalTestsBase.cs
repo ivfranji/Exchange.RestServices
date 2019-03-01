@@ -325,7 +325,7 @@
 
             exchangeService.MailboxId = new MailboxId(AppConfig.MailboxB);
 
-            Thread.Sleep(5000); // allow some time for email to be delivered
+            Thread.Sleep(8000); // allow some time for email to be delivered
             MessageView messageView = new MessageView(10);
             FolderId inbox = new FolderId(WellKnownFolderName.Inbox);
             SearchFilter subjectFilter = new SearchFilter.IsEqualTo(
@@ -338,7 +338,7 @@
             Message msg = (Message) messages.Items[0];
             msg.Reply("this is my reply");
 
-            Thread.Sleep(5000); // allow some time for email to be delivered
+            Thread.Sleep(8000); // allow some time for email to be delivered
 
             subjectFilter = new SearchFilter.IsEqualTo(
                 MessageObjectSchema.Subject, 

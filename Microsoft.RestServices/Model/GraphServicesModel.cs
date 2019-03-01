@@ -4,9 +4,6 @@ namespace Microsoft.Graph
     using System.Collections.Generic;
     using Newtonsoft.Json;
 
-
-
-
     /// <summary>
     /// Entity
     /// </summary>
