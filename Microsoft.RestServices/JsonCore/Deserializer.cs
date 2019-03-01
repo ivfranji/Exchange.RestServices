@@ -29,7 +29,6 @@
             };
 
             this.Settings.Converters.Add(new AttachmentConverter());
-            //this.Settings.Converters.Add(new ListConverter());
         }
 
         /// <summary>
@@ -167,6 +166,32 @@
 
                 if (currentAttachmentType.EndsWith("microsoft.graph.itemAttachment", StringComparison.OrdinalIgnoreCase))
                 {
+                    // correct item attachment converter needs to be added.
+                    JToken item = jsonToken["item"];
+                    if (null != item)
+                    {
+                        string itemType = item["@odata.type"].ToString();
+                        if (string.IsNullOrEmpty(itemType))
+                        {
+                            this.subClassConversionSettings.Converters.Add(
+                                new OutlookItemConverter(typeof(Message)));
+                        }
+                        else
+                        {
+                            if (itemType.EndsWith(typeof(Message).FullName, StringComparison.OrdinalIgnoreCase))
+                            {
+                                this.subClassConversionSettings.Converters.Add(
+                                    new OutlookItemConverter(typeof(Message)));
+                            }
+
+                            if (itemType.EndsWith(typeof(Event).FullName, StringComparison.OrdinalIgnoreCase))
+                            {
+                                this.subClassConversionSettings.Converters.Add(
+                                    new OutlookItemConverter(typeof(Event)));
+                            }
+                        }
+                    }
+
                     return JsonConvert.DeserializeObject<ItemAttachment>(jsonToken.ToString(), subClassConversionSettings);
                 }
 
@@ -251,12 +276,12 @@
             {
                 JToken jsonToken = JObject.ReadFrom(reader);
 
-                if (this.type.FullName == "Microsoft.Graph.Message")
+                if (this.type == typeof(Message))
                 {
                     return JsonConvert.DeserializeObject<Message>(jsonToken.ToString(), subClassConversionSettings);
                 }
 
-                if (this.type.FullName == "Microsoft.Graph.Event")
+                if (this.type == typeof(Event))
                 {
                     return JsonConvert.DeserializeObject<Event>(jsonToken.ToString(), subClassConversionSettings);
                 }

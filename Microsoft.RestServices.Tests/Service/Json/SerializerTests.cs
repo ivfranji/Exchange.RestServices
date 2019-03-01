@@ -9,7 +9,7 @@
     public class SerializerTests
     {
         [TestMethod]
-        public void TestSerializer()
+        public void TestRoundTripSerializerDeserializer()
         {
             Message msg = new Message(new ExchangeService("j", "a@b.com"));
             msg.Subject = "subj";
@@ -21,6 +21,30 @@
             additionalProperties.Add("saveToSentItems", true);
 
             string s = Serializer.Instance.Serialize(msg, additionalProperties);
+
+            CustomModel customModel = Deserializer.Instance.Deserialize<CustomModel>(
+                s, 
+                null);
+
+            Assert.IsTrue(customModel.SaveToSentItems);
+            Assert.AreEqual(
+                "subj", 
+                customModel.Message.Subject);
+
+            Assert.AreEqual(
+                BodyType.Html,
+                customModel.Message.Body.ContentType);
+
+            Assert.AreEqual(
+                "content",
+                customModel.Message.Body.Content);
+        }
+
+        private class CustomModel
+        {
+            public Message Message { get; set; }
+
+            public bool SaveToSentItems { get; set; }
         }
     }
 }

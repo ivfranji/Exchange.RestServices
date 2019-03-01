@@ -80,7 +80,7 @@
 
                             this.propertyValue[key].Changed = true;
                         }
-                        else if (key.Type != valueType)
+                        else if (key.Type != valueType && !valueType.IsSubclassOf(key.Type)) // we can store child classes in their base representation. Example, OutlookItem <- Message
                         {
                             throw new InvalidOperationException("Attempted to store wrong type to the dictionary.");
                         }
