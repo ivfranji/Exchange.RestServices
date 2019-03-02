@@ -1,7 +1,7 @@
 ﻿namespace Microsoft.RestServices.Exchange
 {
     using System.Collections.Generic;
-    using Microsoft.Graph;
+    using Microsoft.OutlookServices;
     using Newtonsoft.Json;
 
     /// <summary>

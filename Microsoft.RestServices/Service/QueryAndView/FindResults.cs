@@ -2,7 +2,7 @@
 {
     using System.Collections;
     using System.Collections.Generic;
-    using Microsoft.Graph;
+    using Microsoft.OutlookServices;
 
     /// <summary>
     /// Class holding find results.

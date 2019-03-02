@@ -2,7 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
-    using Microsoft.Graph;
+    using Microsoft.OutlookServices;
 
     /// <summary>
     /// Property set.
@@ -144,12 +144,12 @@
             {
                 case PropertyValueType.SingleValueExtendedProperties:
                     this.singleValueExtendedProperties.AddFilter(new SearchFilter.IsEqualTo(
-                        SingleValueLegacyExtendedPropertyObjectSchema.Id,
+                        SingleValueLegacyExtendedPropertyObjectSchema.PropertyId,
                         extendedProperty.Definition));
                     break;
                 case PropertyValueType.MultiValueExtendedProperties:
                     this.multiValueExtendedProperties.AddFilter(new SearchFilter.IsEqualTo(
-                        MultiValueLegacyExtendedPropertyObjectSchema.Id,
+                        MultiValueLegacyExtendedPropertyObjectSchema.PropertyId,
                         extendedProperty.Definition));
                     break;
             }

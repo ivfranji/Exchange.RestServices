@@ -2,7 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
-    using Graph;
+    using Microsoft.OutlookServices;
 
     /// <summary>
     /// Property definition.

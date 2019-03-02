@@ -2,7 +2,7 @@
 {
     using System;
     using Microsoft.RestServices.Exchange;
-    using Microsoft.Graph;
+    using Microsoft.OutlookServices;
     using VisualStudio.TestTools.UnitTesting;
 
     [TestClass]

@@ -6,7 +6,7 @@
     using System.Linq;
     using System.Threading;
     using Microsoft.RestServices.Exchange;
-    using Microsoft.Graph;
+    using Microsoft.OutlookServices;
     using VisualStudio.TestTools.UnitTesting;
     using FolderView = Microsoft.RestServices.Exchange.FolderView;
 
@@ -28,6 +28,42 @@
             return new ExchangeService(
                 new TestAuthenticationProvider(), 
                 mailboxId);
+        }
+
+        /// <summary>
+        /// Delete folder if it exist.
+        /// </summary>
+        /// <param name="folderName"></param>
+        /// <param name="exchangeService"></param>
+        /// <param name="folderRoot"></param>
+        protected void EnsureFolderDoesntExist(string folderName, ExchangeService exchangeService, WellKnownFolderName folderRoot)
+        {
+            FindFoldersResults findFolders = exchangeService.FindFolders(
+                folderRoot,
+                new FolderView(30));
+
+            foreach (MailFolder mailFolder in findFolders)
+            {
+                if (mailFolder.DisplayName == folderName)
+                {
+                    mailFolder.Delete();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Create folder
+        /// </summary>
+        /// <param name="folderName"></param>
+        /// <param name="exchangeService"></param>
+        /// <returns></returns>
+        protected MailFolder CreateFolder(string folderName, ExchangeService exchangeService, WellKnownFolderName folderRoot)
+        {
+            MailFolder folder = new MailFolder(exchangeService);
+            folder.DisplayName = folderName;
+            folder.Save(folderRoot);
+
+            return folder;
         }
     }
 
@@ -206,10 +242,10 @@
             messageView.PropertySet.Add("HasAttachments");
 
             {
-                FindItemsResults<OutlookItem> findItemResults = exchangeService.FindItems(
+                FindItemsResults<Item> findItemResults = exchangeService.FindItems(
                     WellKnownFolderName.Inbox, 
                     messageView);
-                foreach (OutlookItem item in findItemResults)
+                foreach (Item item in findItemResults)
                 {
                     Message msg = (Message) item;
                     Assert.AreEqual(
@@ -225,7 +261,7 @@
                 findItemResults = exchangeService.FindItems(
                     WellKnownFolderName.Inbox,
                     messageView);
-                foreach (OutlookItem item in findItemResults)
+                foreach (Item item in findItemResults)
                 {
                     Message msg = (Message)item;
                     Assert.AreEqual(
@@ -245,13 +281,13 @@
             msg.Subject = subject;
             msg.SingleValueExtendedProperties.Add(new SingleValueLegacyExtendedProperty()
             {
-                Id = $"String {FunctionalTestsBase.extendedPropertyGuid} Name Blah",
+                PropertyId = $"String {FunctionalTestsBase.extendedPropertyGuid} Name Blah",
                 Value = "BlahValue"
             });
 
             msg.MultiValueExtendedProperties.Add(new MultiValueLegacyExtendedProperty()
             {
-                Id = $"StringArray {FunctionalTestsBase.extendedPropertyGuid} Name BlahArray",
+                PropertyId = $"StringArray {FunctionalTestsBase.extendedPropertyGuid} Name BlahArray",
                 Value = new List<string>()
                 {
                     "A",
@@ -277,12 +313,12 @@
                 MessageObjectSchema.Subject, 
                 subject);
 
-            FindItemsResults<OutlookItem> findItemsResults = exchangeService.FindItems(
+            FindItemsResults<Item> findItemsResults = exchangeService.FindItems(
                 WellKnownFolderName.Inbox, 
                 filter, 
                 msgView);
 
-            foreach (OutlookItem item in findItemsResults)
+            foreach (Item item in findItemsResults)
             {
                 msg = (Message) item;
                 Assert.AreEqual(
@@ -318,7 +354,7 @@
             message.Body = new ItemBody()
             {
                 Content = "Test message",
-                ContentType = BodyType.Html
+                ContentType = BodyType.HTML
             };
 
             message.Send();
@@ -332,7 +368,7 @@
                 MessageObjectSchema.Subject, 
                 messageSubject);
 
-            FindItemsResults<OutlookItem> messages = exchangeService.FindItems(inbox, subjectFilter, messageView);
+            FindItemsResults<Item> messages = exchangeService.FindItems(inbox, subjectFilter, messageView);
 
             Assert.AreEqual(1, messages.TotalCount);
             Message msg = (Message) messages.Items[0];
@@ -357,21 +393,15 @@
             string folderName = "TempSyncFolder";
             ExchangeService exchangeService = this.GetExchangeService(AppConfig.MailboxA);
 
-            FindFoldersResults findFolders = exchangeService.FindFolders(
-                WellKnownFolderName.MsgFolderRoot,
-                new FolderView(30));
+            this.EnsureFolderDoesntExist(
+                folderName,
+                exchangeService,
+                WellKnownFolderName.MsgFolderRoot);
 
-            foreach (MailFolder mailFolder in findFolders)
-            {
-                if (mailFolder.DisplayName == folderName)
-                {
-                    mailFolder.Delete();
-                }
-            }
-
-            MailFolder folder = new MailFolder(exchangeService);
-            folder.DisplayName = folderName;
-            folder.Save(WellKnownFolderName.MsgFolderRoot);
+            MailFolder folder = this.CreateFolder(
+                folderName,
+                exchangeService,
+                WellKnownFolderName.MsgFolderRoot);
 
             for (int i = 0; i < 10; i++)
             {
@@ -384,7 +414,7 @@
             string syncState = null;
             MessagePropertySet propertySet = new MessagePropertySet();
             propertySet.AddProperty("ToRecipients");
-            SyncFolderItemsCollection<OutlookItem> syncCollection;
+            SyncFolderItemsCollection<Item> syncCollection;
             int counter = 0;
             int numberOfMessages = 0;
             do
@@ -399,7 +429,7 @@
                 numberOfMessages += syncCollection.TotalCount;
                 counter++;
 
-                foreach (ItemChange<OutlookItem> itemChange in syncCollection)
+                foreach (ItemChange<Item> itemChange in syncCollection)
                 {
                     Assert.IsTrue(
                         itemChange.ChangeType == SyncChangeType.Created);
@@ -410,7 +440,7 @@
             Assert.IsFalse(syncCollection.MoreAvailable);
             Assert.IsTrue(numberOfMessages == 10);
 
-            FindItemsResults<OutlookItem> items = exchangeService.FindItems(folder.FolderId, new MessageView(4));
+            FindItemsResults<Item> items = exchangeService.FindItems(folder.FolderId, new MessageView(4));
 
             for (int i = 0; i < items.TotalCount; i++)
             {
@@ -447,13 +477,72 @@
             folder.Delete();
         }
 
+        [TestMethod]
+        public void TestFindMessage()
+        {
+            string folderName = "TestFindItemFolder";
+            ExchangeService exchangeService = this.GetExchangeService(AppConfig.MailboxA);
+            this.EnsureFolderDoesntExist(
+                folderName,
+                exchangeService,
+                WellKnownFolderName.MsgFolderRoot);
+
+            MailFolder folder = this.CreateFolder(
+                folderName, 
+                exchangeService, 
+                WellKnownFolderName.MsgFolderRoot);
+
+            for (int i = 0; i < 9; i++)
+            {
+                this.CreateMessage(
+                    1, 
+                    folder.FolderId, 
+                    exchangeService);
+            }
+
+            for (int i = 0; i < 10; i++)
+            {
+                this.CreateMessage(
+                    i, 
+                    folder.FolderId, 
+                    exchangeService);
+            }
+
+            // there are 10 "Test msg 1" and 9 others. Expecting to see
+            // sync 5 times.
+
+            SearchFilter subjectFilter = new SearchFilter.IsEqualTo(
+                MessageObjectSchema.Subject,
+                "Test msg 1");
+
+            MessageView mv = new MessageView(2);
+            FindItemsResults<Item> items = null;
+            int counter = 0;
+            do
+            {
+                // default behavior is to follow ODataNextLink so
+                // no need for setting offset.
+                items = exchangeService.FindItems(
+                    folder.FolderId,
+                    subjectFilter,
+                    mv);
+
+                counter++;
+
+            } while (items.MoreAvailable);
+
+            Assert.AreEqual(
+                6,
+            counter);
+        }
+
         private void CreateMessage(int messageId, FolderId parentFolderId, ExchangeService exchangeService)
         {
             Message message = new Message(exchangeService);
             message.Subject = $"Test msg {messageId}";
             message.Body = new ItemBody()
             {
-                ContentType = BodyType.Html,
+                ContentType = BodyType.HTML,
                 Content = $"This is test message for sync {messageId}"
             };
 
@@ -542,7 +631,7 @@
             calendarEvent.Body = new ItemBody()
             {
                 Content = "test",
-                ContentType = BodyType.Html
+                ContentType = BodyType.HTML
             };
 
             calendarEvent.Subject = subject;
@@ -579,7 +668,7 @@
                 EventObjectSchema.Subject, 
                 subject);
 
-            FindItemsResults<OutlookItem> items = exchangeService.FindItems(
+            FindItemsResults<Item> items = exchangeService.FindItems(
                 calendarFolderId, 
                 subjectFilter, 
                 new EventView(10));
@@ -590,8 +679,8 @@
 
             Event meeting = (Event) items.Items[0];
             meeting.Decline(
-                "no comment", 
-                true);
+                true, 
+                "no comment");
 
             exchangeService.MailboxId = new MailboxId(AppConfig.MailboxB);
             calendarEvent.Delete();
@@ -602,7 +691,7 @@
         /// </summary>
         /// <param name="hoursToAdd"></param>
         /// <returns></returns>
-        private string GetFormattedDateTime(int hoursToAdd = 2)
+        private DateTime GetFormattedDateTime(int hoursToAdd = 2)
         {
             DateTime dateTime = DateTime.UtcNow.AddHours(hoursToAdd);
             DateTime roundDateTime = new DateTime(
@@ -613,7 +702,7 @@
                 dateTime.Minute - (dateTime.Minute % 15), 
                 0);
 
-            return roundDateTime.ToString("yyyy-MM-ddThh:mm:ssZ");
+            return roundDateTime; //.ToString("yyyy-MM-ddThh:mm:ssZ");
         }
     }
 

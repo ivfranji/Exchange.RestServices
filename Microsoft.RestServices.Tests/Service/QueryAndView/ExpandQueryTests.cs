@@ -1,6 +1,6 @@
 ﻿namespace Microsoft.RestServices.Tests.Service.QueryAndView
 {
-    using Graph;
+    using Microsoft.OutlookServices;
     using Microsoft.RestServices.Exchange;
     using VisualStudio.TestTools.UnitTesting;
 
@@ -45,12 +45,12 @@
             SearchFilter.SearchFilterCollection filterCollection = new SearchFilter.SearchFilterCollection(FilterOperator.and);
             filterCollection.AddFilter(
                 new SearchFilter.IsEqualTo(
-                    SingleValueLegacyExtendedPropertyObjectSchema.Id, 
+                    SingleValueLegacyExtendedPropertyObjectSchema.PropertyId, 
                     extendedProperty1.Definition));
 
             filterCollection.AddFilter(
                 new SearchFilter.IsEqualTo(
-                    SingleValueLegacyExtendedPropertyObjectSchema.Id,
+                    SingleValueLegacyExtendedPropertyObjectSchema.PropertyId,
                     extendedProperty2.Definition));
 
             ExpandQuery expandQueryAttach = new ExpandQuery("attachments");

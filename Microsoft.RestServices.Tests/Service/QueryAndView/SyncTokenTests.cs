@@ -22,7 +22,7 @@
         [TestMethod]
         public void TestSyncTokenParser()
         {
-            Uri url = new Uri("https://graph.microsoft.com/beta/delta?$skiptoken=fasdlfjflds");
+            Uri url = new Uri("https://Microsoft.OutlookServices.microsoft.com/beta/delta?$skiptoken=fasdlfjflds");
             ISyncToken token = null;
             
             Assert.IsTrue(
@@ -51,7 +51,7 @@
                     SyncTokenType.DeltaToken,
                     out token));
 
-            url = new Uri("https://graph.microsoft.com/beta/delta?$select=Something&$deltatoken=fasdlfjflds&$filter=A");
+            url = new Uri("https://Microsoft.OutlookServices.microsoft.com/beta/delta?$select=Something&$deltatoken=fasdlfjflds&$filter=A");
 
             Assert.IsTrue(
                 SyncToken.TryParseFromUrl(

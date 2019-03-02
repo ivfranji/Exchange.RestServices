@@ -1,6 +1,6 @@
 ﻿namespace Microsoft.RestServices.Exchange
 {
-    using Graph;
+    using Microsoft.OutlookServices;
 
     /// <summary>
     /// Folder property set,

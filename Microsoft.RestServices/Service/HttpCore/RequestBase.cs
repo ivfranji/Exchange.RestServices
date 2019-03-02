@@ -44,6 +44,11 @@
         internal Type DeserializationType { get; set; }
 
         /// <summary>
+        /// Allow client to 
+        /// </summary>
+        internal Action<IPreferenceHeaderSetter> PreferHeaderSetter { get; set; }
+
+        /// <summary>
         /// Http rest url.
         /// </summary>
         protected HttpRestUrl RestUrl { get; }
@@ -73,6 +78,8 @@
         protected IHttpWebResponse ExecuteRequest(IHttpWebRequest httpWebRequest)
         {
             this.PreProcessHttpWebRequestInternal(httpWebRequest);
+            this.PreferHeaderSetter?.Invoke(httpWebRequest);
+
             IHttpWebResponse httpWebResponse =
                 ThrottlingHandler.ExecuteRequestUnderThrottlingGuard(
                     httpWebRequest.GetResponse, 

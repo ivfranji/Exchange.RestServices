@@ -46,9 +46,9 @@
   <ItemGroup>
     <Compile Include="JsonCore\Deserializer.cs" />
     <Compile Include="JsonCore\Serializer.cs" />
-    <Compile Include="Model\GraphServicesModelSchema.cs" />
-    <Compile Include="Model\GraphServicesModel.cs" />
-    <Compile Include="Model\GraphServicesModelPartial.cs" />
+    <Compile Include="Model\OutlookServicesModel.cs" />
+    <Compile Include="Model\OutlookServicesModelObjectSchema.cs" />
+    <Compile Include="Model\OutlookServicesModelPartial.cs" />
     <Compile Include="Schema\ObjectSchema.cs" />
     <Compile Include="Service\ActionAttribute.cs" />
     <Compile Include="Service\ActionMapper.cs" />
@@ -68,6 +68,7 @@
     <Compile Include="Service\Extensions\MapiPropertyType.cs" />
     <Compile Include="Service\Extensions\PropertyTypeValueAttribute.cs" />
     <Compile Include="Service\Extensions\PropertyValueType.cs" />
+    <Compile Include="Service\FeatureSet.cs" />
     <Compile Include="Service\FilterFormatter\BaseFormatter.cs" />
     <Compile Include="Service\FilterFormatter\BoolFilterFormatter.cs" />
     <Compile Include="Service\FilterFormatter\DateTimeFilterFormatter.cs" />
@@ -87,12 +88,12 @@
     <Compile Include="Service\HttpCore\IHttpWebRequest.cs" />
     <Compile Include="Service\HttpCore\IHttpWebRequestClient.cs" />
     <Compile Include="Service\HttpCore\IHttpWebResponse.cs" />
+    <Compile Include="Service\HttpCore\IPreferenceHeaderSetter.cs" />
     <Compile Include="Service\HttpCore\PatchRequestBase.cs" />
     <Compile Include="Service\HttpCore\PostRequestBase.cs" />
     <Compile Include="Service\HttpCore\RequestBase.cs" />
     <Compile Include="Service\HttpCore\SyncRequestBase.cs" />
     <Compile Include="Service\Auth\IAuthorizationTokenProvider.cs" />
-    <Compile Include="Service\IExchangeService.cs" />
     <Compile Include="Service\Preference.cs" />
     <Compile Include="Service\FilterFormatter\FormatterProvider.cs" />
     <Compile Include="Service\PropertyChangeTracking\IPropertyChangeTracking.cs" />

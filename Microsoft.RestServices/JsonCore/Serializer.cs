@@ -1,7 +1,7 @@
 ﻿namespace Microsoft.RestServices.Exchange
 {
     using System.Collections.Generic;
-    using Graph;
+    using Microsoft.OutlookServices;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Converters;
     using Newtonsoft.Json.Linq;
@@ -92,8 +92,11 @@
             {
                 foreach (KeyValuePair<string, object> additionalProperty in additionalProperties)
                 {
+                    // Outlook api is case sensitive with parameters so
+                    // caps first letter. Other casing is ok from generated
+                    // model. Graph doesn't care about casing.
                     rootObject.Add(
-                        additionalProperty.Key,
+                        this.CapsFirstLetter(additionalProperty.Key),
                         JToken.FromObject(additionalProperty.Value));
                 }
             }
@@ -113,6 +116,16 @@
                 {
                     NullValueHandling = NullValueHandling.Ignore
                 });
+        }
+
+        /// <summary>
+        /// Capitalize first letter of the string.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        private string CapsFirstLetter(string value)
+        {
+            return $"{value.Substring(0, 1).ToUpper()}{value.Substring(1)}";
         }
     }
 }

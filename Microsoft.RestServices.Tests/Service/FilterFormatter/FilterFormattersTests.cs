@@ -2,7 +2,7 @@
 {
     using System;
     using Exchange;
-    using Graph;
+    using Microsoft.OutlookServices;
     using VisualStudio.TestTools.UnitTesting;
 
     [TestClass]

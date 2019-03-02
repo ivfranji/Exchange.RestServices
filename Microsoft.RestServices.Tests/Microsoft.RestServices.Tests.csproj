@@ -62,7 +62,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AppConfig.cs" />
+    <Compile Include="Functional\TestsDefinition\MailFolderTestDefinition.cs" />
+    <Compile Include="Functional\FunctionalTestRunner.cs" />
     <Compile Include="Functional\FunctionalTestsBase.cs" />
+    <Compile Include="Functional\OutlookFunctionalTests.cs" />
+    <Compile Include="Functional\TestsDefinition\MailMessageTestDefinition.cs" />
     <Compile Include="Mocks\Helper.cs" />
     <Compile Include="Mocks\MockHttpClients.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

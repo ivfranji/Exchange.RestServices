@@ -19,7 +19,7 @@
             {
             };
 
-            IHttpWebRequest request = HttpWebRequest.Get(new HttpRestUrl(new Uri("https://graph.microsoft.com/beta")));
+            IHttpWebRequest request = HttpWebRequest.Get(new HttpRestUrl(new Uri("https://Microsoft.OutlookServices.microsoft.com/beta")));
 
             IHttpWebResponse httpWebResponse = ThrottlingHandler.ExecuteRequestUnderThrottlingGuard(
                 request.GetResponse,

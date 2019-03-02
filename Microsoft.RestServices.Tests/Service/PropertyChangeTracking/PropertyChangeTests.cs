@@ -1,7 +1,7 @@
 ﻿namespace Microsoft.RestServices.Tests.Service.PropertyChangeTracking
 {
     using System.Collections.Generic;
-    using Graph;
+    using Microsoft.OutlookServices;
     using VisualStudio.TestTools.UnitTesting;
 
     [TestClass]

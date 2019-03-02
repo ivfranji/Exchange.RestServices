@@ -37,7 +37,7 @@
                 typeof(IntFilterFormatter));
 
             Assert.IsInstanceOfType(
-                formatterProvider["Microsoft.Graph.Recipient"],
+                formatterProvider["Microsoft.OutlookServices.Recipient"],
                 typeof(RecipientFilterFormatter));
         }
     }

@@ -6,7 +6,7 @@
     /// <summary>
     /// Http web request contract.
     /// </summary>
-    internal interface IHttpWebRequest : IDisposable
+    internal interface IHttpWebRequest : IDisposable, IPreferenceHeaderSetter
     {
         /// <summary>
         /// Rest url.

@@ -1,6 +1,6 @@
 ﻿namespace Microsoft.RestServices.Exchange
 {
-    using Graph;
+    using Microsoft.OutlookServices;
 
     /// <summary>
     /// Recipient filter formatter.
@@ -10,7 +10,7 @@
         /// <inheritdoc cref="BaseFilterFormatter.Type"/>
         public override string Type
         {
-            get { return typeof(Microsoft.Graph.Recipient).FullName; }
+            get { return typeof(Microsoft.OutlookServices.Recipient).FullName; }
         }
 
         /// <inheritdoc cref="BaseFilterFormatter.QuoteRequired"/>

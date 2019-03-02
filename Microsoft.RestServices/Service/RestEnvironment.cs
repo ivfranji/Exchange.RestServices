@@ -1,6 +1,7 @@
 ﻿namespace Microsoft.RestServices.Exchange
 {
     using System;
+    using Service;
 
     /// <summary>
     /// Represents rest environment to connect to.
@@ -23,11 +24,21 @@
             "Graph Prod",
             false);
 
-        public RestEnvironment(Uri baseUri, string name, bool isBeta)
+        /// <summary>
+        /// Graph prod.
+        /// </summary>
+        private static RestEnvironment outlookProd = new RestEnvironment(
+            new Uri("https://outlook.office365.com/api/v2.0"),
+            "Outlook Prod",
+            false,
+            FeatureSet.None);
+
+        public RestEnvironment(Uri baseUri, string name, bool isBeta, FeatureSet featureSet = FeatureSet.All)
         {
             this.BaseUri = baseUri;
             this.Name = name;
             this.IsBeta = isBeta;
+            this.FeatureSet = featureSet;
         }
 
         /// <summary>
@@ -46,6 +57,11 @@
         public bool IsBeta { get; }
 
         /// <summary>
+        /// Feature set.
+        /// </summary>
+        public FeatureSet FeatureSet { get; }
+
+        /// <summary>
         /// Graph beta environment.
         /// </summary>
         public static RestEnvironment GraphBeta
@@ -59,6 +75,17 @@
         public static RestEnvironment GraphProd
         {
             get { return RestEnvironment.graphProd; }
+        }
+
+        /// <summary>
+        /// Outlook Prod environment.
+        /// </summary>
+        public static RestEnvironment OutlookProd
+        {
+            get
+            {
+                return RestEnvironment.outlookProd;
+            }
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿namespace Microsoft.RestServices.Exchange
 {
-    using Microsoft.Graph;
+    using Microsoft.OutlookServices;
 
     /// <summary>
     /// Contains sync item with corresponding change type.

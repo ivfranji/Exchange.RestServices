@@ -1,6 +1,6 @@
 ﻿namespace Microsoft.RestServices.Tests.Service.QueryAndView
 {
-    using Graph;
+    using Microsoft.OutlookServices;
     using Microsoft.RestServices.Exchange;
     using VisualStudio.TestTools.UnitTesting;
 

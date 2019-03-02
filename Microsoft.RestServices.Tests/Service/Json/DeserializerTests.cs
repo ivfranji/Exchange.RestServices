@@ -5,7 +5,7 @@
     using System.Collections.ObjectModel;
     using System.Text;
     using Exchange;
-    using Graph;
+    using Microsoft.OutlookServices;
     using VisualStudio.TestTools.UnitTesting;
 
     [TestClass]
@@ -48,18 +48,18 @@
         {
             string serializedMessage = @"
                 {
-                      ""@odata.type"": ""#microsoft.graph.message"",
+                      ""@odata.type"": ""#Microsoft.OutlookServices.message"",
                       ""subject"": ""message with attachs"",
                       ""isRead"": ""true"",
                       ""attachments"": [
                         {
-                          ""@odata.type"": ""#microsoft.graph.referenceAttachment"",
+                          ""@odata.type"": ""#Microsoft.OutlookServices.referenceAttachment"",
                           ""id"": ""referenceAttachment=="",
                           ""sourceUrl"": ""https://myweb.com""
                         },
                         {
                           ""contentBytes"": ""dGVzdCBjYXNlIHdvcmtz"",
-                          ""@odata.type"": ""#microsoft.graph.fileAttachment"",
+                          ""@odata.type"": ""#Microsoft.OutlookServices.fileAttachment"",
                           ""lastModifiedDateTime"": ""0001-01-01T00:00:00+00:00"",
                           ""contentType"": ""ct"",
                           ""size"": 0,
@@ -68,14 +68,14 @@
                           ""name"": ""test.txt""
                         },
                         {
-                          ""@odata.type"": ""#microsoft.graph.itemAttachment"",
+                          ""@odata.type"": ""#Microsoft.OutlookServices.itemAttachment"",
                           ""id"": ""itemAttachment=="",
                           ""item"":{
                             ""id"": ""attachmentitemId"",
                             ""changeKey"": ""ck=="",
                             ""subject"": ""attachment item subject"",
                             ""isRead"": ""true"",
-                            ""@odata.type"": ""#microsoft.graph.message""
+                            ""@odata.type"": ""#Microsoft.OutlookServices.message""
                           }
                         }
                     ]
@@ -133,18 +133,18 @@
         public void TestMessageWithEventAttachmentDeserialization()
         {
             string serializedMessage = @"{
-              ""@odata.type"": ""#microsoft.graph.message"",
+              ""@odata.type"": ""#Microsoft.OutlookServices.message"",
               ""subject"": ""message with attachs"",
               ""isRead"": ""true"",
               ""attachments"": [
                 {
-                  ""@odata.type"": ""#microsoft.graph.itemAttachment"",
+                  ""@odata.type"": ""#Microsoft.OutlookServices.itemAttachment"",
                   ""id"": ""itemAttachment=="",
                   ""item"":{
                     ""id"": ""attachmentitemId"",
                     ""changeKey"": ""ck=="",
                     ""subject"": ""attachment item subject"",
-                    ""@odata.type"": ""#microsoft.graph.event"",
+                    ""@odata.type"": ""#Microsoft.OutlookServices.event"",
                     ""attendees"": [
                       {
                         ""emailAddress"":{

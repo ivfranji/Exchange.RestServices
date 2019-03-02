@@ -7,7 +7,7 @@
     using System.Net.Http;
     using System.Net.Http.Headers;
     using Microsoft.RestServices.Exchange;
-    using Microsoft.Graph;
+    using Microsoft.OutlookServices;
     using Mocks;
     using VisualStudio.TestTools.UnitTesting;
     using FolderView = Microsoft.RestServices.Exchange.FolderView;
@@ -44,7 +44,7 @@
 
             mock.InlineAssertation = (message) =>
             {
-                Uri expectedUri = new Uri("https://graph.microsoft.com/beta/users/a@a.com/mailfolders/Inbox/messages?$top=10&$skip=0");
+                Uri expectedUri = new Uri("https://Microsoft.OutlookServices.microsoft.com/beta/users/a@a.com/mailfolders/Inbox/messages?$top=10&$skip=0");
 
                 Assert.IsTrue(message.Method == HttpMethod.Get);
                 Assert.AreEqual(expectedUri, message.RequestUri);
@@ -57,7 +57,7 @@
                 "abc", 
                 "a@a.com");
 
-            FindItemsResults<OutlookItem> results = service.FindItems(
+            FindItemsResults<Item> results = service.FindItems(
                 WellKnownFolderName.Inbox, 
                 new MessageView(10, false));
 
@@ -73,7 +73,7 @@
                 "abc",
                 "a@a.com");
 
-            FindItemsResults<OutlookItem> results = service.FindItems(
+            FindItemsResults<Item> results = service.FindItems(
                 WellKnownFolderName.Inbox,
                 new MessageView(10, false));
 
@@ -93,7 +93,7 @@
                 "abc",
                 "a@a.com");
 
-            FindItemsResults<OutlookItem> results = service.FindItems(
+            FindItemsResults<Item> results = service.FindItems(
                 WellKnownFolderName.Inbox,
                 new MessageView(10, false));
 
@@ -118,7 +118,7 @@
 
             ResponseCollection<Message> responseCollection = new ResponseCollection<Message>();
             responseCollection.ODataContext =
-                "https://graph.microsoft.com/beta/$metadata#users(user)/mailfolders('Inbox')/messages";
+                "https://Microsoft.OutlookServices.microsoft.com/beta/$metadata#users(user)/mailfolders('Inbox')/messages";
             responseCollection.Value = messages;
             string serialized = Serializer.Instance.Serialize(responseCollection);
 
@@ -129,7 +129,7 @@
                 "abc",
                 "a@a.com");
 
-            FindItemsResults<OutlookItem> results = service.FindItems(
+            FindItemsResults<Item> results = service.FindItems(
                 WellKnownFolderName.Inbox,
                 new MessageView(10, false));
 
@@ -145,7 +145,7 @@
 
             mock.InlineAssertation = (message) =>
             {
-                Uri requestUri = new Uri("https://graph.microsoft.com/beta/users/a@a.com/sendMail");
+                Uri requestUri = new Uri("https://Microsoft.OutlookServices.microsoft.com/beta/users/a@a.com/sendMail");
                 Assert.AreEqual(requestUri, message.RequestUri);
 
                 Helper.ValidateXAnchorMailbox(message, "a@a.com");
@@ -181,7 +181,7 @@
                     "from@d.com", 
                     messageCommentModel.Message.ToRecipients[0].EmailAddress.Address);
 
-                Uri requestUri = new Uri("https://graph.microsoft.com/beta/users/a@a.com/messages/message-id/reply");
+                Uri requestUri = new Uri("https://Microsoft.OutlookServices.microsoft.com/beta/users/a@a.com/messages/message-id/reply");
                 Assert.AreEqual(
                     requestUri,
                     httpRequestMessage.RequestUri);
@@ -235,7 +235,7 @@
                     "forwardEmail",
                     messageCommentModel.Comment);
 
-                Uri requestUri = new Uri("https://graph.microsoft.com/beta/users/a@a.com/messages/message-id/forward");
+                Uri requestUri = new Uri("https://Microsoft.OutlookServices.microsoft.com/beta/users/a@a.com/messages/message-id/forward");
                 Assert.AreEqual(
                     requestUri,
                     httpRequestMessage.RequestUri);
@@ -353,7 +353,7 @@
                     "forwardEmail",
                     messageCommentModel.Comment);
 
-                Uri requestUri = new Uri("https://graph.microsoft.com/beta/users/a@a.com/messages/message-id/forward");
+                Uri requestUri = new Uri("https://Microsoft.OutlookServices.microsoft.com/beta/users/a@a.com/messages/message-id/forward");
                 Assert.AreEqual(
                     requestUri,
                     httpRequestMessage.RequestUri);
@@ -412,7 +412,7 @@
                 }
             });
 
-            msg.Forward("forwardEmail", toRecipients);
+            msg.Forward(toRecipients, "forwardEmail");
         }
 
         [TestMethod]
@@ -423,7 +423,7 @@
 
             mock.InlineAssertation = (httpRequestMessage) =>
             {
-                Uri requestUri = new Uri("https://graph.microsoft.com/beta/users/a@a.com/messages/message-id/move");
+                Uri requestUri = new Uri("https://Microsoft.OutlookServices.microsoft.com/beta/users/a@a.com/messages/message-id/move");
                 Assert.AreEqual(
                     requestUri,
                     httpRequestMessage.RequestUri);
@@ -481,7 +481,7 @@
 
             mock.InlineAssertation = (httpRequestMessage) =>
             {
-                Uri requestUri = new Uri("https://graph.microsoft.com/beta/users/a@a.com/messages/message-id/copy");
+                Uri requestUri = new Uri("https://Microsoft.OutlookServices.microsoft.com/beta/users/a@a.com/messages/message-id/copy");
                 Assert.AreEqual(
                     requestUri,
                     httpRequestMessage.RequestUri);
@@ -593,7 +593,7 @@
 
             mock.InlineAssertation = (httpRequestMessage) =>
             {
-                Uri requestUri = new Uri("https://graph.microsoft.com/beta/users/b@b.com/messages/abcdef");
+                Uri requestUri = new Uri("https://Microsoft.OutlookServices.microsoft.com/beta/users/b@b.com/messages/abcdef");
                 Assert.AreEqual(
                     requestUri, 
                     httpRequestMessage.RequestUri);
@@ -621,7 +621,7 @@
 
             mock.InlineAssertation = (httpRequestMessage) =>
             {
-                //Uri requestUri = new Uri("https://graph.microsoft.com/beta/users/a@a.com/mailfolders/gggg");
+                //Uri requestUri = new Uri("https://Microsoft.OutlookServices.microsoft.com/beta/users/a@a.com/mailfolders/gggg");
                 //Assert.AreEqual(
                 //    requestUri,
                 //    httpRequestMessage.RequestUri);
@@ -651,7 +651,7 @@
             mock.InlineAssertation = (httpRequestMessage) =>
             {
                 Uri requestUri = new Uri(
-                    "https://graph.microsoft.com/beta/users/a@a.com/mailfolders/MyTestFolder/childfolders?$filter=DisplayName%20eq%20'subFolder'&$top=10&$skip=0");
+                    "https://Microsoft.OutlookServices.microsoft.com/beta/users/a@a.com/mailfolders/MyTestFolder/childfolders?$filter=DisplayName%20eq%20'subFolder'&$top=10&$skip=0");
                 Assert.AreEqual(
                     requestUri,
                     httpRequestMessage.RequestUri);
@@ -724,7 +724,7 @@
                     HttpWebRequest.PATCH,
                     httpRequestMessage.Method);
 
-                Uri requestUri = new Uri("https://graph.microsoft.com/beta/users/a@a.com/events/AABB==");
+                Uri requestUri = new Uri("https://Microsoft.OutlookServices.microsoft.com/beta/users/a@a.com/events/AABB==");
                 Assert.AreEqual(
                     requestUri, 
                     httpRequestMessage.RequestUri);
@@ -775,7 +775,7 @@
                     HttpWebRequest.PATCH, 
                     httpRequestMessage.Method);
 
-                Uri requestUri = new Uri("https://graph.microsoft.com/beta/users/a@a.com/mailfolders/BBCC==");
+                Uri requestUri = new Uri("https://Microsoft.OutlookServices.microsoft.com/beta/users/a@a.com/mailfolders/BBCC==");
                 Assert.AreEqual(
                     requestUri,
                     httpRequestMessage.RequestUri);

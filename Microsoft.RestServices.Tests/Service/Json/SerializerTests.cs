@@ -2,7 +2,7 @@
 {
     using System.Collections.Generic;
     using Microsoft.RestServices.Exchange;
-    using Microsoft.Graph;
+    using Microsoft.OutlookServices;
     using VisualStudio.TestTools.UnitTesting;
 
     [TestClass]
@@ -15,7 +15,7 @@
             msg.Subject = "subj";
             msg.Body = new ItemBody();
             msg.Body.Content = "content";
-            msg.Body.ContentType = BodyType.Html;
+            msg.Body.ContentType = BodyType.HTML;
 
             Dictionary<string, object> additionalProperties = new Dictionary<string, object>();
             additionalProperties.Add("saveToSentItems", true);
@@ -32,7 +32,7 @@
                 customModel.Message.Subject);
 
             Assert.AreEqual(
-                BodyType.Html,
+                BodyType.HTML,
                 customModel.Message.Body.ContentType);
 
             Assert.AreEqual(

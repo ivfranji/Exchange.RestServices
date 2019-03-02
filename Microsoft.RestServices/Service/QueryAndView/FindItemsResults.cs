@@ -1,12 +1,12 @@
 ﻿namespace Microsoft.RestServices.Exchange
 {
-    using Microsoft.Graph;
+    using Microsoft.OutlookServices;
 
     /// <summary>
     /// Find item results.
     /// </summary>
     /// <typeparam name="TItem">Type within collection.</typeparam>
-    public class FindItemsResults<TItem> : FindResults<TItem> where TItem : OutlookItem
+    public class FindItemsResults<TItem> : FindResults<TItem> where TItem : Item
     {
         /// <summary>
         /// Create new instance of <see cref="FindItemsResults{TItem}"/>.

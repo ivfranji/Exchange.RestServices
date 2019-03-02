@@ -1,6 +1,6 @@
 ﻿namespace Microsoft.RestServices.Exchange.Service.QueryAndView
 {
-    using Microsoft.Graph;
+    using Microsoft.OutlookServices;
 
     /// <summary>
     /// Outlook task property set.
@@ -11,11 +11,11 @@
         /// Create new instance of <see cref="OutlookTaskPropertySet"/>
         /// </summary>
         public OutlookTaskPropertySet()
-            : base(typeof(OutlookTask))
+            : base(typeof(Task))
         {
-            this.FirstClassProperties.Add(nameof(OutlookTask.CreatedDateTime));
-            this.FirstClassProperties.Add(nameof(OutlookTask.Owner));
-            this.FirstClassProperties.Add(nameof(OutlookTask.Subject));
+            this.FirstClassProperties.Add(nameof(Task.CreatedDateTime));
+            this.FirstClassProperties.Add(nameof(Task.Owner));
+            this.FirstClassProperties.Add(nameof(Task.Subject));
         }
     }
 }

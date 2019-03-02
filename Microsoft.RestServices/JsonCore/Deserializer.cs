@@ -1,7 +1,7 @@
 ﻿namespace Microsoft.RestServices.Exchange
 {
     using System;
-    using Microsoft.Graph;
+    using Microsoft.OutlookServices;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
     using Newtonsoft.Json.Serialization;
@@ -100,7 +100,7 @@
             /// <returns></returns>
             protected override JsonConverter ResolveContractConverter(Type objectType)
             {
-                if (typeof(OutlookItem).IsAssignableFrom(objectType) && !objectType.IsAbstract)
+                if (typeof(Item).IsAssignableFrom(objectType) && !objectType.IsAbstract)
                 {
                     return null;
                 }
@@ -147,12 +147,12 @@
             {
                 JToken jsonToken = JObject.ReadFrom(reader);
                 string currentAttachmentType = jsonToken["@odata.type"].ToString();
-                if (currentAttachmentType.EndsWith("microsoft.graph.fileAttachment", StringComparison.OrdinalIgnoreCase))
+                if (currentAttachmentType.EndsWith("Microsoft.OutlookServices.fileAttachment", StringComparison.OrdinalIgnoreCase))
                 {
                     return JsonConvert.DeserializeObject<FileAttachment>(jsonToken.ToString(), subClassConversionSettings);
                 }
 
-                if (currentAttachmentType.EndsWith("microsoft.graph.itemAttachment", StringComparison.OrdinalIgnoreCase))
+                if (currentAttachmentType.EndsWith("Microsoft.OutlookServices.itemAttachment", StringComparison.OrdinalIgnoreCase))
                 {
                     // correct item attachment converter needs to be added.
                     JToken item = jsonToken["item"];
@@ -183,7 +183,7 @@
                     return JsonConvert.DeserializeObject<ItemAttachment>(jsonToken.ToString(), subClassConversionSettings);
                 }
 
-                if (currentAttachmentType.EndsWith("microsoft.graph.referenceAttachment", StringComparison.OrdinalIgnoreCase))
+                if (currentAttachmentType.EndsWith("Microsoft.OutlookServices.referenceAttachment", StringComparison.OrdinalIgnoreCase))
                 {
                     return JsonConvert.DeserializeObject<ReferenceAttachment>(jsonToken.ToString(), subClassConversionSettings);
                 }
@@ -284,7 +284,7 @@
             /// <returns></returns>
             public override bool CanConvert(Type objectType)
             {
-                return (objectType == typeof(OutlookItem));
+                return (objectType == typeof(Item));
             }
 
             /// <summary>

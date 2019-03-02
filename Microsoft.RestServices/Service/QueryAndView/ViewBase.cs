@@ -49,6 +49,7 @@
             this.Type = type;
             this.PropertySet = propertySet;
             this.ExpandProperties = new List<string>();
+            this.FollowODataNextLink = true;
         }
 
         /// <summary>
@@ -60,6 +61,17 @@
         /// Property set.
         /// </summary>
         public PropertySet PropertySet { get; }
+
+        /// <summary>
+        /// If specified, during paging it will follow odata next link instead
+        /// of constructing it from view. Default behavior.
+        /// </summary>
+        public bool FollowODataNextLink { get; set; }
+
+        /// <summary>
+        /// OData next link.
+        /// </summary>
+        internal string ODataNextLink { get; set; }
 
         /// <summary>
         /// Create filter with select.

@@ -12,6 +12,20 @@
     internal class TestAuthenticationProvider : IAuthorizationTokenProvider
     {
         /// <summary>
+        /// Create new instance of <see cref="TestAuthenticationProvider"/>
+        /// </summary>
+        /// <param name="resourceUri">Resource uri. Default Microsoft.OutlookServices api.</param>
+        internal TestAuthenticationProvider(string resourceUri = AppConfig.GraphResourceUri)
+        {
+            this.ResourceUri = resourceUri;
+        }
+
+        /// <summary>
+        /// Resource uri.
+        /// </summary>
+        private string ResourceUri { get; }
+
+        /// <summary>
         /// Retrieve token.
         /// </summary>
         /// <returns></returns>
@@ -46,7 +60,7 @@
                 certFromStore);
 
             AuthenticationResult token = context.AcquireTokenAsync(
-                AppConfig.ResourceUri,
+                this.ResourceUri,
                 cert).Result;
 
             return token.AccessToken;
@@ -64,7 +78,6 @@
         public AuthenticationHeaderValue GetAuthenticationHeader()
         {
             string token = this.GetToken();
-
             return new AuthenticationHeaderValue(
                 this.Scheme, 
                 token);

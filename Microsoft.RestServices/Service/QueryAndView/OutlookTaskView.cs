@@ -1,6 +1,6 @@
 ﻿namespace Microsoft.RestServices.Exchange
 {
-    using Microsoft.Graph;
+    using Microsoft.OutlookServices;
     using Service.QueryAndView;
 
     /// <summary>
@@ -23,7 +23,7 @@
         /// <param name="pageSize">Page size.</param>
         /// <param name="offset">Offset.</param>
         public OutlookTaskView(int pageSize, int offset)
-            : base(pageSize, offset, typeof(OutlookTask), new OutlookTaskPropertySet())
+            : base(pageSize, offset, typeof(Task), new OutlookTaskPropertySet())
         {
         }
     }

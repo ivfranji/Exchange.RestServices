@@ -26,7 +26,7 @@
 
             mock.InlineAssertation = (message) =>
             {
-                Uri uri = new Uri("https://graph.microsoft.com/beta/me/messages/id-123");
+                Uri uri = new Uri("https://Microsoft.OutlookServices.microsoft.com/beta/me/messages/id-123");
                 Assert.AreEqual(
                     uri, 
                     message.RequestUri);
@@ -59,7 +59,7 @@
 
             mock.InlineAssertation = (message) =>
             {
-                Uri uri = new Uri("https://graph.microsoft.com/beta/users/a@a.com/messages/id-123");
+                Uri uri = new Uri("https://Microsoft.OutlookServices.microsoft.com/beta/users/a@a.com/messages/id-123");
                 Assert.AreEqual(
                     uri,
                     message.RequestUri);
@@ -89,7 +89,7 @@
 
             mock.InlineAssertation = (message) =>
             {
-                Uri uri = new Uri("https://graph.microsoft.com/beta/users/b@b.com/messages/id-123");
+                Uri uri = new Uri("https://Microsoft.OutlookServices.microsoft.com/beta/users/b@b.com/messages/id-123");
                 Assert.AreEqual(
                     uri,
                     message.RequestUri);

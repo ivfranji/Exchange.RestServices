@@ -1,6 +1,6 @@
 ﻿namespace Microsoft.RestServices.Exchange
 {
-    using Microsoft.Graph;
+    using Microsoft.OutlookServices;
     using Service.QueryAndView;
 
     /// <inheritdoc />

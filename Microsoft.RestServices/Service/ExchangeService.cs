@@ -7,12 +7,13 @@
     using System.Net.Http.Headers;
     using System.Text;
     using System.Text.RegularExpressions;
-    using Microsoft.Graph;
+    using Microsoft.OutlookServices;
+    using Service;
 
     /// <summary>
     /// Base service for Exchange operations.
     /// </summary>
-    public class ExchangeService : IExchangeService
+    public class ExchangeService
     {
         #region Privates
 
@@ -82,7 +83,8 @@
         /// <param name="tokenProvider">Token provider.</param>
         /// <param name="xAnchorMailbox">Anchor mailbox.</param>
         /// <param name="restEnvironment">Rest environment.</param>
-        public ExchangeService(IAuthorizationTokenProvider tokenProvider, string mailboxId, RestEnvironment restEnvironment = null)
+        public ExchangeService(IAuthorizationTokenProvider tokenProvider, string mailboxId,
+            RestEnvironment restEnvironment = null)
         {
             ArgumentValidator.ThrowIfNull(
                 tokenProvider,
@@ -138,7 +140,7 @@
             set
             {
                 if (!string.IsNullOrEmpty(value))
-                { 
+                {
                     Regex userAgentRegex = new Regex("^[a-zA-Z]+$");
                     if (userAgentRegex.IsMatch(value))
                     {
@@ -193,10 +195,7 @@
         /// </summary>
         public IWebProxy ProxyServer
         {
-            set
-            {
-                HttpWebRequestClientProvider.Instance.ProxyChanged(value);
-            }
+            set { HttpWebRequestClientProvider.Instance.ProxyChanged(value); }
         }
 
         /// <summary>
@@ -222,7 +221,7 @@
         /// Authorization token provider. 
         /// </summary>
         public IAuthorizationTokenProvider AuthorizationTokenProvider { get; }
-        
+
         /// <summary>
         /// Session based preferences applied on every request.
         /// </summary>
@@ -250,7 +249,7 @@
             if (null != webRequest)
             {
                 this.Trace(
-                    TraceFlags.HttpRequest, 
+                    TraceFlags.HttpRequest,
                     webRequest.ToString());
             }
         }
@@ -270,14 +269,14 @@
         {
             // TODO: Implement way to know which action requires new entity.
             string action = $"{actionName}~{entity.GetType().Name}";
-            return this.actionMapper[action].Invoke(this, new object[] { entity, additionalParameters });
+            return this.actionMapper[action].Invoke(this, new object[] {entity, additionalParameters});
         }
 
         [Action(ActionMapper.SendMessageAction)]
         internal void SendMail(Message message, Dictionary<string, object> additionalProperties)
         {
             string content = this.Serializer.Serialize(
-                message, 
+                message,
                 additionalProperties);
 
             PostRequestBase request = new PostRequestBase(
@@ -287,7 +286,7 @@
                 {
                     httpRestUri.RelativePath = "sendMail";
                     this.EnsureCorrectEndpoint(
-                        httpRestUri, 
+                        httpRestUri,
                         null);
                 });
 
@@ -302,7 +301,7 @@
             message.ToRecipients = new List<Recipient>();
             message.ToRecipients.Add(message.From);
             string content = this.Serializer.Serialize(
-                message, 
+                message,
                 additionalParameters);
 
             ItemId itemId = new MessageId(
@@ -330,12 +329,12 @@
                 throw new ArgumentException("ToRecipients not specified.");
             }
 
-            message.ToRecipients = (List<Recipient>)additionalParameters["toRecipients"];
+            message.ToRecipients = (List<Recipient>) additionalParameters["toRecipients"];
             string content = this.Serializer.Serialize(
-                message, 
+                message,
                 additionalParameters);
             ItemId itemId = new MessageId(
-                message.Id, 
+                message.Id,
                 this.MailboxId.Id);
 
             PostRequestBase request = new PostRequestBase(this,
@@ -406,12 +405,12 @@
         internal MailFolder MoveMailFolder(MailFolder folder, Dictionary<string, object> additionalParameters)
         {
             ArgumentValidator.ThrowIfNull(folder, nameof(folder));
-            
+
             // no changes other than destination id accepted.
             folder.ResetChangeTracking();
             string content = this.Serializer.Serialize(
-                folder, 
-                additionalParameters, 
+                folder,
+                additionalParameters,
                 false);
 
             PostRequestBase request = new PostRequestBase(
@@ -443,7 +442,7 @@
         internal void DeclineEvent(Event meetingEvent, Dictionary<string, object> additionalParameters)
         {
             ArgumentValidator.ThrowIfNull(
-                meetingEvent, 
+                meetingEvent,
                 nameof(meetingEvent));
 
             string content = this.Serializer.Serialize(
@@ -466,20 +465,20 @@
         }
 
         #endregion
-        
+
         #region Message operations
-        
+
         /// <inheritdoc cref="IExchangeService.FindItems(FolderId,ViewBase)"/>
-        public FindItemsResults<OutlookItem> FindItems(FolderId parentFolderId, ViewBase itemView)
+        public FindItemsResults<Item> FindItems(FolderId parentFolderId, ViewBase itemView)
         {
             return this.FindItems(
                 parentFolderId,
                 null,
                 itemView);
         }
-        
+
         /// <inheritdoc cref="IExchangeService.FindItems(WellKnownFolderName,ViewBase)"/>
-        public FindItemsResults<OutlookItem> FindItems(WellKnownFolderName wellKnownFolderName, ViewBase itemView)
+        public FindItemsResults<Item> FindItems(WellKnownFolderName wellKnownFolderName, ViewBase itemView)
         {
             return this.FindItems(
                 wellKnownFolderName,
@@ -488,7 +487,8 @@
         }
 
         /// <inheritdoc cref="IExchangeService.FindItems(WellKnownFolderName,SearchFilter,ViewBase)"/>
-        public FindItemsResults<OutlookItem> FindItems(WellKnownFolderName wellKnownFolderName, SearchFilter searchFilter, ViewBase itemView)
+        public FindItemsResults<Item> FindItems(WellKnownFolderName wellKnownFolderName, SearchFilter searchFilter,
+            ViewBase itemView)
         {
             FolderId parentFolderId = new FolderId(wellKnownFolderName);
             if (wellKnownFolderName == WellKnownFolderName.Calendar)
@@ -503,7 +503,7 @@
         }
 
         /// <inheritdoc cref="IExchangeService.FindItems(FolderId,SearchFilter,ViewBase)"/>
-        public FindItemsResults<OutlookItem> FindItems(FolderId parentFolderId, SearchFilter searchFilter, ViewBase itemView)
+        public FindItemsResults<Item> FindItems(FolderId parentFolderId, SearchFilter searchFilter, ViewBase itemView)
         {
             ArgumentValidator.ThrowIfNull(
                 parentFolderId,
@@ -519,32 +519,47 @@
                 searchQuery = new CompositeQuery(new[] {searchFilter, itemView.ViewQuery});
             }
 
-            GetRequestBase<ResponseCollection<OutlookItem>> request = new GetRequestBase<ResponseCollection<OutlookItem>>(
+            GetRequestBase<ResponseCollection<Item>> request = new GetRequestBase<ResponseCollection<Item>>(
                 this,
                 (httpRestUrl) =>
                 {
-                    httpRestUrl.RelativePath = parentFolderId.MessagesContainer;
-                    httpRestUrl.Query = searchQuery;
-                    this.EnsureCorrectEndpoint(
-                        httpRestUrl, 
-                        parentFolderId);
+                    if (itemView.FollowODataNextLink &&
+                        !string.IsNullOrEmpty(itemView.ODataNextLink))
+                    {
+                        httpRestUrl.ODataNextUri = itemView.ODataNextLink;
+                    }
+                    else
+                    {
+                        httpRestUrl.RelativePath = parentFolderId.MessagesContainer;
+                        httpRestUrl.Query = searchQuery;
+                        this.EnsureCorrectEndpoint(
+                            httpRestUrl,
+                            parentFolderId);
+                    }
                 });
 
             request.DeserializationType = itemView.Type;
-            ResponseCollection<OutlookItem> response = request.Execute();
+            ResponseCollection<Item> response = request.Execute();
 
-          
+
             // for null response return empty collection.
             if (null == response)
             {
-                return new FindItemsResults<OutlookItem>(
-                    new ResponseCollection<OutlookItem>(), 
-                    this, 
+                return new FindItemsResults<Item>(
+                    new ResponseCollection<Item>(),
+                    this,
                     this.GetMailboxId(parentFolderId));
             }
+            else
+            {
+                if (itemView.FollowODataNextLink)
+                {
+                    itemView.ODataNextLink = response.ODataNextLink;
+                }
+            }
 
-            return new FindItemsResults<OutlookItem>(
-                response, 
+            return new FindItemsResults<Item>(
+                response,
                 this,
                 this.GetMailboxId(parentFolderId));
         }
@@ -557,7 +572,8 @@
         /// <param name="maxChangesReturned">Max changes returned.</param>
         /// <param name="syncState">Sync state.</param>
         /// <returns></returns>
-        public SyncFolderItemsCollection<OutlookItem> SyncFolderItems(FolderId syncFolderId, PropertySet propertySet, int maxChangesReturned, string syncState)
+        public SyncFolderItemsCollection<Item> SyncFolderItems(FolderId syncFolderId, PropertySet propertySet,
+            int maxChangesReturned, string syncState)
         {
             ArgumentValidator.ThrowIfNull(syncFolderId, nameof(syncFolderId));
             ArgumentValidator.ThrowIfNull(propertySet, nameof(propertySet));
@@ -587,21 +603,26 @@
                 syncQuery.SelectedProperties = propertySet.Properties;
             }
 
-            SyncRequestBase<SyncResponseCollection<OutlookItem>> request = new SyncRequestBase<SyncResponseCollection<OutlookItem>>(
-                this,
-                syncQuery,
-                (httpRestUrl) =>
-                {
-                    httpRestUrl.RelativePath = syncFolderId.MessagesDelta;
-                    httpRestUrl.Query = syncQuery;
-                    this.EnsureCorrectEndpoint(
-                        httpRestUrl,
-                        syncFolderId);
-                });
+            SyncRequestBase<SyncResponseCollection<Item>> request =
+                new SyncRequestBase<SyncResponseCollection<Item>>(
+                    this,
+                    syncQuery,
+                    (httpRestUrl) =>
+                    {
+                        string deltaFolder = this.DeltaFolderIdFeatureSetEnabled()
+                            ? syncFolderId.MessagesDelta
+                            : syncFolderId.MessagesContainer;
+
+                        httpRestUrl.RelativePath = deltaFolder;
+                        httpRestUrl.Query = syncQuery;
+                        this.EnsureCorrectEndpoint(
+                            httpRestUrl,
+                            syncFolderId);
+                    });
 
             request.DeserializationType = propertySet.Type;
-            SyncResponseCollection<OutlookItem> response = request.Execute();
-            return new SyncFolderItemsCollection<OutlookItem>(
+            SyncResponseCollection<Item> response = request.Execute();
+            return new SyncFolderItemsCollection<Item>(
                 response,
                 this,
                 this.GetMailboxId(syncFolderId));
@@ -615,7 +636,7 @@
         internal Message GetItem(ItemId itemId)
         {
             ArgumentValidator.ThrowIfNull(
-                itemId, 
+                itemId,
                 nameof(itemId));
 
             GetRequestBase<Message> request = new GetRequestBase<Message>(
@@ -636,7 +657,7 @@
         /// <param name="parentFolderId"></param>
         /// <param name="deserializationType"></param>
         /// <returns></returns>
-        internal OutlookItem CreateItem(OutlookItem item, FolderId parentFolderId)
+        internal Item CreateItem(Item item, FolderId parentFolderId)
         {
             ArgumentValidator.ThrowIfNull(item, nameof(item));
             ArgumentValidator.ThrowIfNull(parentFolderId, nameof(parentFolderId));
@@ -659,7 +680,7 @@
 
             request.DeserializationType = item.GetType();
             return this.ProcessOutlookItemRequest(
-                request.Execute<OutlookItem>, 
+                request.Execute<Item>,
                 parentFolderId);
         }
 
@@ -668,33 +689,33 @@
         /// </summary>
         /// <param name="item"></param>
         /// <returns></returns>
-        internal OutlookItem UpdateItem(OutlookItem item)
+        internal Item UpdateItem(Item item)
         {
             ArgumentValidator.ThrowIfNull(item, nameof(item));
             ArgumentValidator.ThrowIfNullOrEmpty(item.Id, nameof(item.Id));
-            
+
             string content = this.Serializer.Serialize(
                 item,
-                null, 
+                null,
                 false);
 
             PatchRequestBase request = new PatchRequestBase(
-                this, 
+                this,
                 content,
                 (httpResturl) =>
                 {
                     httpResturl.RelativePath = item.ItemId.IdPath;
                     this.EnsureCorrectEndpoint(
-                        httpResturl, 
+                        httpResturl,
                         item.ItemId);
                 });
 
             request.DeserializationType = item.GetType();
             return this.ProcessOutlookItemRequest(
-                request.Execute<OutlookItem>, 
+                request.Execute<Item>,
                 item.ItemId);
         }
-        
+
         /// <summary>
         /// Delete item from the store.
         /// </summary>
@@ -755,7 +776,7 @@
         #endregion
 
         #region Folder operations
-        
+
         /// <inheritdoc cref="IExchangeService.FindFolders(FolderId,FolderView)"/>
         public FindFoldersResults FindFolders(FolderId parentFolderId, FolderView folderView)
         {
@@ -775,7 +796,8 @@
         }
 
         /// <inheritdoc cref="IExchangeService.FindFolders(WellKnownFolderName,SearchFilter,FolderView)"/>
-        public FindFoldersResults FindFolders(WellKnownFolderName wellKnownFolderName, SearchFilter searchFilter, FolderView folderView)
+        public FindFoldersResults FindFolders(WellKnownFolderName wellKnownFolderName, SearchFilter searchFilter,
+            FolderView folderView)
         {
             FolderId parentFolderId = new FolderId(wellKnownFolderName);
             return this.FindFolders(
@@ -809,7 +831,7 @@
                     httpRestUrl.MailboxId = parentFolderId.MailboxId;
                     httpRestUrl.Query = searchQuery;
                     this.EnsureCorrectEndpoint(
-                        httpRestUrl, 
+                        httpRestUrl,
                         parentFolderId);
                 });
 
@@ -821,7 +843,7 @@
             else
             {
                 response.RegisterServiceAndResetChangeTracking(
-                    this, 
+                    this,
                     this.GetMailboxId(parentFolderId));
             }
 
@@ -836,7 +858,7 @@
         public SyncFolderItemsCollection<MailFolder> SyncFolderHierarchy(string syncState)
         {
             return this.SyncFolderHierarchy(
-                new MailFolderPropertySet(), 
+                new MailFolderPropertySet(),
                 syncState);
         }
 
@@ -846,14 +868,15 @@
         /// <param name="propertySet">Property set.</param>
         /// <param name="syncState">Sync state.</param>
         /// <returns></returns>
-        public SyncFolderItemsCollection<MailFolder> SyncFolderHierarchy(MailFolderPropertySet propertySet, string syncState)
+        public SyncFolderItemsCollection<MailFolder> SyncFolderHierarchy(MailFolderPropertySet propertySet,
+            string syncState)
         {
             ISyncQuery syncQuery = null;
             if (string.IsNullOrEmpty(syncState))
             {
                 // Initial sync
                 syncQuery = new SyncQuery(
-                    10, 
+                    10,
                     null);
             }
             else
@@ -874,21 +897,33 @@
                 syncQuery.SelectedProperties = propertySet.Properties;
             }
 
-            SyncRequestBase<SyncResponseCollection<MailFolder>> request = new SyncRequestBase<SyncResponseCollection<MailFolder>>(
-                this, 
-                syncQuery, 
-                (httpRestUrl) =>
+            SyncRequestBase<SyncResponseCollection<MailFolder>> request =
+                new SyncRequestBase<SyncResponseCollection<MailFolder>>(
+                    this,
+                    syncQuery,
+                    (httpRestUrl) =>
+                    {
+                        httpRestUrl.RelativePath = this.DeltaFolderIdFeatureSetEnabled()
+                            ? "mailfolders/delta"
+                            : "mailfolders";
+
+                        httpRestUrl.Query = syncQuery;
+                        this.EnsureCorrectEndpoint(
+                            httpRestUrl,
+                            null);
+                    });
+
+            if (!this.DeltaFolderIdFeatureSetEnabled())
+            {
+                request.PreferHeaderSetter = (preferenceSetter) =>
                 {
-                    httpRestUrl.RelativePath = "mailfolders/delta";
-                    httpRestUrl.Query = syncQuery;
-                    this.EnsureCorrectEndpoint(
-                        httpRestUrl, 
-                        null);
-                });
+                    preferenceSetter.SetPreferHeader(syncQuery.Preferences);
+                };
+            }
 
             SyncResponseCollection<MailFolder> response = request.Execute();
             return new SyncFolderItemsCollection<MailFolder>(
-                response, 
+                response,
                 this,
                 this.GetMailboxId(null));
         }
@@ -975,12 +1010,12 @@
                 {
                     httpRestUrl.RelativePath = parentFolderId.ChildFoldersContainer;
                     this.EnsureCorrectEndpoint(
-                        httpRestUrl, 
+                        httpRestUrl,
                         parentFolderId);
                 });
 
             return this.ProcessMailFolderRequest(
-                request.Execute<MailFolder>, 
+                request.Execute<MailFolder>,
                 folder.FolderId);
         }
 
@@ -992,7 +1027,7 @@
         {
             this.DeleteEntity(folder.FolderId);
         }
-        
+
         /// <summary>
         /// Delete folder from the store.
         /// </summary>
@@ -1009,18 +1044,19 @@
         public List<MessageRule> GetInboxRules()
         {
             FolderId folderId = new FolderId(
-                WellKnownFolderName.Inbox, 
+                WellKnownFolderName.Inbox,
                 this.MailboxId.Id);
 
-            GetRequestBase<ResponseCollection<MessageRule>> request = new GetRequestBase<ResponseCollection<MessageRule>>(
-                this,
-                (httpRestUrl) =>
-                {
-                    httpRestUrl.RelativePath = folderId.MessageRules;
-                    this.EnsureCorrectEndpoint(
-                        httpRestUrl, 
-                        null);
-                });
+            GetRequestBase<ResponseCollection<MessageRule>> request =
+                new GetRequestBase<ResponseCollection<MessageRule>>(
+                    this,
+                    (httpRestUrl) =>
+                    {
+                        httpRestUrl.RelativePath = folderId.MessageRules;
+                        this.EnsureCorrectEndpoint(
+                            httpRestUrl,
+                            null);
+                    });
 
             ResponseCollection<MessageRule> response = request.Execute();
             if (null == response)
@@ -1029,7 +1065,7 @@
             }
 
             response.RegisterServiceAndResetChangeTracking(
-                this, 
+                this,
                 this.GetMailboxId(folderId));
             return response.Value;
         }
@@ -1042,7 +1078,7 @@
         public MessageRule GetInboxRule(string ruleId)
         {
             ArgumentValidator.ThrowIfNullOrEmpty(
-                ruleId, 
+                ruleId,
                 nameof(ruleId));
 
             FolderId folderId = new FolderId(
@@ -1087,8 +1123,8 @@
                 WellKnownFolderName.Inbox,
                 this.MailboxId.Id);
             string content = this.Serializer.Serialize(
-                rule, 
-                null, 
+                rule,
+                null,
                 false);
 
             PatchRequestBase request = new PatchRequestBase(
@@ -1098,7 +1134,7 @@
                 {
                     httpRestUrl.RelativePath = $"{folderId.MessageRules}/{rule.Id}";
                     this.EnsureCorrectEndpoint(
-                        httpRestUrl, 
+                        httpRestUrl,
                         folderId);
                 });
 
@@ -1107,7 +1143,6 @@
             updatedRule.ResetChangeTracking();
 
             return updatedRule;
-
         }
 
         /// <summary>
@@ -1138,13 +1173,13 @@
         internal MessageRule CreateInboxRule(MessageRule rule)
         {
             ArgumentValidator.ThrowIfNull(
-                rule, 
+                rule,
                 nameof(rule));
 
             FolderId folderId = new FolderId(WellKnownFolderName.Inbox);
             string content = this.Serializer.Serialize(
-                rule, 
-                null, 
+                rule,
+                null,
                 false);
 
             PostRequestBase request = new PostRequestBase(
@@ -1174,15 +1209,16 @@
         /// <returns></returns>
         public List<InferenceClassificationOverride> GetInferenceClassificationOverrides()
         {
-            GetRequestBase<ResponseCollection<InferenceClassificationOverride>> request = new GetRequestBase<ResponseCollection<InferenceClassificationOverride>>(
-                this,
-                (httpRestUrl) =>
-                {
-                    httpRestUrl.RelativePath = $"{nameof(InferenceClassification)}/overrides";
-                    this.EnsureCorrectEndpoint(
-                        httpRestUrl,
-                        null);
-                });
+            GetRequestBase<ResponseCollection<InferenceClassificationOverride>> request =
+                new GetRequestBase<ResponseCollection<InferenceClassificationOverride>>(
+                    this,
+                    (httpRestUrl) =>
+                    {
+                        httpRestUrl.RelativePath = $"{nameof(InferenceClassification)}/overrides";
+                        this.EnsureCorrectEndpoint(
+                            httpRestUrl,
+                            null);
+                    });
 
             ResponseCollection<InferenceClassificationOverride> response = request.Execute();
             if (null != response)
@@ -1206,15 +1242,16 @@
         /// </summary>
         /// <param name="inferenceOverride"></param>
         /// <returns></returns>
-        internal InferenceClassificationOverride UpdateInferenceClassificationOverride(InferenceClassificationOverride inferenceOverride)
+        internal InferenceClassificationOverride UpdateInferenceClassificationOverride(
+            InferenceClassificationOverride inferenceOverride)
         {
             ArgumentValidator.ThrowIfNull(
-                inferenceOverride, 
+                inferenceOverride,
                 nameof(inferenceOverride));
 
             string content = this.Serializer.Serialize(
-                inferenceOverride, 
-                null, 
+                inferenceOverride,
+                null,
                 false);
 
             PatchRequestBase request = new PatchRequestBase(
@@ -1224,11 +1261,12 @@
                 {
                     httpRestUrl.RelativePath = $"inferenceClassification/overrides/{inferenceOverride.Id}";
                     this.EnsureCorrectEndpoint(
-                        httpRestUrl, 
+                        httpRestUrl,
                         null);
                 });
 
-            InferenceClassificationOverride inferenceClassification = request.Execute<InferenceClassificationOverride>();
+            InferenceClassificationOverride inferenceClassification =
+                request.Execute<InferenceClassificationOverride>();
             inferenceClassification.Service = this;
             inferenceClassification.ResetChangeTracking();
 
@@ -1240,7 +1278,8 @@
         /// </summary>
         /// <param name="inferenceOverride"></param>
         /// <returns></returns>
-        internal InferenceClassificationOverride CreateInferenceClassificationOverride(InferenceClassificationOverride inferenceOverride)
+        internal InferenceClassificationOverride CreateInferenceClassificationOverride(
+            InferenceClassificationOverride inferenceOverride)
         {
             ArgumentValidator.ThrowIfNull(
                 inferenceOverride,
@@ -1262,7 +1301,8 @@
                         null);
                 });
 
-            InferenceClassificationOverride inferenceClassification = request.Execute<InferenceClassificationOverride>();
+            InferenceClassificationOverride inferenceClassification =
+                request.Execute<InferenceClassificationOverride>();
             inferenceClassification.Service = this;
             inferenceClassification.ResetChangeTracking();
 
@@ -1276,7 +1316,7 @@
         internal void DeleteInferenceClassificationOverride(InferenceClassificationOverride inferenceOverride)
         {
             ArgumentValidator.ThrowIfNull(
-                inferenceOverride, 
+                inferenceOverride,
                 nameof(inferenceOverride));
 
             DeleteRequestBase request = new DeleteRequestBase(
@@ -1304,7 +1344,7 @@
         {
             AuthenticationHeaderValue authenticationHeader = this.AuthorizationTokenProvider.GetAuthenticationHeader();
             ArgumentValidator.ThrowIfNull(
-                authenticationHeader, 
+                authenticationHeader,
                 nameof(authenticationHeader));
 
             webRequest.Authorization = authenticationHeader;
@@ -1313,7 +1353,7 @@
             if (this.HasPreferences)
             {
                 webRequest.Headers.Add(
-                    ExchangeService.PreferHeaderName, 
+                    ExchangeService.PreferHeaderName,
                     this.Preferences.Select(p => p.Prefer));
             }
         }
@@ -1326,7 +1366,7 @@
         {
             this.httpResponseHeaders = webResponse.HttpResponseHeaders;
             this.TraceHttpWebHeaders(
-                TraceFlags.HttpResponseHeaders, 
+                TraceFlags.HttpResponseHeaders,
                 webResponse.HttpResponseHeaders);
 
             if (webResponse.Success)
@@ -1373,7 +1413,7 @@
         #endregion
 
         #region Private methods
-        
+
         /// <summary>
         /// Indicate should tracing occur.
         /// </summary>
@@ -1475,10 +1515,10 @@
         /// <param name="outlookItemFetch"></param>
         /// <param name="entity"></param>
         /// <returns></returns>
-        private OutlookItem ProcessOutlookItemRequest(Func<OutlookItem> outlookItemRequest, EntityId entity)
+        private Item ProcessOutlookItemRequest(Func<Item> outlookItemRequest, EntityId entity)
         {
             ArgumentValidator.ThrowIfNull(outlookItemRequest, nameof(outlookItemRequest));
-            OutlookItem outlookItem = outlookItemRequest();
+            Item outlookItem = outlookItemRequest();
 
             if (null == outlookItem)
             {
@@ -1513,6 +1553,15 @@
             mailFolder.ResetChangeTracking();
 
             return mailFolder;
+        }
+
+        /// <summary>
+        /// Indicate if delta folder id feature set enabled.
+        /// </summary>
+        /// <returns></returns>
+        private bool DeltaFolderIdFeatureSetEnabled()
+        {
+            return (this.restEnvironment.FeatureSet & FeatureSet.DeltaFolderId) == FeatureSet.DeltaFolderId;
         }
 
         #endregion

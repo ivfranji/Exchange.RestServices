@@ -1,7 +1,7 @@
 ﻿namespace Microsoft.RestServices.Exchange
 {
     using System;
-    using Microsoft.Graph;
+    using Microsoft.OutlookServices;
 
     /// <summary>
     /// Outlook task folder id.
@@ -19,7 +19,7 @@
         /// <param name="id"></param>
         /// <param name="mailboxId"></param>
         public OutlookTaskFolderId(string id, string mailboxId)
-            : base(id, mailboxId, typeof(OutlookTaskFolder))
+            : base(id, mailboxId, typeof(TaskFolder))
         {
         }
 

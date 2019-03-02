@@ -44,6 +44,17 @@
         }
 
         /// <summary>
+        /// Setter for OData next uri.
+        /// </summary>
+        public string ODataNextUri
+        {
+            set
+            {
+                this.requestUriBuilder = new UriBuilder(new Uri(value));
+            }
+        }
+
+        /// <summary>
         /// Anchor mailbox for this rest url.
         /// </summary>
         public string XAnchorMailbox { get; private set; }

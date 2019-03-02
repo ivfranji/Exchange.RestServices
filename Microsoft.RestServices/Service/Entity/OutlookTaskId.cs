@@ -1,6 +1,6 @@
 ﻿namespace Microsoft.RestServices.Exchange
 {
-    using Microsoft.Graph;
+    using Microsoft.OutlookServices;
 
     /// <summary>
     /// Outlook task id.
@@ -13,7 +13,7 @@
         /// <param name="entityId">Entity Id.</param>
         /// <param name="mailboxId">Mailbox id.</param>
         public OutlookTaskId(string entityId, string mailboxId) 
-            : base(entityId, mailboxId, typeof(OutlookTask))
+            : base(entityId, mailboxId, typeof(Task))
         {
         }
 
@@ -23,7 +23,7 @@
         /// <param name="entityId">Entity Id.</param>
         /// <param name="mailboxId">Mailbox id.</param>
         public OutlookTaskId(string entityId, MailboxId mailboxId) 
-            : base(entityId, mailboxId, typeof(OutlookTask))
+            : base(entityId, mailboxId, typeof(Task))
         {
         }
     }

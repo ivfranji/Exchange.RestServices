@@ -56,10 +56,12 @@
         /// <summary>
         /// Resource uri.
         /// </summary>
-        internal static string ResourceUri
-        {
-            get { return "https://graph.microsoft.com"; }
-        }
+        internal const string GraphResourceUri = "https://Microsoft.OutlookServices.microsoft.com";
+
+        /// <summary>
+        /// Resource uri.
+        /// </summary>
+        internal const string OutlookResourceUri = "https://outlook.office365.com";
 
         /// <summary>
         /// Tenant id.

@@ -1,7 +1,7 @@
 ﻿namespace Microsoft.RestServices.Exchange
 {
     using System;
-    using System.Net;
+    using System.Collections.Generic;
     using System.Net.Http;
     using System.Net.Http.Headers;
     using System.Text;
@@ -184,6 +184,18 @@
             }
 
             return sb.ToString();
+        }
+
+        /// <summary>
+        /// Sets prefer header.
+        /// </summary>
+        /// <param name="value"></param>
+        public void SetPreferHeader(IEnumerable<string> value)
+        {
+            if (null != value)
+            {
+                this.httpRequestMessage.Headers.Add("Prefer", value);
+            }
         }
 
         /// <summary>

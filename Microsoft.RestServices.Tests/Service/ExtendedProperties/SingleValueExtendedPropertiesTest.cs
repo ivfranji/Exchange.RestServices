@@ -1,7 +1,7 @@
 ﻿namespace Microsoft.RestServices.Tests.Service.ExtendedProperties
 {
     using Microsoft.RestServices.Exchange;
-    using Microsoft.Graph;
+    using Microsoft.OutlookServices;
     using VisualStudio.TestTools.UnitTesting;
 
     [TestClass]
@@ -11,11 +11,11 @@
         public void TestExpandSingleValueProperties()
         {
             SingleValueLegacyExtendedProperty prop = new SingleValueLegacyExtendedProperty();
-            prop.Id = "String 0x4001001E";
+            prop.PropertyId = "String 0x4001001E";
 
             SearchFilter filter = new SearchFilter.IsEqualTo(
-                SingleValueLegacyExtendedPropertyObjectSchema.Id, 
-                $"{{{prop.Id}}}");
+                SingleValueLegacyExtendedPropertyObjectSchema.PropertyId, 
+                $"{{{prop.PropertyId}}}");
             ExpandQuery expand = new ExpandQuery($"singleValueExtendedProperties({filter.Query})");
 
             Assert.AreEqual(

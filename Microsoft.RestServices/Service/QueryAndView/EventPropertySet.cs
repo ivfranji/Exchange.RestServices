@@ -1,6 +1,6 @@
 ﻿namespace Microsoft.RestServices.Exchange.Service.QueryAndView
 {
-    using Microsoft.Graph;
+    using Microsoft.OutlookServices;
 
     /// <summary>
     /// Event property set.

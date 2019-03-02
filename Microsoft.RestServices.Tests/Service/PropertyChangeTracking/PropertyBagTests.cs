@@ -4,7 +4,7 @@
     using System.Collections.Generic;
     using System.Reflection;
     using Exchange;
-    using Graph;
+    using Microsoft.OutlookServices;
     using VisualStudio.TestTools.UnitTesting;
 
     [TestClass]
@@ -90,7 +90,7 @@
             ((IList<SingleValueLegacyExtendedProperty>)
                 (bag[MessageObjectSchema.SingleValueExtendedProperties])).Add(new SingleValueLegacyExtendedProperty()
             {
-                Id = "A",
+                PropertyId = "A",
                 Value = "Abc"
             });
 
