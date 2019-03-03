@@ -26,5 +26,10 @@
         /// Selected properties.
         /// </summary>
         ISelectQuery SelectedProperties { get; set; }
+
+        /// <summary>
+        /// OData delta link.
+        /// </summary>
+        string ODataDeltaLink { get; set; }
     }
 }

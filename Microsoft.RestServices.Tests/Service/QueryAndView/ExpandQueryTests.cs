@@ -63,7 +63,7 @@
                 PropertyValueType.SingleValueExtendedProperties);
 
             Assert.AreEqual(
-                "$expand=SingleValueExtendedProperties($filter=Id eq 'Boolean 0x0C14' and Id eq 'String 0x0481')",
+                "$expand=SingleValueExtendedProperties($filter=PropertyId eq 'Boolean 0x0C14' and PropertyId eq 'String 0x0481')",
                 extendedPropertyExpandQuery.Query);
 
             ExpandQuery arrayExpandQuery = new ExpandQuery(
@@ -71,7 +71,7 @@
                 extendedPropertyExpandQuery);
 
             Assert.AreEqual(
-                "$expand=attachments,SingleValueExtendedProperties($filter=Id eq 'Boolean 0x0C14' and Id eq 'String 0x0481')",
+                "$expand=attachments,SingleValueExtendedProperties($filter=PropertyId eq 'Boolean 0x0C14' and PropertyId eq 'String 0x0481')",
                 arrayExpandQuery.Query);
         }
     }

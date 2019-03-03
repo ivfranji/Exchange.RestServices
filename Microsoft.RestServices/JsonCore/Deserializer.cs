@@ -3,6 +3,7 @@
     using System;
     using Microsoft.OutlookServices;
     using Newtonsoft.Json;
+    using Newtonsoft.Json.Converters;
     using Newtonsoft.Json.Linq;
     using Newtonsoft.Json.Serialization;
 
@@ -58,9 +59,10 @@
             };
 
             settings.Converters.Add(new AttachmentConverter());
+
             if (null != type)
             {
-                settings.Converters.Add(new OutlookItemConverter(type));
+                settings.Converters.Add(new ItemConverter(type));
             }
 
             return JsonConvert.DeserializeObject<T>(content, settings);
@@ -91,7 +93,7 @@
         /// <summary>
         /// Outlook item class resolver
         /// </summary>
-        private class OutlookItemClassResolver : DefaultContractResolver
+        private class ItemClassResolver : DefaultContractResolver
         {
             /// <summary>
             /// Resolve contract converter. 
@@ -162,20 +164,20 @@
                         if (string.IsNullOrEmpty(itemType))
                         {
                             this.subClassConversionSettings.Converters.Add(
-                                new OutlookItemConverter(typeof(Message)));
+                                new ItemConverter(typeof(Message)));
                         }
                         else
                         {
                             if (itemType.EndsWith(typeof(Message).FullName, StringComparison.OrdinalIgnoreCase))
                             {
                                 this.subClassConversionSettings.Converters.Add(
-                                    new OutlookItemConverter(typeof(Message)));
+                                    new ItemConverter(typeof(Message)));
                             }
 
                             if (itemType.EndsWith(typeof(Event).FullName, StringComparison.OrdinalIgnoreCase))
                             {
                                 this.subClassConversionSettings.Converters.Add(
-                                    new OutlookItemConverter(typeof(Event)));
+                                    new ItemConverter(typeof(Event)));
                             }
                         }
                     }
@@ -214,7 +216,7 @@
         /// Correctly deserialize specific type of the attachment since
         /// items are using abstract reference property.
         /// </summary>
-        private class OutlookItemConverter : JsonConverter
+        private class ItemConverter : JsonConverter
         {
             /// <summary>
             /// Type to convert.
@@ -225,7 +227,7 @@
             /// Outlook item converter.
             /// </summary>
             /// <param name="type"></param>
-            internal OutlookItemConverter(Type type)
+            internal ItemConverter(Type type)
             {
                 this.type = type;
                 this.subClassConversionSettings.Converters.Add(new AttachmentConverter());
@@ -236,7 +238,7 @@
             /// </summary>
             private JsonSerializerSettings subClassConversionSettings = new JsonSerializerSettings()
             {
-                ContractResolver = new OutlookItemClassResolver(),
+                ContractResolver = new ItemClassResolver(),
                 NullValueHandling = NullValueHandling.Ignore,
                 ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor
             };

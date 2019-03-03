@@ -17,28 +17,26 @@
             true);
 
         /// <summary>
-        /// Graph prod.
-        /// </summary>
-        private static RestEnvironment graphProd = new RestEnvironment(
-            new Uri("https://graph.microsoft.com/v1.0"),
-            "Graph Prod",
-            false);
-
-        /// <summary>
-        /// Graph prod.
+        /// Outlook prod.
         /// </summary>
         private static RestEnvironment outlookProd = new RestEnvironment(
             new Uri("https://outlook.office365.com/api/v2.0"),
             "Outlook Prod",
-            false,
-            FeatureSet.None);
+            false);
 
-        public RestEnvironment(Uri baseUri, string name, bool isBeta, FeatureSet featureSet = FeatureSet.All)
+        /// <summary>
+        /// Outlook prod.
+        /// </summary>
+        private static RestEnvironment outlookBeta = new RestEnvironment(
+            new Uri("https://outlook.office365.com/api/beta"),
+            "Outlook Beta",
+            true);
+
+        public RestEnvironment(Uri baseUri, string name, bool isBeta)
         {
             this.BaseUri = baseUri;
             this.Name = name;
             this.IsBeta = isBeta;
-            this.FeatureSet = featureSet;
         }
 
         /// <summary>
@@ -57,24 +55,11 @@
         public bool IsBeta { get; }
 
         /// <summary>
-        /// Feature set.
-        /// </summary>
-        public FeatureSet FeatureSet { get; }
-
-        /// <summary>
         /// Graph beta environment.
         /// </summary>
         public static RestEnvironment GraphBeta
         {
             get { return RestEnvironment.graphBeta; }
-        }
-
-        /// <summary>
-        /// Graph prod environment.
-        /// </summary>
-        public static RestEnvironment GraphProd
-        {
-            get { return RestEnvironment.graphProd; }
         }
 
         /// <summary>
@@ -85,6 +70,17 @@
             get
             {
                 return RestEnvironment.outlookProd;
+            }
+        }
+
+        /// <summary>
+        /// Outlook Beta environment.
+        /// </summary>
+        public static RestEnvironment OutlookBeta
+        {
+            get
+            {
+                return RestEnvironment.outlookBeta;
             }
         }
     }

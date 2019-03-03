@@ -9,6 +9,7 @@
     using System.Text.RegularExpressions;
     using Microsoft.OutlookServices;
     using Service;
+    using Service.QueryAndView;
 
     /// <summary>
     /// Base service for Exchange operations.
@@ -83,8 +84,7 @@
         /// <param name="tokenProvider">Token provider.</param>
         /// <param name="xAnchorMailbox">Anchor mailbox.</param>
         /// <param name="restEnvironment">Rest environment.</param>
-        public ExchangeService(IAuthorizationTokenProvider tokenProvider, string mailboxId,
-            RestEnvironment restEnvironment = null)
+        public ExchangeService(IAuthorizationTokenProvider tokenProvider, string mailboxId, RestEnvironment restEnvironment = null)
         {
             ArgumentValidator.ThrowIfNull(
                 tokenProvider,
@@ -300,9 +300,7 @@
             // and we only respond to "From" person.
             message.ToRecipients = new List<Recipient>();
             message.ToRecipients.Add(message.From);
-            string content = this.Serializer.Serialize(
-                message,
-                additionalParameters);
+            string content = this.Serializer.Serialize(additionalParameters);
 
             ItemId itemId = new MessageId(
                 message.Id,
@@ -329,10 +327,8 @@
                 throw new ArgumentException("ToRecipients not specified.");
             }
 
-            message.ToRecipients = (List<Recipient>) additionalParameters["toRecipients"];
-            string content = this.Serializer.Serialize(
-                message,
-                additionalParameters);
+            message.ToRecipients = (IList<Recipient>) additionalParameters["toRecipients"];
+            string content = this.Serializer.Serialize(additionalParameters);
             ItemId itemId = new MessageId(
                 message.Id,
                 this.MailboxId.Id);
@@ -609,9 +605,7 @@
                     syncQuery,
                     (httpRestUrl) =>
                     {
-                        string deltaFolder = this.DeltaFolderIdFeatureSetEnabled()
-                            ? syncFolderId.MessagesDelta
-                            : syncFolderId.MessagesContainer;
+                        string deltaFolder = syncFolderId.MessagesContainer;
 
                         httpRestUrl.RelativePath = deltaFolder;
                         httpRestUrl.Query = syncQuery;
@@ -622,6 +616,7 @@
 
             request.DeserializationType = propertySet.Type;
             SyncResponseCollection<Item> response = request.Execute();
+            response.PageSize = maxChangesReturned;
             return new SyncFolderItemsCollection<Item>(
                 response,
                 this,
@@ -855,7 +850,7 @@
         /// </summary>
         /// <param name="syncState">Sync state.</param>
         /// <returns></returns>
-        public SyncFolderItemsCollection<MailFolder> SyncFolderHierarchy(string syncState)
+        public SyncMailFolderHierarchyResponse SyncFolderHierarchy(string syncState)
         {
             return this.SyncFolderHierarchy(
                 new MailFolderPropertySet(),
@@ -868,8 +863,7 @@
         /// <param name="propertySet">Property set.</param>
         /// <param name="syncState">Sync state.</param>
         /// <returns></returns>
-        public SyncFolderItemsCollection<MailFolder> SyncFolderHierarchy(MailFolderPropertySet propertySet,
-            string syncState)
+        public SyncMailFolderHierarchyResponse SyncFolderHierarchy(MailFolderPropertySet propertySet, string syncState)
         {
             ISyncQuery syncQuery = null;
             if (string.IsNullOrEmpty(syncState))
@@ -881,15 +875,40 @@
             }
             else
             {
-                ISyncToken syncToken = SyncToken.Deserialize(syncState);
-                if (syncToken == null)
+                // ODataDelta link shouldn't be empty at this point.
+                byte[] syncStateBytes = Convert.FromBase64String(syncState);
+                string deserializedSyncState = Encoding.UTF8.GetString(syncStateBytes);
+
+                Uri uri = null;
+                try
+                {
+                    uri = new Uri(deserializedSyncState);
+                }
+                catch (Exception e)
                 {
                     throw new ArgumentException("Invalid sync state provided.");
                 }
 
+                ISyncToken syncToken;
+                if (!SyncToken.TryParseFromUrl(uri, SyncTokenType.DeltaToken, out syncToken))
+                {
+                    throw new ArgumentException("Sync state doesn't contain sync delta token.");
+                }
+
                 syncQuery = new SyncQuery(
                     10,
-                    syncToken);
+                    null);
+
+                syncQuery.ODataDeltaLink = uri.ToString();
+                //ISyncToken syncToken = SyncToken.Deserialize(syncState);
+                //if (syncToken == null)
+                //{
+                //    throw new ArgumentException("Invalid sync state provided.");
+                //}
+
+                //syncQuery = new SyncQuery(
+                //    10,
+                //    syncToken);
             }
 
             if (null != propertySet && null != propertySet.Properties)
@@ -897,32 +916,29 @@
                 syncQuery.SelectedProperties = propertySet.Properties;
             }
 
-            SyncRequestBase<SyncResponseCollection<MailFolder>> request =
-                new SyncRequestBase<SyncResponseCollection<MailFolder>>(
+            SyncRequestBase<SyncMailFolderResponseCollection> request =
+                new SyncRequestBase<SyncMailFolderResponseCollection>(
                     this,
                     syncQuery,
                     (httpRestUrl) =>
                     {
-                        httpRestUrl.RelativePath = this.DeltaFolderIdFeatureSetEnabled()
-                            ? "mailfolders/delta"
-                            : "mailfolders";
-
-                        httpRestUrl.Query = syncQuery;
+                        if (!string.IsNullOrEmpty(syncQuery.ODataDeltaLink))
+                        {
+                            httpRestUrl.ODataNextUri = syncQuery.ODataDeltaLink;
+                        }
+                        else
+                        {
+                            httpRestUrl.RelativePath = "mailfolders";
+                            httpRestUrl.Query = syncQuery;
+                        }
+                        
                         this.EnsureCorrectEndpoint(
                             httpRestUrl,
                             null);
                     });
 
-            if (!this.DeltaFolderIdFeatureSetEnabled())
-            {
-                request.PreferHeaderSetter = (preferenceSetter) =>
-                {
-                    preferenceSetter.SetPreferHeader(syncQuery.Preferences);
-                };
-            }
-
-            SyncResponseCollection<MailFolder> response = request.Execute();
-            return new SyncFolderItemsCollection<MailFolder>(
+            SyncMailFolderResponseCollection response = request.Execute();
+            return new SyncMailFolderHierarchyResponse(
                 response,
                 this,
                 this.GetMailboxId(null));
@@ -1553,15 +1569,6 @@
             mailFolder.ResetChangeTracking();
 
             return mailFolder;
-        }
-
-        /// <summary>
-        /// Indicate if delta folder id feature set enabled.
-        /// </summary>
-        /// <returns></returns>
-        private bool DeltaFolderIdFeatureSetEnabled()
-        {
-            return (this.restEnvironment.FeatureSet & FeatureSet.DeltaFolderId) == FeatureSet.DeltaFolderId;
         }
 
         #endregion

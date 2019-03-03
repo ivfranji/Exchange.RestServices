@@ -43,7 +43,7 @@
                 3421));
 
             Assert.AreEqual(
-                "$expand=SingleValueExtendedProperties($filter=Id eq 'String 0x0D5D')",
+                "$expand=SingleValueExtendedProperties($filter=PropertyId eq 'String 0x0D5D')",
                 mailFolderPropertySet.ExpandQuery.Query);
 
             mailFolderPropertySet = new MailFolderPropertySet();
@@ -52,7 +52,7 @@
 
             mailFolderPropertySet.Add(new ExtendedPropertyDefinition(MapiPropertyType.StringArray, 3421));
             Assert.AreEqual(
-                "$expand=MultiValueExtendedProperties($filter=Id eq 'StringArray 0x0D5D')", 
+                "$expand=MultiValueExtendedProperties($filter=PropertyId eq 'StringArray 0x0D5D')", 
                 mailFolderPropertySet.ExpandQuery.Query);
 
             mailFolderPropertySet.Add(new ExtendedPropertyDefinition(
@@ -60,7 +60,7 @@
                 3421));
 
             Assert.AreEqual(
-                "$expand=SingleValueExtendedProperties($filter=Id eq 'String 0x0D5D'),MultiValueExtendedProperties($filter=Id eq 'StringArray 0x0D5D')",
+                "$expand=SingleValueExtendedProperties($filter=PropertyId eq 'String 0x0D5D'),MultiValueExtendedProperties($filter=PropertyId eq 'StringArray 0x0D5D')",
                 mailFolderPropertySet.ExpandQuery.Query);
         }
     }

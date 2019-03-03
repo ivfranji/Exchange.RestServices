@@ -42,7 +42,7 @@
             messageView.PropertySet.Add(new ExtendedPropertyDefinition(MapiPropertyType.String, 0x4001));
             
             Assert.AreEqual(
-                "$top=10&$skip=12&$select=Id,IsRead,Subject,ParentFolderId,Body,HasAttachments&$expand=attachments,SingleValueExtendedProperties($filter=Id eq 'String 0x4001')",
+                "$top=10&$skip=12&$select=Id,IsRead,Subject,ParentFolderId,Body,HasAttachments&$expand=attachments,SingleValueExtendedProperties($filter=PropertyId eq 'String 0x4001')",
                 messageView.ViewQuery.Query);
 
             messageView = new MessageView(
@@ -52,7 +52,7 @@
 
             messageView.PropertySet.Add(new ExtendedPropertyDefinition(MapiPropertyType.String, 0x4001));
             Assert.AreEqual(
-                "$top=10&$skip=12&$expand=SingleValueExtendedProperties($filter=Id eq 'String 0x4001')",
+                "$top=10&$skip=12&$expand=SingleValueExtendedProperties($filter=PropertyId eq 'String 0x4001')",
                 messageView.ViewQuery.Query);
         }
     }

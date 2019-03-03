@@ -26,7 +26,7 @@
 
             mock.InlineAssertation = (message) =>
             {
-                Uri uri = new Uri("https://Microsoft.OutlookServices.microsoft.com/beta/me/messages/id-123");
+                Uri uri = new Uri("https://outlook.office365.com/api/v2.0/me/messages/id-123");
                 Assert.AreEqual(
                     uri, 
                     message.RequestUri);
@@ -41,7 +41,8 @@
 
             ExchangeService meService = new ExchangeService(
                 "abc", 
-                string.Empty);
+                string.Empty,
+                RestEnvironment.OutlookProd);
 
             Assert.IsTrue(meService.MailboxId.IdInMeForm);
 
@@ -59,7 +60,7 @@
 
             mock.InlineAssertation = (message) =>
             {
-                Uri uri = new Uri("https://Microsoft.OutlookServices.microsoft.com/beta/users/a@a.com/messages/id-123");
+                Uri uri = new Uri("https://outlook.office365.com/api/beta/users/a@a.com/messages/id-123");
                 Assert.AreEqual(
                     uri,
                     message.RequestUri);
@@ -71,7 +72,8 @@
 
             ExchangeService meService = new ExchangeService(
                 "abc",
-                "a@a.com");
+                "a@a.com",
+                RestEnvironment.OutlookBeta);
 
             Assert.IsTrue(meService.MailboxId.IdInEmailAddressForm);
 
@@ -89,7 +91,7 @@
 
             mock.InlineAssertation = (message) =>
             {
-                Uri uri = new Uri("https://Microsoft.OutlookServices.microsoft.com/beta/users/b@b.com/messages/id-123");
+                Uri uri = new Uri("https://outlook.office365.com/api/v2.0/users/b@b.com/messages/id-123");
                 Assert.AreEqual(
                     uri,
                     message.RequestUri);
@@ -102,7 +104,8 @@
 
             ExchangeService meService = new ExchangeService(
                 "abc",
-                "a@a.com");
+                "a@a.com",
+                RestEnvironment.OutlookProd);
 
             Assert.IsTrue(meService.MailboxId.IdInEmailAddressForm);
 

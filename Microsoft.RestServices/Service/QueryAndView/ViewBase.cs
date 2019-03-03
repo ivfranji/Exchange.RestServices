@@ -49,7 +49,7 @@
             this.Type = type;
             this.PropertySet = propertySet;
             this.ExpandProperties = new List<string>();
-            this.FollowODataNextLink = true;
+            this.FollowODataNextLink = false;
         }
 
         /// <summary>
@@ -64,7 +64,7 @@
 
         /// <summary>
         /// If specified, during paging it will follow odata next link instead
-        /// of constructing it from view. Default behavior.
+        /// of constructing it from view.
         /// </summary>
         public bool FollowODataNextLink { get; set; }
 

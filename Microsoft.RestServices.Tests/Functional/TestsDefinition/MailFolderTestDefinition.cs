@@ -19,9 +19,6 @@
         {
             string folder1Name = "TempSyncFolder1";
             string folder2Name = "TempSyncFolder2";
-
-            HttpWebRequestClientProvider.Instance.EnterLock();
-            HttpWebRequestClientProvider.Instance.Reset();
             exchangeService.MailboxId = new MailboxId(AppConfig.MailboxA);
 
             FindFoldersResults findFolders = exchangeService.FindFolders(
@@ -39,7 +36,7 @@
 
             string syncState = null;
             int counter = 0;
-            SyncFolderItemsCollection<MailFolder> sync;
+            SyncMailFolderHierarchyResponse sync;
             do
             {
                 sync = exchangeService.SyncFolderHierarchy(syncState);
@@ -81,8 +78,6 @@
             {
                 Assert.IsTrue(change.ChangeType == SyncChangeType.Deleted);
             }
-
-            HttpWebRequestClientProvider.Instance.ExitLock();
         }
 
         /// <summary>
@@ -90,9 +85,6 @@
         /// </summary>
         public static void GetMailFolders(ExchangeService exchangeService)
         {
-            HttpWebRequestClientProvider.Instance.EnterLock();
-            HttpWebRequestClientProvider.Instance.Reset();
-
             exchangeService.MailboxId = new MailboxId(AppConfig.MailboxA);
             FindFoldersResults findFoldersResults = null;
             FolderView folderView = new FolderView(10);
@@ -112,8 +104,6 @@
                 }
 
             } while (findFoldersResults.MoreAvailable);
-
-            HttpWebRequestClientProvider.Instance.ExitLock();
         }
 
         /// <summary>
@@ -122,9 +112,6 @@
         /// <param name="exchangeService"></param>
         public static void CreateReadUpdateDeleteMailFolder(ExchangeService exchangeService)
         {
-            HttpWebRequestClientProvider.Instance.EnterLock();
-            HttpWebRequestClientProvider.Instance.Reset();
-
             exchangeService.MailboxId = new MailboxId(AppConfig.MailboxA);
 
             foreach (MailFolder folder in exchangeService.FindFolders(WellKnownFolderName.Inbox, new FolderView(10)))
@@ -170,8 +157,6 @@
             folder1.Delete();
             Assert.IsNull(folder1.DisplayName);
             Assert.IsNull(folder1.Id);
-
-            HttpWebRequestClientProvider.Instance.ExitLock();
         }
     }
 }

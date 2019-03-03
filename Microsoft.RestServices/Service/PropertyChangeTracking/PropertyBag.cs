@@ -2,15 +2,18 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Collections.ObjectModel;
     using System.Collections.Specialized;
-    using System.Reflection;
 
     /// <summary>
     /// Property bag.
     /// </summary>
-    public class PropertyBag : IPropertyChangeTracking
+    public class PropertyBag
     {
+        /// <summary>
+        /// ODataType property name.
+        /// </summary>
+        internal const string ODataTypePropertyName = "ODataType";
+
         /// <summary>
         /// List of properties linked with values.
         /// </summary>
@@ -48,6 +51,11 @@
         /// Indicate bag is new.
         /// </summary>
         internal bool IsNew { get; private set; }
+
+        /// <summary>
+        /// Underlying type is part of entity schema.
+        /// </summary>
+        internal bool IsEntitySchema { get; }
 
         /// <summary>
         /// Get value based on property definition.
@@ -93,6 +101,8 @@
                     {
                         this.propertyValue[key].Value = key.DefaultValue;
                     }
+
+                    
                 }
                 else
                 {
@@ -143,14 +153,22 @@
         /// </summary>
         internal void ResetChangeTracking()
         {
-            //foreach (string key in this.propertyList.Keys)
-            //{
-            //    this.propertyList[key].Changed = false;
-            //}
-
-            foreach ( PropertyDefinition key in this.propertyValue.Keys )
+            foreach (PropertyDefinition key in this.propertyValue.Keys)
             {
-                this.propertyValue[key].Changed = false;
+                ObjectChangeTracking changeTrackingProperty = this.propertyValue[key];
+                changeTrackingProperty.Changed = false;
+                if (key.ChangeTrackable)
+                {
+                    key.InvokeResetChangeTrackingOnProperty(changeTrackingProperty.Value);
+                }
+                else if (key.IsList && key.ListChangeTrackable)
+                {
+                    IList<object> list = key.ActivateIList(changeTrackingProperty.Value);
+                    foreach (object obj in list)
+                    {
+                        key.InvokeResetChangeTrackingOnProperty(obj);
+                    }
+                }
             }
         }
 
@@ -167,15 +185,30 @@
         /// Returns list of changed properties.
         /// </summary>
         /// <returns></returns>
-        public IList<string> GetChangedProperties()
+        public IList<string> GetChangedPropertyNames()
         {
-            List<string> changedProperties = new List<string>();
-            foreach ( PropertyDefinition prop in this.propertyValue.Keys )
+            List<string> changedPropertyNames = new List<string>();
+            foreach (PropertyDefinition prop in this.GetChangedProperies())
             {
-                ObjectChangeTracking objectChangeTracking = this.propertyValue[prop];
-                if ( objectChangeTracking.Changed )
+                changedPropertyNames.Add(prop.Name);
+            }
+
+            return changedPropertyNames;
+        }
+
+        /// <summary>
+        /// Return list of changed properties.
+        /// </summary>
+        /// <returns></returns>
+        public IList<PropertyDefinition> GetChangedProperies()
+        {
+            List<PropertyDefinition> changedProperties = new List<PropertyDefinition>();
+            foreach (PropertyDefinition propDefinition in this.propertyValue.Keys)
+            {
+                ObjectChangeTracking objectChangeTracking = this.propertyValue[propDefinition];
+                if (objectChangeTracking.Changed)
                 {
-                    changedProperties.Add(prop.Name);
+                    changedProperties.Add(propDefinition);
                 }
             }
 
@@ -209,6 +242,13 @@
             {
                 throw new ArgumentNullException(nameof(bagSchema));
             }
+
+            //// Make sure ODataType is always returned in changed properties.
+            //PropertyDefinition odataTypePropertyDefinition;
+            //if (this.ContainsProperty(PropertyBag.ODataTypePropertyName, out odataTypePropertyDefinition))
+            //{
+            //    this.propertyValue[odataTypePropertyDefinition].Changed = true;
+            //}
         }
 
         /// <summary>
@@ -218,21 +258,8 @@
         /// <param name="value">Value, if null, create empty collection.</param>
         private void InitializeCollectionProperty(PropertyDefinition def, object value)
         {
-            Type observableCollectionType = typeof(ObservableCollection<>);
-            Type constructedObservableCollection = observableCollectionType.MakeGenericType(def.GetListUnderlyingType());
-            if (value != null)
-            {
-                this.propertyValue[def] = new ObjectChangeTracking(
-                    Activator.CreateInstance(
-                    constructedObservableCollection,
-                    value));
-            }
-            else
-            {
-                this.propertyValue[def] = new ObjectChangeTracking(
-                    Activator.CreateInstance(constructedObservableCollection));
-            }
-            
+            this.propertyValue[def] = new ObjectChangeTracking(
+                def.ActivateObservableList(value));
             INotifyCollectionChanged notifyCollectionChanged = (INotifyCollectionChanged)this.propertyValue[def].Value;
             this.propertyValue[def].RegisterListChangeListener(notifyCollectionChanged);
         }
@@ -244,15 +271,33 @@
         /// <returns></returns>
         private PropertyDefinition GetPropertyDefinitionByName(string propertyName)
         {
-            foreach (KeyValuePair<PropertyDefinition, ObjectChangeTracking> pair in this.propertyValue)
+            PropertyDefinition propertyDefinition;
+            if (this.ContainsProperty(propertyName, out propertyDefinition))
             {
-                if ( pair.Key.Name == propertyName )
-                {
-                    return pair.Key;
-                }
+                return propertyDefinition;
             }
 
             throw new KeyNotFoundException($"Key doesn't exist: '{propertyName}'.");
+        }
+
+        /// <summary>
+        /// Contains property.
+        /// </summary>
+        /// <param name="propertyName"></param>
+        /// <returns></returns>
+        private bool ContainsProperty(string propertyName, out PropertyDefinition propertyDefinition)
+        {
+            propertyDefinition = null;
+            foreach (KeyValuePair<PropertyDefinition, ObjectChangeTracking> pair in this.propertyValue)
+            {
+                if (pair.Key.Name == propertyName)
+                {
+                    propertyDefinition = pair.Key;
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         /// <summary>

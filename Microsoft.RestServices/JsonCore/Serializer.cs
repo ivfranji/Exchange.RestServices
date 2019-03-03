@@ -70,21 +70,15 @@
             */
 
             JObject rootObject = new JObject();
-            JObject appendObject = rootObject;
-
             if (appendRootObject)
             {
-                appendObject = new JObject();
-                rootObject.Add(obj.GetType().Name, appendObject);
+                rootObject.Add(
+                    obj.GetType().Name, 
+                    this.BuildObjectFromIPropertyChangeTracking(obj));
             }
-
-            foreach (string changedProperty in obj.GetChangedProperties())
+            else
             {
-                object property = obj[changedProperty];
-                appendObject[changedProperty] = JToken.FromObject(
-                    property, 
-                    this.StringEnumSerializer);
-                
+                rootObject = this.BuildObjectFromIPropertyChangeTracking(obj);
             }
 
             // Additional properties aren't part of initial object, for example "Comment" in SendMail.
@@ -102,6 +96,29 @@
             }
 
             return JsonConvert.SerializeObject(rootObject);
+        }
+
+        /// <summary>
+        /// Serialize dictionary.
+        /// </summary>
+        /// <param name="properties">Properties.</param>
+        /// <returns></returns>
+        public string Serialize(Dictionary<string, object> properties)
+        {
+            if (null != properties && properties.Count > 0)
+            {
+                JObject rootObject = new JObject();
+                foreach (KeyValuePair<string, object> property in properties)
+                {
+                    rootObject.Add(
+                        this.CapsFirstLetter(property.Key),
+                        JToken.FromObject(property.Value));
+                }
+
+                return JsonConvert.SerializeObject(rootObject);
+            }
+
+            return string.Empty;
         }
 
         /// <summary>
@@ -126,6 +143,56 @@
         private string CapsFirstLetter(string value)
         {
             return $"{value.Substring(0, 1).ToUpper()}{value.Substring(1)}";
+        }
+
+        private JObject BuildObjectFromIPropertyChangeTracking(IPropertyChangeTracking obj, bool appendODataType = false, string odataType = null)
+        {
+            JObject jObject = new JObject();
+            if (appendODataType)
+            {
+                if (!string.IsNullOrEmpty(odataType))
+                {
+                    jObject["@odata.type"] = odataType;
+                }
+            }
+
+            foreach (PropertyDefinition changedProperty in obj.GetChangedProperies())
+            {
+                object property = obj[changedProperty];
+                if (changedProperty.ChangeTrackable)
+                {
+                    jObject[changedProperty.Name] = JToken.FromObject(
+                        this.BuildObjectFromIPropertyChangeTracking(property as IPropertyChangeTracking,
+                            changedProperty.Type.IsAbstract,
+                            changedProperty.GetODataType(property)),
+                        this.StringEnumSerializer);
+                }
+                else if (changedProperty.ListChangeTrackable)
+                {
+                    IList<object> list = changedProperty.ActivateIList(obj[changedProperty]);
+                    JArray jArray = new JArray();
+                    foreach (object entry in list)
+                    {
+                        jArray.Add(
+                            this.BuildObjectFromIPropertyChangeTracking(
+                                entry as IPropertyChangeTracking, 
+                                changedProperty.GetListUnderlyingType().IsAbstract,
+                                changedProperty.GetODataType(entry)));
+                    }
+
+                    jObject.Add(
+                        changedProperty.Name, 
+                        jArray);
+                }
+                else
+                {
+                    jObject[changedProperty.Name] = JToken.FromObject(
+                        property,
+                        this.StringEnumSerializer);
+                }
+            }
+
+            return jObject;
         }
     }
 }

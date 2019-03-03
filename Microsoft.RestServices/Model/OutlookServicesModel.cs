@@ -725,17 +725,6 @@ namespace Microsoft.OutlookServices
             get { return (Entity) this.propertyBag[NotificationObjectSchema.ResourceData]; }
             set { this.propertyBag[NotificationObjectSchema.ResourceData] = value; }
         }
-
-        /// <summary>
-        /// OData Type
-        /// </summary>
-        [JsonProperty("@odata.type")]
-        public string ODataType
-        {
-            get { return "#Microsoft.OutlookServices.Notification";}
-            internal set { }
-        }
-
     }
 
 
@@ -802,17 +791,6 @@ namespace Microsoft.OutlookServices
             get { return (string) this.propertyBag[PushSubscriptionObjectSchema.ClientState]; }
             set { this.propertyBag[PushSubscriptionObjectSchema.ClientState] = value; }
         }
-
-        /// <summary>
-        /// OData Type
-        /// </summary>
-        [JsonProperty("@odata.type")]
-        public string ODataType
-        {
-            get { return "#Microsoft.OutlookServices.PushSubscription";}
-            internal set { }
-        }
-
     }
 
 
@@ -871,17 +849,6 @@ namespace Microsoft.OutlookServices
             get { return (IList<TaskFolder>) this.propertyBag[TaskGroupObjectSchema.TaskFolders]; }
             set { this.propertyBag[TaskGroupObjectSchema.TaskFolders] = value; }
         }
-
-        /// <summary>
-        /// OData Type
-        /// </summary>
-        [JsonProperty("@odata.type")]
-        public string ODataType
-        {
-            get { return "#Microsoft.OutlookServices.TaskGroup";}
-            internal set { }
-        }
-
     }
 
 
@@ -960,17 +927,6 @@ namespace Microsoft.OutlookServices
             get { return (IList<MultiValueLegacyExtendedProperty>) this.propertyBag[TaskFolderObjectSchema.MultiValueExtendedProperties]; }
             set { this.propertyBag[TaskFolderObjectSchema.MultiValueExtendedProperties] = value; }
         }
-
-        /// <summary>
-        /// OData Type
-        /// </summary>
-        [JsonProperty("@odata.type")]
-        public string ODataType
-        {
-            get { return "#Microsoft.OutlookServices.TaskFolder";}
-            internal set { }
-        }
-
     }
 
 
@@ -999,17 +955,6 @@ namespace Microsoft.OutlookServices
             get { return (string) this.propertyBag[SingleValueLegacyExtendedPropertyObjectSchema.PropertyId]; }
             set { this.propertyBag[SingleValueLegacyExtendedPropertyObjectSchema.PropertyId] = value; }
         }
-
-        /// <summary>
-        /// OData Type
-        /// </summary>
-        [JsonProperty("@odata.type")]
-        public string ODataType
-        {
-            get { return "#Microsoft.OutlookServices.SingleValueLegacyExtendedProperty";}
-            internal set { }
-        }
-
     }
 
 
@@ -1038,17 +983,6 @@ namespace Microsoft.OutlookServices
             get { return (string) this.propertyBag[MultiValueLegacyExtendedPropertyObjectSchema.PropertyId]; }
             set { this.propertyBag[MultiValueLegacyExtendedPropertyObjectSchema.PropertyId] = value; }
         }
-
-        /// <summary>
-        /// OData Type
-        /// </summary>
-        [JsonProperty("@odata.type")]
-        public string ODataType
-        {
-            get { return "#Microsoft.OutlookServices.MultiValueLegacyExtendedProperty";}
-            internal set { }
-        }
-
     }
 
 
@@ -1717,17 +1651,6 @@ namespace Microsoft.OutlookServices
             get { return (Event) this.propertyBag[EventMessageObjectSchema.Event]; }
             set { this.propertyBag[EventMessageObjectSchema.Event] = value; }
         }
-
-        /// <summary>
-        /// OData Type
-        /// </summary>
-        [JsonProperty("@odata.type")]
-        public string ODataType
-        {
-            get { return "#Microsoft.OutlookServices.EventMessage";}
-            internal set { }
-        }
-
     }
 
 
@@ -1976,17 +1899,6 @@ namespace Microsoft.OutlookServices
             get { return (IList<Event>) this.propertyBag[CalendarObjectSchema.CalendarView]; }
             set { this.propertyBag[CalendarObjectSchema.CalendarView] = value; }
         }
-
-        /// <summary>
-        /// OData Type
-        /// </summary>
-        [JsonProperty("@odata.type")]
-        public string ODataType
-        {
-            get { return "#Microsoft.OutlookServices.Calendar";}
-            internal set { }
-        }
-
     }
 
 
@@ -2035,17 +1947,6 @@ namespace Microsoft.OutlookServices
             get { return (IList<Calendar>) this.propertyBag[CalendarGroupObjectSchema.Calendars]; }
             set { this.propertyBag[CalendarGroupObjectSchema.Calendars] = value; }
         }
-
-        /// <summary>
-        /// OData Type
-        /// </summary>
-        [JsonProperty("@odata.type")]
-        public string ODataType
-        {
-            get { return "#Microsoft.OutlookServices.CalendarGroup";}
-            internal set { }
-        }
-
     }
 
 
@@ -2659,17 +2560,6 @@ namespace Microsoft.OutlookServices
             get { return (string) this.propertyBag[PersonObjectSchema.IMAddress]; }
             set { this.propertyBag[PersonObjectSchema.IMAddress] = value; }
         }
-
-        /// <summary>
-        /// OData Type
-        /// </summary>
-        [JsonProperty("@odata.type")]
-        public string ODataType
-        {
-            get { return "#Microsoft.OutlookServices.Person";}
-            internal set { }
-        }
-
     }
 
 
@@ -3048,17 +2938,6 @@ namespace Microsoft.OutlookServices
             get { return (IList<Extension>) this.propertyBag[ContactObjectSchema.Extensions]; }
             set { this.propertyBag[ContactObjectSchema.Extensions] = value; }
         }
-
-        /// <summary>
-        /// OData Type
-        /// </summary>
-        [JsonProperty("@odata.type")]
-        public string ODataType
-        {
-            get { return "#Microsoft.OutlookServices.Contact";}
-            internal set { }
-        }
-
     }
 
 
@@ -3127,17 +3006,6 @@ namespace Microsoft.OutlookServices
             get { return (IList<ContactFolder>) this.propertyBag[ContactFolderObjectSchema.ChildFolders]; }
             set { this.propertyBag[ContactFolderObjectSchema.ChildFolders] = value; }
         }
-
-        /// <summary>
-        /// OData Type
-        /// </summary>
-        [JsonProperty("@odata.type")]
-        public string ODataType
-        {
-            get { return "#Microsoft.OutlookServices.ContactFolder";}
-            internal set { }
-        }
-
     }
 
 
@@ -3166,17 +3034,6 @@ namespace Microsoft.OutlookServices
             get { return (CategoryColor) this.propertyBag[OutlookCategoryObjectSchema.Color]; }
             set { this.propertyBag[OutlookCategoryObjectSchema.Color] = value; }
         }
-
-        /// <summary>
-        /// OData Type
-        /// </summary>
-        [JsonProperty("@odata.type")]
-        public string ODataType
-        {
-            get { return "#Microsoft.OutlookServices.OutlookCategory";}
-            internal set { }
-        }
-
     }
 
 
@@ -3195,17 +3052,6 @@ namespace Microsoft.OutlookServices
             get { return (IList<InferenceClassificationOverride>) this.propertyBag[InferenceClassificationObjectSchema.Overrides]; }
             set { this.propertyBag[InferenceClassificationObjectSchema.Overrides] = value; }
         }
-
-        /// <summary>
-        /// OData Type
-        /// </summary>
-        [JsonProperty("@odata.type")]
-        public string ODataType
-        {
-            get { return "#Microsoft.OutlookServices.InferenceClassification";}
-            internal set { }
-        }
-
     }
 
 
@@ -3234,17 +3080,6 @@ namespace Microsoft.OutlookServices
             get { return (int) this.propertyBag[PhotoObjectSchema.Width]; }
             set { this.propertyBag[PhotoObjectSchema.Width] = value; }
         }
-
-        /// <summary>
-        /// OData Type
-        /// </summary>
-        [JsonProperty("@odata.type")]
-        public string ODataType
-        {
-            get { return "#Microsoft.OutlookServices.Photo";}
-            internal set { }
-        }
-
     }
 
 
@@ -3422,17 +3257,6 @@ namespace Microsoft.OutlookServices
             get { return (IList<ConversationThread>) this.propertyBag[ConversationObjectSchema.Threads]; }
             set { this.propertyBag[ConversationObjectSchema.Threads] = value; }
         }
-
-        /// <summary>
-        /// OData Type
-        /// </summary>
-        [JsonProperty("@odata.type")]
-        public string ODataType
-        {
-            get { return "#Microsoft.OutlookServices.Conversation";}
-            internal set { }
-        }
-
     }
 
 
@@ -3529,17 +3353,6 @@ namespace Microsoft.OutlookServices
             get { return (string) this.propertyBag[FileAttachmentObjectSchema.ContentBytes]; }
             set { this.propertyBag[FileAttachmentObjectSchema.ContentBytes] = value; }
         }
-
-        /// <summary>
-        /// OData Type
-        /// </summary>
-        [JsonProperty("@odata.type")]
-        public string ODataType
-        {
-            get { return "#Microsoft.OutlookServices.FileAttachment";}
-            internal set { }
-        }
-
     }
 
 
@@ -3558,17 +3371,6 @@ namespace Microsoft.OutlookServices
             get { return (Item) this.propertyBag[ItemAttachmentObjectSchema.Item]; }
             set { this.propertyBag[ItemAttachmentObjectSchema.Item] = value; }
         }
-
-        /// <summary>
-        /// OData Type
-        /// </summary>
-        [JsonProperty("@odata.type")]
-        public string ODataType
-        {
-            get { return "#Microsoft.OutlookServices.ItemAttachment";}
-            internal set { }
-        }
-
     }
 
 
@@ -3637,17 +3439,6 @@ namespace Microsoft.OutlookServices
             get { return (bool) this.propertyBag[ReferenceAttachmentObjectSchema.IsFolder]; }
             set { this.propertyBag[ReferenceAttachmentObjectSchema.IsFolder] = value; }
         }
-
-        /// <summary>
-        /// OData Type
-        /// </summary>
-        [JsonProperty("@odata.type")]
-        public string ODataType
-        {
-            get { return "#Microsoft.OutlookServices.ReferenceAttachment";}
-            internal set { }
-        }
-
     }
 
 
@@ -3736,17 +3527,6 @@ namespace Microsoft.OutlookServices
             get { return (bool) this.propertyBag[MessageRuleObjectSchema.IsReadOnly]; }
             set { this.propertyBag[MessageRuleObjectSchema.IsReadOnly] = value; }
         }
-
-        /// <summary>
-        /// OData Type
-        /// </summary>
-        [JsonProperty("@odata.type")]
-        public string ODataType
-        {
-            get { return "#Microsoft.OutlookServices.MessageRule";}
-            internal set { }
-        }
-
     }
 
 
@@ -3775,17 +3555,6 @@ namespace Microsoft.OutlookServices
             get { return (EmailAddress) this.propertyBag[InferenceClassificationOverrideObjectSchema.SenderEmailAddress]; }
             set { this.propertyBag[InferenceClassificationOverrideObjectSchema.SenderEmailAddress] = value; }
         }
-
-        /// <summary>
-        /// OData Type
-        /// </summary>
-        [JsonProperty("@odata.type")]
-        public string ODataType
-        {
-            get { return "#Microsoft.OutlookServices.InferenceClassificationOverride";}
-            internal set { }
-        }
-
     }
 
 
@@ -3982,17 +3751,6 @@ namespace Microsoft.OutlookServices
             get { return (string) this.propertyBag[OpenTypeExtensionObjectSchema.ExtensionName]; }
             set { this.propertyBag[OpenTypeExtensionObjectSchema.ExtensionName] = value; }
         }
-
-        /// <summary>
-        /// OData Type
-        /// </summary>
-        [JsonProperty("@odata.type")]
-        public string ODataType
-        {
-            get { return "#Microsoft.OutlookServices.OpenTypeExtension";}
-            internal set { }
-        }
-
     }
 
 
@@ -4007,17 +3765,6 @@ namespace Microsoft.OutlookServices
         /// </summary>
         [JsonProperty("Name", NullValueHandling = NullValueHandling.Ignore)]
         public string Name { get; set; }
-
-
-        /// <summary>
-        /// OData Type
-        /// </summary>
-        [JsonProperty("@odata.type")]
-        public string ODataType
-        {
-            get { return "#Microsoft.OutlookServices.TimeZoneBase";}
-            internal set { }
-        }
 
     }
 
@@ -4047,17 +3794,6 @@ namespace Microsoft.OutlookServices
         /// </summary>
         [JsonProperty("DaylightOffset", NullValueHandling = NullValueHandling.Ignore)]
         public DaylightTimeZoneOffset DaylightOffset { get; set; }
-
-
-        /// <summary>
-        /// OData Type
-        /// </summary>
-        [JsonProperty("@odata.type")]
-        public string ODataType
-        {
-            get { return "#Microsoft.OutlookServices.CustomTimeZone";}
-            internal set { }
-        }
 
     }
 
@@ -4102,17 +3838,6 @@ namespace Microsoft.OutlookServices
         [JsonProperty("Year", NullValueHandling = NullValueHandling.Ignore)]
         public int Year { get; set; }
 
-
-        /// <summary>
-        /// OData Type
-        /// </summary>
-        [JsonProperty("@odata.type")]
-        public string ODataType
-        {
-            get { return "#Microsoft.OutlookServices.StandardTimeZoneOffset";}
-            internal set { }
-        }
-
     }
 
 
@@ -4127,17 +3852,6 @@ namespace Microsoft.OutlookServices
         /// </summary>
         [JsonProperty("DaylightBias", NullValueHandling = NullValueHandling.Ignore)]
         public int DaylightBias { get; set; }
-
-
-        /// <summary>
-        /// OData Type
-        /// </summary>
-        [JsonProperty("@odata.type")]
-        public string ODataType
-        {
-            get { return "#Microsoft.OutlookServices.DaylightTimeZoneOffset";}
-            internal set { }
-        }
 
     }
 
@@ -4181,17 +3895,6 @@ namespace Microsoft.OutlookServices
         /// </summary>
         [JsonProperty("WorkingHours", NullValueHandling = NullValueHandling.Ignore)]
         public WorkingHours WorkingHours { get; set; }
-
-
-        /// <summary>
-        /// OData Type
-        /// </summary>
-        [JsonProperty("@odata.type")]
-        public string ODataType
-        {
-            get { return "#Microsoft.OutlookServices.MailboxSettings";}
-            internal set { }
-        }
 
     }
 
@@ -4243,17 +3946,6 @@ namespace Microsoft.OutlookServices
         [JsonProperty("ExternalReplyMessage", NullValueHandling = NullValueHandling.Ignore)]
         public string ExternalReplyMessage { get; set; }
 
-
-        /// <summary>
-        /// OData Type
-        /// </summary>
-        [JsonProperty("@odata.type")]
-        public string ODataType
-        {
-            get { return "#Microsoft.OutlookServices.AutomaticRepliesSetting";}
-            internal set { }
-        }
-
     }
 
 
@@ -4276,17 +3968,6 @@ namespace Microsoft.OutlookServices
         [JsonProperty("TimeZone", NullValueHandling = NullValueHandling.Ignore)]
         public string TimeZone { get; set; }
 
-
-        /// <summary>
-        /// OData Type
-        /// </summary>
-        [JsonProperty("@odata.type")]
-        public string ODataType
-        {
-            get { return "#Microsoft.OutlookServices.DateTimeTimeZone";}
-            internal set { }
-        }
-
     }
 
 
@@ -4308,17 +3989,6 @@ namespace Microsoft.OutlookServices
         /// </summary>
         [JsonProperty("DisplayName", NullValueHandling = NullValueHandling.Ignore)]
         public string DisplayName { get; set; }
-
-
-        /// <summary>
-        /// OData Type
-        /// </summary>
-        [JsonProperty("@odata.type")]
-        public string ODataType
-        {
-            get { return "#Microsoft.OutlookServices.LocaleInfo";}
-            internal set { }
-        }
 
     }
 
@@ -4355,17 +4025,6 @@ namespace Microsoft.OutlookServices
         /// </summary>
         [JsonProperty("TimeZone", NullValueHandling = NullValueHandling.Ignore)]
         public TimeZoneBase TimeZone { get; set; }
-
-
-        /// <summary>
-        /// OData Type
-        /// </summary>
-        [JsonProperty("@odata.type")]
-        public string ODataType
-        {
-            get { return "#Microsoft.OutlookServices.WorkingHours";}
-            internal set { }
-        }
 
     }
 
@@ -4431,17 +4090,6 @@ namespace Microsoft.OutlookServices
         [JsonProperty("ReminderFireTime", NullValueHandling = NullValueHandling.Ignore)]
         public DateTimeTimeZone ReminderFireTime { get; set; }
 
-
-        /// <summary>
-        /// OData Type
-        /// </summary>
-        [JsonProperty("@odata.type")]
-        public string ODataType
-        {
-            get { return "#Microsoft.OutlookServices.Reminder";}
-            internal set { }
-        }
-
     }
 
 
@@ -4506,17 +4154,6 @@ namespace Microsoft.OutlookServices
         [JsonProperty("UniqueIdType", NullValueHandling = NullValueHandling.Ignore)]
         public LocationUniqueIdType UniqueIdType { get; set; }
 
-
-        /// <summary>
-        /// OData Type
-        /// </summary>
-        [JsonProperty("@odata.type")]
-        public string ODataType
-        {
-            get { return "#Microsoft.OutlookServices.Location";}
-            internal set { }
-        }
-
     }
 
 
@@ -4574,17 +4211,6 @@ namespace Microsoft.OutlookServices
         [JsonProperty("PostalCode", NullValueHandling = NullValueHandling.Ignore)]
         public string PostalCode { get; set; }
 
-
-        /// <summary>
-        /// OData Type
-        /// </summary>
-        [JsonProperty("@odata.type")]
-        public string ODataType
-        {
-            get { return "#Microsoft.OutlookServices.PhysicalAddress";}
-            internal set { }
-        }
-
     }
 
 
@@ -4627,17 +4253,6 @@ namespace Microsoft.OutlookServices
         /// </summary>
         [JsonProperty("AltitudeAccuracy", NullValueHandling = NullValueHandling.Ignore)]
         public Double AltitudeAccuracy { get; set; }
-
-
-        /// <summary>
-        /// OData Type
-        /// </summary>
-        [JsonProperty("@odata.type")]
-        public string ODataType
-        {
-            get { return "#Microsoft.OutlookServices.GeoCoordinates";}
-            internal set { }
-        }
 
     }
 
@@ -4731,17 +4346,6 @@ namespace Microsoft.OutlookServices
         [JsonProperty("Error", NullValueHandling = NullValueHandling.Ignore)]
         public Error Error { get; set; }
 
-
-        /// <summary>
-        /// OData Type
-        /// </summary>
-        [JsonProperty("@odata.type")]
-        public string ODataType
-        {
-            get { return "#Microsoft.OutlookServices.MailTips";}
-            internal set { }
-        }
-
     }
 
 
@@ -4763,17 +4367,6 @@ namespace Microsoft.OutlookServices
         /// </summary>
         [JsonProperty("Address", NullValueHandling = NullValueHandling.Ignore)]
         public string Address { get; set; }
-
-
-        /// <summary>
-        /// OData Type
-        /// </summary>
-        [JsonProperty("@odata.type")]
-        public string ODataType
-        {
-            get { return "#Microsoft.OutlookServices.EmailAddress";}
-            internal set { }
-        }
 
     }
 
@@ -4811,17 +4404,6 @@ namespace Microsoft.OutlookServices
         [JsonProperty("ScheduledEndTime", NullValueHandling = NullValueHandling.Ignore)]
         public DateTimeTimeZone ScheduledEndTime { get; set; }
 
-
-        /// <summary>
-        /// OData Type
-        /// </summary>
-        [JsonProperty("@odata.type")]
-        public string ODataType
-        {
-            get { return "#Microsoft.OutlookServices.AutomaticRepliesMailTips";}
-            internal set { }
-        }
-
     }
 
 
@@ -4836,17 +4418,6 @@ namespace Microsoft.OutlookServices
         /// </summary>
         [JsonProperty("EmailAddress", NullValueHandling = NullValueHandling.Ignore)]
         public EmailAddress EmailAddress { get; set; }
-
-
-        /// <summary>
-        /// OData Type
-        /// </summary>
-        [JsonProperty("@odata.type")]
-        public string ODataType
-        {
-            get { return "#Microsoft.OutlookServices.Recipient";}
-            internal set { }
-        }
 
     }
 
@@ -4870,17 +4441,6 @@ namespace Microsoft.OutlookServices
         [JsonProperty("Code", NullValueHandling = NullValueHandling.Ignore)]
         public string Code { get; set; }
 
-
-        /// <summary>
-        /// OData Type
-        /// </summary>
-        [JsonProperty("@odata.type")]
-        public string ODataType
-        {
-            get { return "#Microsoft.OutlookServices.Error";}
-            internal set { }
-        }
-
     }
 
 
@@ -4903,17 +4463,6 @@ namespace Microsoft.OutlookServices
         [JsonProperty("DisplayName", NullValueHandling = NullValueHandling.Ignore)]
         public string DisplayName { get; set; }
 
-
-        /// <summary>
-        /// OData Type
-        /// </summary>
-        [JsonProperty("@odata.type")]
-        public string ODataType
-        {
-            get { return "#Microsoft.OutlookServices.TimeZoneInformation";}
-            internal set { }
-        }
-
     }
 
 
@@ -4928,17 +4477,6 @@ namespace Microsoft.OutlookServices
         /// </summary>
         [JsonProperty("Type", NullValueHandling = NullValueHandling.Ignore)]
         public AttendeeType Type { get; set; }
-
-
-        /// <summary>
-        /// OData Type
-        /// </summary>
-        [JsonProperty("@odata.type")]
-        public string ODataType
-        {
-            get { return "#Microsoft.OutlookServices.AttendeeBase";}
-            internal set { }
-        }
 
     }
 
@@ -4969,17 +4507,6 @@ namespace Microsoft.OutlookServices
         [JsonProperty("Locations", NullValueHandling = NullValueHandling.Ignore)]
         public IList<LocationConstraintItem> Locations { get; set; }
 
-
-        /// <summary>
-        /// OData Type
-        /// </summary>
-        [JsonProperty("@odata.type")]
-        public string ODataType
-        {
-            get { return "#Microsoft.OutlookServices.LocationConstraint";}
-            internal set { }
-        }
-
     }
 
 
@@ -4994,17 +4521,6 @@ namespace Microsoft.OutlookServices
         /// </summary>
         [JsonProperty("ResolveAvailability", NullValueHandling = NullValueHandling.Ignore)]
         public bool ResolveAvailability { get; set; }
-
-
-        /// <summary>
-        /// OData Type
-        /// </summary>
-        [JsonProperty("@odata.type")]
-        public string ODataType
-        {
-            get { return "#Microsoft.OutlookServices.LocationConstraintItem";}
-            internal set { }
-        }
 
     }
 
@@ -5028,17 +4544,6 @@ namespace Microsoft.OutlookServices
         [JsonProperty("Timeslots", NullValueHandling = NullValueHandling.Ignore)]
         public IList<TimeSlot> Timeslots { get; set; }
 
-
-        /// <summary>
-        /// OData Type
-        /// </summary>
-        [JsonProperty("@odata.type")]
-        public string ODataType
-        {
-            get { return "#Microsoft.OutlookServices.TimeConstraint";}
-            internal set { }
-        }
-
     }
 
 
@@ -5061,17 +4566,6 @@ namespace Microsoft.OutlookServices
         [JsonProperty("End", NullValueHandling = NullValueHandling.Ignore)]
         public DateTimeTimeZone End { get; set; }
 
-
-        /// <summary>
-        /// OData Type
-        /// </summary>
-        [JsonProperty("@odata.type")]
-        public string ODataType
-        {
-            get { return "#Microsoft.OutlookServices.TimeSlot";}
-            internal set { }
-        }
-
     }
 
 
@@ -5093,17 +4587,6 @@ namespace Microsoft.OutlookServices
         /// </summary>
         [JsonProperty("EmptySuggestionsReason", NullValueHandling = NullValueHandling.Ignore)]
         public string EmptySuggestionsReason { get; set; }
-
-
-        /// <summary>
-        /// OData Type
-        /// </summary>
-        [JsonProperty("@odata.type")]
-        public string ODataType
-        {
-            get { return "#Microsoft.OutlookServices.MeetingTimeSuggestionsResult";}
-            internal set { }
-        }
 
     }
 
@@ -5155,17 +4638,6 @@ namespace Microsoft.OutlookServices
         [JsonProperty("SuggestionReason", NullValueHandling = NullValueHandling.Ignore)]
         public string SuggestionReason { get; set; }
 
-
-        /// <summary>
-        /// OData Type
-        /// </summary>
-        [JsonProperty("@odata.type")]
-        public string ODataType
-        {
-            get { return "#Microsoft.OutlookServices.MeetingTimeSuggestion";}
-            internal set { }
-        }
-
     }
 
 
@@ -5187,17 +4659,6 @@ namespace Microsoft.OutlookServices
         /// </summary>
         [JsonProperty("Availability", NullValueHandling = NullValueHandling.Ignore)]
         public FreeBusyStatus Availability { get; set; }
-
-
-        /// <summary>
-        /// OData Type
-        /// </summary>
-        [JsonProperty("@odata.type")]
-        public string ODataType
-        {
-            get { return "#Microsoft.OutlookServices.AttendeeAvailability";}
-            internal set { }
-        }
 
     }
 
@@ -5221,17 +4682,6 @@ namespace Microsoft.OutlookServices
         [JsonProperty("Content", NullValueHandling = NullValueHandling.Ignore)]
         public string Content { get; set; }
 
-
-        /// <summary>
-        /// OData Type
-        /// </summary>
-        [JsonProperty("@odata.type")]
-        public string ODataType
-        {
-            get { return "#Microsoft.OutlookServices.ItemBody";}
-            internal set { }
-        }
-
     }
 
 
@@ -5253,17 +4703,6 @@ namespace Microsoft.OutlookServices
         /// </summary>
         [JsonProperty("Range", NullValueHandling = NullValueHandling.Ignore)]
         public RecurrenceRange Range { get; set; }
-
-
-        /// <summary>
-        /// OData Type
-        /// </summary>
-        [JsonProperty("@odata.type")]
-        public string ODataType
-        {
-            get { return "#Microsoft.OutlookServices.PatternedRecurrence";}
-            internal set { }
-        }
 
     }
 
@@ -5322,17 +4761,6 @@ namespace Microsoft.OutlookServices
         [JsonProperty("Index", NullValueHandling = NullValueHandling.Ignore)]
         public WeekIndex Index { get; set; }
 
-
-        /// <summary>
-        /// OData Type
-        /// </summary>
-        [JsonProperty("@odata.type")]
-        public string ODataType
-        {
-            get { return "#Microsoft.OutlookServices.RecurrencePattern";}
-            internal set { }
-        }
-
     }
 
 
@@ -5376,17 +4804,6 @@ namespace Microsoft.OutlookServices
         [JsonProperty("NumberOfOccurrences", NullValueHandling = NullValueHandling.Ignore)]
         public int NumberOfOccurrences { get; set; }
 
-
-        /// <summary>
-        /// OData Type
-        /// </summary>
-        [JsonProperty("@odata.type")]
-        public string ODataType
-        {
-            get { return "#Microsoft.OutlookServices.RecurrenceRange";}
-            internal set { }
-        }
-
     }
 
 
@@ -5408,17 +4825,6 @@ namespace Microsoft.OutlookServices
         /// </summary>
         [JsonProperty("Value", NullValueHandling = NullValueHandling.Ignore)]
         public string Value { get; set; }
-
-
-        /// <summary>
-        /// OData Type
-        /// </summary>
-        [JsonProperty("@odata.type")]
-        public string ODataType
-        {
-            get { return "#Microsoft.OutlookServices.InternetMessageHeader";}
-            internal set { }
-        }
 
     }
 
@@ -5456,17 +4862,6 @@ namespace Microsoft.OutlookServices
         [JsonProperty("FlagStatus", NullValueHandling = NullValueHandling.Ignore)]
         public FollowupFlagStatus FlagStatus { get; set; }
 
-
-        /// <summary>
-        /// OData Type
-        /// </summary>
-        [JsonProperty("@odata.type")]
-        public string ODataType
-        {
-            get { return "#Microsoft.OutlookServices.FollowupFlag";}
-            internal set { }
-        }
-
     }
 
 
@@ -5489,17 +4884,6 @@ namespace Microsoft.OutlookServices
         [JsonProperty("Time", NullValueHandling = NullValueHandling.Ignore)]
         public DateTimeOffset Time { get; set; }
 
-
-        /// <summary>
-        /// OData Type
-        /// </summary>
-        [JsonProperty("@odata.type")]
-        public string ODataType
-        {
-            get { return "#Microsoft.OutlookServices.ResponseStatus";}
-            internal set { }
-        }
-
     }
 
 
@@ -5514,17 +4898,6 @@ namespace Microsoft.OutlookServices
         /// </summary>
         [JsonProperty("Status", NullValueHandling = NullValueHandling.Ignore)]
         public ResponseStatus Status { get; set; }
-
-
-        /// <summary>
-        /// OData Type
-        /// </summary>
-        [JsonProperty("@odata.type")]
-        public string ODataType
-        {
-            get { return "#Microsoft.OutlookServices.Attendee";}
-            internal set { }
-        }
 
     }
 
@@ -5562,17 +4935,6 @@ namespace Microsoft.OutlookServices
         [JsonProperty("ItemId", NullValueHandling = NullValueHandling.Ignore)]
         public string ItemId { get; set; }
 
-
-        /// <summary>
-        /// OData Type
-        /// </summary>
-        [JsonProperty("@odata.type")]
-        public string ODataType
-        {
-            get { return "#Microsoft.OutlookServices.ScoredEmailAddress";}
-            internal set { }
-        }
-
     }
 
 
@@ -5609,17 +4971,6 @@ namespace Microsoft.OutlookServices
         [JsonProperty("Language", NullValueHandling = NullValueHandling.Ignore)]
         public string Language { get; set; }
 
-
-        /// <summary>
-        /// OData Type
-        /// </summary>
-        [JsonProperty("@odata.type")]
-        public string ODataType
-        {
-            get { return "#Microsoft.OutlookServices.Phone";}
-            internal set { }
-        }
-
     }
 
 
@@ -5649,17 +5000,6 @@ namespace Microsoft.OutlookServices
         [JsonProperty("DisplayName", NullValueHandling = NullValueHandling.Ignore)]
         public string DisplayName { get; set; }
 
-
-        /// <summary>
-        /// OData Type
-        /// </summary>
-        [JsonProperty("@odata.type")]
-        public string ODataType
-        {
-            get { return "#Microsoft.OutlookServices.Website";}
-            internal set { }
-        }
-
     }
 
 
@@ -5681,17 +5021,6 @@ namespace Microsoft.OutlookServices
         /// </summary>
         [JsonProperty("Subclass", NullValueHandling = NullValueHandling.Ignore)]
         public string Subclass { get; set; }
-
-
-        /// <summary>
-        /// OData Type
-        /// </summary>
-        [JsonProperty("@odata.type")]
-        public string ODataType
-        {
-            get { return "#Microsoft.OutlookServices.PersonType";}
-            internal set { }
-        }
 
     }
 
@@ -5911,17 +5240,6 @@ namespace Microsoft.OutlookServices
         [JsonProperty("WithinSizeRange", NullValueHandling = NullValueHandling.Ignore)]
         public SizeRange WithinSizeRange { get; set; }
 
-
-        /// <summary>
-        /// OData Type
-        /// </summary>
-        [JsonProperty("@odata.type")]
-        public string ODataType
-        {
-            get { return "#Microsoft.OutlookServices.MessageRulePredicates";}
-            internal set { }
-        }
-
     }
 
 
@@ -5943,17 +5261,6 @@ namespace Microsoft.OutlookServices
         /// </summary>
         [JsonProperty("MaximumSize", NullValueHandling = NullValueHandling.Ignore)]
         public int MaximumSize { get; set; }
-
-
-        /// <summary>
-        /// OData Type
-        /// </summary>
-        [JsonProperty("@odata.type")]
-        public string ODataType
-        {
-            get { return "#Microsoft.OutlookServices.SizeRange";}
-            internal set { }
-        }
 
     }
 
@@ -6039,17 +5346,6 @@ namespace Microsoft.OutlookServices
         /// </summary>
         [JsonProperty("StopProcessingRules", NullValueHandling = NullValueHandling.Ignore)]
         public bool StopProcessingRules { get; set; }
-
-
-        /// <summary>
-        /// OData Type
-        /// </summary>
-        [JsonProperty("@odata.type")]
-        public string ODataType
-        {
-            get { return "#Microsoft.OutlookServices.MessageRuleActions";}
-            internal set { }
-        }
 
     }
 

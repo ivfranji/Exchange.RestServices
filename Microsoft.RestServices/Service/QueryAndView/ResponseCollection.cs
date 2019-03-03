@@ -30,7 +30,7 @@
         /// <summary>
         /// More available.
         /// </summary>
-        public bool MoreAvailable
+        public virtual bool MoreAvailable
         {
             get { return !string.IsNullOrEmpty(this.ODataNextLink); }
         }
@@ -52,6 +52,12 @@
             }
         }
 
+        /// <summary>
+        /// Page size that was used to grab results.
+        /// TODO: THis needs to come from REST URL!!!
+        /// </summary>
+        internal int PageSize { get; set; }
+
     }
 
     /// <summary>
@@ -65,5 +71,51 @@
         /// </summary>
         [JsonProperty("@odata.deltaLink")]
         internal string ODataDeltaLink { get; set; }
+
+        /// <summary>
+        /// With sync response collection, need to make sure that
+        /// returned collection is empty before it is marked as sync
+        /// done.
+        /// </summary>
+        public override bool MoreAvailable
+        {
+            get
+            {
+                if (!string.IsNullOrEmpty(this.ODataDeltaLink))
+                {
+                    return this.Value.Count >= this.PageSize;
+                }
+
+                return base.MoreAvailable;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Sync mail folder response collection.
+    /// </summary>
+    public class SyncMailFolderResponseCollection : ResponseCollection<MailFolder>
+    {
+        /// <summary>
+        /// Odata delta link.
+        /// </summary>
+        [JsonProperty("@odata.deltaLink")]
+        internal string ODataDeltaLink
+        {
+            get; set;
+        }
+
+        /// <summary>
+        /// With folder sync response collection, need to make sure that
+        /// returned collection is empty before it is marked as sync
+        /// done.
+        /// </summary>
+        public override bool MoreAvailable
+        {
+            get
+            {
+                return !string.IsNullOrEmpty(this.ODataDeltaLink) && this.Value.Count > 0;
+            }
+        }
     }
 }

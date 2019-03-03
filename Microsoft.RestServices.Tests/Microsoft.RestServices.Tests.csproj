@@ -62,9 +62,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AppConfig.cs" />
+    <Compile Include="Functional\TestHelpers.cs" />
+    <Compile Include="Functional\TestsDefinition\AttachmentTestDefinition.cs" />
+    <Compile Include="Functional\TestsDefinition\EventTestDefinition.cs" />
+    <Compile Include="Functional\TestsDefinition\InboxRuleTestDefinition.cs" />
+    <Compile Include="Functional\TestsDefinition\InferenceClassificationTestDefinition.cs" />
     <Compile Include="Functional\TestsDefinition\MailFolderTestDefinition.cs" />
     <Compile Include="Functional\FunctionalTestRunner.cs" />
-    <Compile Include="Functional\FunctionalTestsBase.cs" />
     <Compile Include="Functional\OutlookFunctionalTests.cs" />
     <Compile Include="Functional\TestsDefinition\MailMessageTestDefinition.cs" />
     <Compile Include="Mocks\Helper.cs" />

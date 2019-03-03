@@ -44,7 +44,7 @@
 
             mock.InlineAssertation = (message) =>
             {
-                Uri expectedUri = new Uri("https://Microsoft.OutlookServices.microsoft.com/beta/users/a@a.com/mailfolders/Inbox/messages?$top=10&$skip=0");
+                Uri expectedUri = new Uri("https://outlook.office365.com/api/v2.0/users/a@a.com/mailfolders/Inbox/messages?$top=10&$skip=0");
 
                 Assert.IsTrue(message.Method == HttpMethod.Get);
                 Assert.AreEqual(expectedUri, message.RequestUri);
@@ -55,7 +55,8 @@
 
             ExchangeService service = new ExchangeService(
                 "abc", 
-                "a@a.com");
+                "a@a.com",
+                RestEnvironment.OutlookProd);
 
             FindItemsResults<Item> results = service.FindItems(
                 WellKnownFolderName.Inbox, 
@@ -145,7 +146,7 @@
 
             mock.InlineAssertation = (message) =>
             {
-                Uri requestUri = new Uri("https://Microsoft.OutlookServices.microsoft.com/beta/users/a@a.com/sendMail");
+                Uri requestUri = new Uri("https://outlook.office365.com/api/beta/users/a@a.com/sendMail");
                 Assert.AreEqual(requestUri, message.RequestUri);
 
                 Helper.ValidateXAnchorMailbox(message, "a@a.com");
@@ -153,7 +154,8 @@
 
             ExchangeService service = new ExchangeService(
                 "abc",
-                "a@a.com");
+                "a@a.com",
+                RestEnvironment.OutlookBeta);
 
             Message msg = new Message(service);
             msg.Subject = "testsubject";
@@ -171,17 +173,13 @@
 
             mock.InlineAssertation = (httpRequestMessage) =>
             {
-                MockMessageCommentModel messageCommentModel = Deserializer.Instance.Deserialize<MockMessageCommentModel>(httpRequestMessage.Content.ReadAsStringAsync().Result, null);
+                Dictionary<string, object> reply = Deserializer.Instance.Deserialize<Dictionary<string, object>>(httpRequestMessage.Content.ReadAsStringAsync().Result, null);
+               
                 Assert.AreEqual(
                     "replyToEmail", 
-                    messageCommentModel.Comment);
-
-                // From needs to become To in reply.
-                Assert.AreEqual(
-                    "from@d.com", 
-                    messageCommentModel.Message.ToRecipients[0].EmailAddress.Address);
-
-                Uri requestUri = new Uri("https://Microsoft.OutlookServices.microsoft.com/beta/users/a@a.com/messages/message-id/reply");
+                    reply["Comment"]);
+                
+                Uri requestUri = new Uri("https://outlook.office365.com/api/v2.0/users/a@a.com/messages/message-id/reply");
                 Assert.AreEqual(
                     requestUri,
                     httpRequestMessage.RequestUri);
@@ -191,7 +189,8 @@
 
             ExchangeService service = new ExchangeService(
                 "abc",
-                "a@a.com");
+                "a@a.com",
+                RestEnvironment.OutlookProd);
 
             Message msg = new Message(service);
             msg.Subject = "testsubject";
@@ -220,6 +219,8 @@
             Dictionary<string, object> parameters =  new Dictionary<string, object>();
             parameters.Add("comment", "replyToEmail");
             service.ReplyEmail(msg, parameters);
+
+            HttpWebRequestClientProvider.Instance.Reset();
         }
 
         [TestMethod]
@@ -230,28 +231,34 @@
 
             mock.InlineAssertation = (httpRequestMessage) =>
             {
-                MockMessageCommentModel messageCommentModel = Deserializer.Instance.Deserialize<MockMessageCommentModel>(httpRequestMessage.Content.ReadAsStringAsync().Result, null);
+                Dictionary<string, object> forward = Deserializer.Instance.Deserialize<Dictionary<string, object>>(httpRequestMessage.Content.ReadAsStringAsync().Result, null);
                 Assert.AreEqual(
                     "forwardEmail",
-                    messageCommentModel.Comment);
+                    forward["Comment"]);
 
-                Uri requestUri = new Uri("https://Microsoft.OutlookServices.microsoft.com/beta/users/a@a.com/messages/message-id/forward");
+                Uri requestUri = new Uri("https://outlook.office365.com/api/v2.0/users/a@a.com/messages/message-id/forward");
                 Assert.AreEqual(
                     requestUri,
                     httpRequestMessage.RequestUri);
 
+                
+
+                List<Recipient> recipients =
+                    Deserializer.Instance.Deserialize<List<Recipient>>(forward["ToRecipients"].ToString(), null);
+
                 Assert.AreEqual(
                     "rec1@a.com",
-                    messageCommentModel.Message.ToRecipients[0].EmailAddress.Address);
+                    recipients[0].EmailAddress.Address);
 
                 Assert.AreEqual(
                     "rec2@a.com",
-                    messageCommentModel.Message.ToRecipients[1].EmailAddress.Address);
+                    recipients[1].EmailAddress.Address);
             };
 
             ExchangeService service = new ExchangeService(
                 "abc",
-                "a@a.com");
+                "a@a.com",
+                RestEnvironment.OutlookProd);
 
             Message msg = new Message(service);
             msg.Subject = "testsubject";
@@ -298,6 +305,8 @@
             parameters.Add("comment", "forwardEmail");
             parameters.Add(nameof(toRecipients), toRecipients);
             service.ForwardEmail(msg, parameters);
+
+            HttpWebRequestClientProvider.Instance.Reset();
         }
 
         [TestMethod]
@@ -348,28 +357,32 @@
 
             mock.InlineAssertation = (httpRequestMessage) =>
             {
-                MockMessageCommentModel messageCommentModel = Deserializer.Instance.Deserialize<MockMessageCommentModel>(httpRequestMessage.Content.ReadAsStringAsync().Result, null);
+                Dictionary<string, object> forward = Deserializer.Instance.Deserialize<Dictionary<string, object>> (httpRequestMessage.Content.ReadAsStringAsync().Result, null);
                 Assert.AreEqual(
                     "forwardEmail",
-                    messageCommentModel.Comment);
+                    forward["Comment"]);
 
-                Uri requestUri = new Uri("https://Microsoft.OutlookServices.microsoft.com/beta/users/a@a.com/messages/message-id/forward");
+                Uri requestUri = new Uri("https://outlook.office365.com/api/v2.0/users/a@a.com/messages/message-id/forward");
                 Assert.AreEqual(
                     requestUri,
                     httpRequestMessage.RequestUri);
 
+                List<Recipient> recipients =
+                    Deserializer.Instance.Deserialize<List<Recipient>>(forward["ToRecipients"].ToString(), null);
+
                 Assert.AreEqual(
                     "rec1@a.com",
-                    messageCommentModel.Message.ToRecipients[0].EmailAddress.Address);
+                    recipients[0].EmailAddress.Address);
 
                 Assert.AreEqual(
                     "rec2@a.com",
-                    messageCommentModel.Message.ToRecipients[1].EmailAddress.Address);
+                    recipients[1].EmailAddress.Address);
             };
 
             ExchangeService service = new ExchangeService(
                 "abc",
-                "a@a.com");
+                "a@a.com",
+                RestEnvironment.OutlookProd);
 
             Message msg = new Message(service);
             msg.Subject = "testsubject";
@@ -418,24 +431,26 @@
         [TestMethod]
         public void MoveMessageTest()
         {
+            HttpWebRequestClientProvider.Instance.EnterLock();
             MockHttpClient mock = new MockHttpClient(HttpStatusCode.OK, "");
             HttpWebRequestClientProvider.Instance.RegisterHttpClientProvider(mock.MockClient);
 
             mock.InlineAssertation = (httpRequestMessage) =>
             {
-                Uri requestUri = new Uri("https://Microsoft.OutlookServices.microsoft.com/beta/users/a@a.com/messages/message-id/move");
+                Uri requestUri = new Uri("https://outlook.office365.com/api/beta/users/a@a.com/messages/message-id/move");
                 Assert.AreEqual(
                     requestUri,
                     httpRequestMessage.RequestUri);
 
                 Assert.AreEqual(
-                    "{\"destinationId\":\"destinationFolder\"}",
+                    "{\"DestinationId\":\"destinationFolder\"}",
                     httpRequestMessage.Content.ReadAsStringAsync().Result);
             };
 
             ExchangeService service = new ExchangeService(
                 "abc",
-                "a@a.com");
+                "a@a.com",
+                RestEnvironment.OutlookBeta);
 
             Message msg = new Message(service);
             msg.Subject = "testsubject";
@@ -471,29 +486,33 @@
 
             msg.ResetChangeTracking();
             msg.Move("destinationFolder");
+
+            HttpWebRequestClientProvider.Instance.ExitLock();
         }
 
         [TestMethod]
         public void CopyMessageTest()
         {
+            HttpWebRequestClientProvider.Instance.EnterLock();
             MockHttpClient mock = new MockHttpClient(HttpStatusCode.OK, "");
             HttpWebRequestClientProvider.Instance.RegisterHttpClientProvider(mock.MockClient);
 
             mock.InlineAssertation = (httpRequestMessage) =>
             {
-                Uri requestUri = new Uri("https://Microsoft.OutlookServices.microsoft.com/beta/users/a@a.com/messages/message-id/copy");
+                Uri requestUri = new Uri("https://outlook.office365.com/api/beta/users/a@a.com/messages/message-id/copy");
                 Assert.AreEqual(
                     requestUri,
                     httpRequestMessage.RequestUri);
 
                 Assert.AreEqual(
-                    "{\"destinationId\":\"destinationFolder\"}",
+                    "{\"DestinationId\":\"destinationFolder\"}",
                     httpRequestMessage.Content.ReadAsStringAsync().Result);
             };
 
             ExchangeService service = new ExchangeService(
                 "abc",
-                "a@a.com");
+                "a@a.com",
+                RestEnvironment.OutlookBeta);
 
             Message msg = new Message(service);
             msg.Subject = "testsubject";
@@ -529,12 +548,19 @@
 
             msg.ResetChangeTracking();
             msg.Copy("destinationFolder");
+
+            HttpWebRequestClientProvider.Instance.Reset();
+            HttpWebRequestClientProvider.Instance.ExitLock();
         }
 
         [TestMethod]
         public void UserAgentTests()
         {
-            ExchangeService service = Helper.Service;
+            ExchangeService service = new ExchangeService(
+                "abc",
+                "a@a.com",
+                RestEnvironment.OutlookBeta);
+
             Assert.AreEqual(
                 "ExchangeRestClient", 
                 service.UserAgent);
@@ -558,7 +584,11 @@
         [TestMethod]
         public void TraceEnablementTests()
         {
-            ExchangeService service = Helper.Service;
+            ExchangeService service = new ExchangeService(
+                "abc",
+                "a@a.com",
+                RestEnvironment.OutlookBeta);
+
             Assert.IsFalse(service.TraceEnabled);
             Assert.IsTrue(service.TraceListener != null);
             Assert.IsTrue(service.TraceListener.GetType() == typeof(DefaultTraceListener));
@@ -574,7 +604,11 @@
         [TestMethod]
         public void MailboxIdChange()
         {
-            ExchangeService service = Helper.Service;
+            ExchangeService service = new ExchangeService(
+                "abc",
+                "a@a.com",
+                RestEnvironment.OutlookBeta);
+
             Assert.AreEqual(
                 "a@a.com", 
                 service.MailboxId.Id);
@@ -593,7 +627,7 @@
 
             mock.InlineAssertation = (httpRequestMessage) =>
             {
-                Uri requestUri = new Uri("https://Microsoft.OutlookServices.microsoft.com/beta/users/b@b.com/messages/abcdef");
+                Uri requestUri = new Uri("https://outlook.office365.com/api/beta/users/b@b.com/messages/abcdef");
                 Assert.AreEqual(
                     requestUri, 
                     httpRequestMessage.RequestUri);
@@ -607,7 +641,11 @@
                 
             };
 
-            ExchangeService service = Helper.Service;
+            ExchangeService service = new ExchangeService(
+                "abc",
+                "a@a.com",
+                RestEnvironment.OutlookBeta);
+
             ItemId messageId = new MessageId("abcdef", "b@b.com");
 
             service.DeleteItem(messageId);
@@ -635,7 +673,11 @@
 
             };
 
-            ExchangeService service = Helper.Service;
+            ExchangeService service = new ExchangeService(
+                "abc",
+                "a@a.com",
+                RestEnvironment.OutlookBeta);
+
             FolderId folderId = new FolderId("gggg");
 
             service.DeleteFolder(folderId);
@@ -651,7 +693,7 @@
             mock.InlineAssertation = (httpRequestMessage) =>
             {
                 Uri requestUri = new Uri(
-                    "https://Microsoft.OutlookServices.microsoft.com/beta/users/a@a.com/mailfolders/MyTestFolder/childfolders?$filter=DisplayName%20eq%20'subFolder'&$top=10&$skip=0");
+                    "https://outlook.office365.com/api/beta/users/a@a.com/mailfolders/MyTestFolder/childfolders?$filter=DisplayName%20eq%20'subFolder'&$top=10&$skip=0");
                 Assert.AreEqual(
                     requestUri,
                     httpRequestMessage.RequestUri);
@@ -660,7 +702,10 @@
 
             };
 
-            ExchangeService service = Helper.Service;
+            ExchangeService service = new ExchangeService(
+                "abc",
+                "a@a.com",
+                RestEnvironment.OutlookBeta);
 
             service.FindFolders(
                 new FolderId("MyTestFolder"),
@@ -693,7 +738,11 @@
                 Assert.IsNull(calEvent.Subject);
             };
 
-            ExchangeService service = Helper.Service;
+            ExchangeService service = new ExchangeService(
+                "abc",
+                "a@a.com",
+                RestEnvironment.OutlookBeta);
+
             Event calendarEvent = new Event();
             calendarEvent.Service = service;
             calendarEvent.IsReminderOn = false;
@@ -724,7 +773,7 @@
                     HttpWebRequest.PATCH,
                     httpRequestMessage.Method);
 
-                Uri requestUri = new Uri("https://Microsoft.OutlookServices.microsoft.com/beta/users/a@a.com/events/AABB==");
+                Uri requestUri = new Uri("https://outlook.office365.com/api/v2.0/users/a@a.com/events/AABB==");
                 Assert.AreEqual(
                     requestUri, 
                     httpRequestMessage.RequestUri);
@@ -738,7 +787,11 @@
                 Assert.IsNull(calEvent.Subject);
             };
 
-            ExchangeService service = Helper.Service;
+            ExchangeService service = new ExchangeService(
+                "abc",
+                "a@a.com",
+                RestEnvironment.OutlookProd);
+
             Event calendarEvent = new Event();
             calendarEvent.Service = service;
             calendarEvent.IsReminderOn = false;
@@ -775,7 +828,7 @@
                     HttpWebRequest.PATCH, 
                     httpRequestMessage.Method);
 
-                Uri requestUri = new Uri("https://Microsoft.OutlookServices.microsoft.com/beta/users/a@a.com/mailfolders/BBCC==");
+                Uri requestUri = new Uri("https://outlook.office365.com/api/beta/users/a@a.com/mailfolders/BBCC==");
                 Assert.AreEqual(
                     requestUri,
                     httpRequestMessage.RequestUri);
@@ -790,7 +843,11 @@
                     "FolderAbc");
             };
 
-            ExchangeService service = Helper.Service;
+            ExchangeService service = new ExchangeService(
+                "abc",
+                "a@a.com",
+                RestEnvironment.OutlookBeta);
+
             MailFolder mailFolder = new MailFolder();
             mailFolder.MailboxId = service.MailboxId;
             mailFolder.Service = service;
@@ -827,18 +884,15 @@
                 }
             };
 
-            ExchangeService service = Helper.Service;
+            ExchangeService service = new ExchangeService(
+                "abc",
+                "a@a.com",
+                RestEnvironment.OutlookBeta);
+
             service.UserAgent = "Tst";
             service.GetInboxRules();
 
             HttpWebRequestClientProvider.Instance.Reset();
-        }
-
-        internal class MockMessageCommentModel
-        {
-            public Message Message { get; set; }
-
-            public string Comment { get; set; }
         }
     }
 }

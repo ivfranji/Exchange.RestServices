@@ -51,7 +51,7 @@
         private bool IsDeleteChange()
         {
             // Only Id will be available. 
-            return this.Item.GetChangedProperties().Count == 1;
+            return this.Item.GetChangedPropertyNames().Count == 1;
         }
 
         /// <summary>
@@ -61,7 +61,7 @@
         private bool IsReadChange()
         {
             // 3 properties will be listed - Id, IsRead and ParentFolderId
-            return this.Item.GetChangedProperties().Count == 3;
+            return this.Item.GetChangedPropertyNames().Count == 3;
         }
     }
 

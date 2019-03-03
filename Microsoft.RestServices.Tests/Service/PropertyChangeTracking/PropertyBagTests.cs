@@ -21,7 +21,7 @@
             Assert.IsTrue(bag.IsNew);
 
             bag["Subject"] = "Test";
-            Assert.IsTrue(bag.GetChangedProperties().Count == 1);
+            Assert.IsTrue(bag.GetChangedPropertyNames().Count == 1);
             Assert.AreEqual("Test", bag["Subject"]);
 
             bag.Clear();
@@ -82,7 +82,7 @@
         {
             PropertyBag bag = new PropertyBag(new MessageObjectSchema());
 
-            IList<string> props = bag.GetChangedProperties();
+            IList<string> props = bag.GetChangedPropertyNames();
             Assert.AreEqual(
                 0,
                 props.Count);
@@ -94,7 +94,7 @@
                 Value = "Abc"
             });
 
-            props = bag.GetChangedProperties();
+            props = bag.GetChangedPropertyNames();
             Assert.AreEqual(
                 1,
                 props.Count);
@@ -104,7 +104,7 @@
         public void TestPropertyBagDefaultBehavior()
         {
             PropertyBag bag = new PropertyBag(new MessageObjectSchema());
-            IList<string> props = bag.GetChangedProperties();
+            IList<string> props = bag.GetChangedPropertyNames();
             Assert.AreEqual(
                 0,
                 props.Count);

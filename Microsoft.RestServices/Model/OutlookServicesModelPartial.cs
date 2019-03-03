@@ -77,9 +77,18 @@
         /// Get a list of changed properties.
         /// </summary>
         /// <returns></returns>
-        public IList<string> GetChangedProperties()
+        public IList<string> GetChangedPropertyNames()
         {
-            return this.propertyBag.GetChangedProperties();
+            return this.propertyBag.GetChangedPropertyNames();
+        }
+
+        /// <summary>
+        /// Get list of changed properties.
+        /// </summary>
+        /// <returns></returns>
+        public IList<PropertyDefinition> GetChangedProperies()
+        {
+            return this.propertyBag.GetChangedProperies();
         }
 
         /// <summary>
@@ -88,6 +97,16 @@
         /// <param name="key"></param>
         /// <returns></returns>
         public object this[string key]
+        {
+            get { return this.propertyBag[key]; }
+        }
+
+        /// <summary>
+        /// Indexer.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public object this[PropertyDefinition key]
         {
             get { return this.propertyBag[key]; }
         }
@@ -111,7 +130,7 @@
                     "Cannot perform update on newly created item. Sync item from server and try again.");
             }
 
-            if (this.propertyBag.GetChangedProperties().Count == 0)
+            if (this.propertyBag.GetChangedPropertyNames().Count == 0)
             {
                 throw new ArgumentException("No changed properties detected.");
             }
@@ -337,7 +356,7 @@
                     "Cannot perform update on newly created item. Sync item from server and try again.");
             }
 
-            if (this.propertyBag.GetChangedProperties().Count == 0)
+            if (this.propertyBag.GetChangedPropertyNames().Count == 0)
             {
                 throw new ArgumentException("No changed properties detected.");
             }
@@ -560,9 +579,18 @@
         /// Get changed properties.
         /// </summary>
         /// <returns></returns>
-        public IList<string> GetChangedProperties()
+        public IList<string> GetChangedPropertyNames()
         {
-            return this.propertyBag.GetChangedProperties();
+            return this.propertyBag.GetChangedPropertyNames();
+        }
+
+        /// <summary>
+        /// Get changed properties.
+        /// </summary>
+        /// <returns></returns>
+        public IList<PropertyDefinition> GetChangedProperies()
+        {
+            return this.propertyBag.GetChangedProperies();
         }
 
         /// <summary>
@@ -571,6 +599,16 @@
         /// <param name="key">Property key.</param>
         /// <returns></returns>
         public object this[string key]
+        {
+            get { return this.propertyBag[key]; }
+        }
+
+        /// <summary>
+        /// Property indexer.
+        /// </summary>
+        /// <param name="key">Property key.</param>
+        /// <returns></returns>
+        public object this[PropertyDefinition key]
         {
             get { return this.propertyBag[key]; }
         }
@@ -612,9 +650,18 @@
         /// Get changed properties.
         /// </summary>
         /// <returns></returns>
-        public IList<string> GetChangedProperties()
+        public IList<string> GetChangedPropertyNames()
         {
-            return this.propertyBag.GetChangedProperties();
+            return this.propertyBag.GetChangedPropertyNames();
+        }
+
+        /// <summary>
+        /// Get changed properties.
+        /// </summary>
+        /// <returns></returns>
+        public IList<PropertyDefinition> GetChangedProperies()
+        {
+            return this.propertyBag.GetChangedProperies();
         }
 
         /// <summary>
@@ -623,6 +670,16 @@
         /// <param name="key">Property key.</param>
         /// <returns></returns>
         public object this[string key]
+        {
+            get { return this.propertyBag[key]; }
+        }
+
+        /// <summary>
+        /// Property indexer.
+        /// </summary>
+        /// <param name="key">Property key.</param>
+        /// <returns></returns>
+        public object this[PropertyDefinition key]
         {
             get { return this.propertyBag[key]; }
         }

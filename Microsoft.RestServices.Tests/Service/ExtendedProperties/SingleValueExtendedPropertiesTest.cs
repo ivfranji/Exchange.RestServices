@@ -19,7 +19,7 @@
             ExpandQuery expand = new ExpandQuery($"singleValueExtendedProperties({filter.Query})");
 
             Assert.AreEqual(
-                "$expand=singleValueExtendedProperties($filter=Id eq '{String 0x4001001E}')",
+                "$expand=singleValueExtendedProperties($filter=PropertyId eq '{String 0x4001001E}')",
                 expand.Query);
         }
     }

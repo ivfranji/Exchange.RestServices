@@ -12,8 +12,11 @@
         public void TestSyncFolderItemsCollectionWithNullResponseCollection()
         {
             SyncFolderItemsCollection<Message> collection = new SyncFolderItemsCollection<Message>(
-                null, 
-                Helper.Service,
+                null,
+                new ExchangeService(
+                    "abc",
+                    "a@a.com",
+                    RestEnvironment.OutlookBeta),
                 null);
 
             Assert.IsTrue(collection.TotalCount == 0);

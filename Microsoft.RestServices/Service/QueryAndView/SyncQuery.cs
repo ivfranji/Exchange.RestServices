@@ -65,5 +65,8 @@
 
         /// <inheritdoc cref="ISyncQuery.SelectedProperties"/>
         public ISelectQuery SelectedProperties { get; set; }
+
+        /// <inheritdoc cref="ISyncQuery.ODataDeltaLink"/>
+        public string ODataDeltaLink { get; set; }
     }
 }

@@ -45,7 +45,7 @@
                 3421));
 
             Assert.AreEqual(
-                "$expand=SingleValueExtendedProperties($filter=Id eq 'String 0x0D5D')",
+                "$expand=SingleValueExtendedProperties($filter=PropertyId eq 'String 0x0D5D')",
                 messagePropertySet.ExpandQuery.Query);
 
             messagePropertySet = new MessagePropertySet();
@@ -54,7 +54,7 @@
 
             messagePropertySet.Add(new ExtendedPropertyDefinition(MapiPropertyType.StringArray, 3421));
             Assert.AreEqual(
-                "$expand=MultiValueExtendedProperties($filter=Id eq 'StringArray 0x0D5D')",
+                "$expand=MultiValueExtendedProperties($filter=PropertyId eq 'StringArray 0x0D5D')",
                 messagePropertySet.ExpandQuery.Query);
 
             messagePropertySet.Add(new ExtendedPropertyDefinition(
@@ -62,7 +62,7 @@
                 3421));
 
             Assert.AreEqual(
-                "$expand=SingleValueExtendedProperties($filter=Id eq 'String 0x0D5D'),MultiValueExtendedProperties($filter=Id eq 'StringArray 0x0D5D')",
+                "$expand=SingleValueExtendedProperties($filter=PropertyId eq 'String 0x0D5D'),MultiValueExtendedProperties($filter=PropertyId eq 'StringArray 0x0D5D')",
                 messagePropertySet.ExpandQuery.Query);
 
             messagePropertySet.Add(new ExtendedPropertyDefinition(
@@ -70,7 +70,7 @@
                 0x0E1F));
 
             Assert.AreEqual(
-                "$expand=SingleValueExtendedProperties($filter=Id eq 'String 0x0D5D' or Id eq 'Boolean 0x0E1F'),MultiValueExtendedProperties($filter=Id eq 'StringArray 0x0D5D')",
+                "$expand=SingleValueExtendedProperties($filter=PropertyId eq 'String 0x0D5D' or PropertyId eq 'Boolean 0x0E1F'),MultiValueExtendedProperties($filter=PropertyId eq 'StringArray 0x0D5D')",
                 messagePropertySet.ExpandQuery.Query);
         }
     }

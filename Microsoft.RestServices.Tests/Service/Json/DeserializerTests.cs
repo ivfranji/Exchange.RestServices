@@ -53,14 +53,13 @@
                       ""isRead"": ""true"",
                       ""attachments"": [
                         {
-                          ""@odata.type"": ""#Microsoft.OutlookServices.referenceAttachment"",
+                          ""@odata.type"": ""#Microsoft.OutlookServices.ReferenceAttachment"",
                           ""id"": ""referenceAttachment=="",
                           ""sourceUrl"": ""https://myweb.com""
                         },
                         {
                           ""contentBytes"": ""dGVzdCBjYXNlIHdvcmtz"",
-                          ""@odata.type"": ""#Microsoft.OutlookServices.fileAttachment"",
-                          ""lastModifiedDateTime"": ""0001-01-01T00:00:00+00:00"",
+                          ""@odata.type"": ""#Microsoft.OutlookServices.FileAttachment"",
                           ""contentType"": ""ct"",
                           ""size"": 0,
                           ""isInline"": false,
@@ -68,7 +67,7 @@
                           ""name"": ""test.txt""
                         },
                         {
-                          ""@odata.type"": ""#Microsoft.OutlookServices.itemAttachment"",
+                          ""@odata.type"": ""#Microsoft.OutlookServices.ItemAttachment"",
                           ""id"": ""itemAttachment=="",
                           ""item"":{
                             ""id"": ""attachmentitemId"",
@@ -133,18 +132,18 @@
         public void TestMessageWithEventAttachmentDeserialization()
         {
             string serializedMessage = @"{
-              ""@odata.type"": ""#Microsoft.OutlookServices.message"",
+              ""@odata.type"": ""#Microsoft.OutlookServices.Message"",
               ""subject"": ""message with attachs"",
               ""isRead"": ""true"",
               ""attachments"": [
                 {
-                  ""@odata.type"": ""#Microsoft.OutlookServices.itemAttachment"",
+                  ""@odata.type"": ""#Microsoft.OutlookServices.ItemAttachment"",
                   ""id"": ""itemAttachment=="",
                   ""item"":{
                     ""id"": ""attachmentitemId"",
                     ""changeKey"": ""ck=="",
                     ""subject"": ""attachment item subject"",
-                    ""@odata.type"": ""#Microsoft.OutlookServices.event"",
+                    ""@odata.type"": ""#Microsoft.OutlookServices.Event"",
                     ""attendees"": [
                       {
                         ""emailAddress"":{
@@ -162,10 +161,12 @@
                       ""ContentType"": ""Html""
                     },
                     ""start"":{
-                      ""dateTime"": ""2019-01-01T12:00:00""
+                      ""dateTime"": ""2019-01-01T12:00:00"",
+                      ""TimeZone"": ""Pacific Standard Time""
                     },
                     ""end"": {
-                      ""dateTime"": ""2019-01-01T4:00:00""
+                      ""dateTime"": ""2019-01-01T04:00:00"",
+                      ""TimeZone"": ""Pacific Standard Time""
                     }
                   }
                 }
