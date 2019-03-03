@@ -59,7 +59,6 @@
             };
 
             settings.Converters.Add(new AttachmentConverter());
-
             if (null != type)
             {
                 settings.Converters.Add(new ItemConverter(type));
@@ -149,12 +148,12 @@
             {
                 JToken jsonToken = JObject.ReadFrom(reader);
                 string currentAttachmentType = jsonToken["@odata.type"].ToString();
-                if (currentAttachmentType.EndsWith("Microsoft.OutlookServices.fileAttachment", StringComparison.OrdinalIgnoreCase))
+                if (currentAttachmentType.Equals(FileAttachmentObjectSchema.ODataType.DefaultValue))
                 {
                     return JsonConvert.DeserializeObject<FileAttachment>(jsonToken.ToString(), subClassConversionSettings);
                 }
 
-                if (currentAttachmentType.EndsWith("Microsoft.OutlookServices.itemAttachment", StringComparison.OrdinalIgnoreCase))
+                if (currentAttachmentType.Equals(ItemAttachmentObjectSchema.ODataType.DefaultValue))
                 {
                     // correct item attachment converter needs to be added.
                     JToken item = jsonToken["item"];
@@ -168,24 +167,29 @@
                         }
                         else
                         {
-                            if (itemType.EndsWith(typeof(Message).FullName, StringComparison.OrdinalIgnoreCase))
+                            if (itemType.Equals(MessageObjectSchema.ODataType.DefaultValue))
                             {
                                 this.subClassConversionSettings.Converters.Add(
                                     new ItemConverter(typeof(Message)));
                             }
 
-                            if (itemType.EndsWith(typeof(Event).FullName, StringComparison.OrdinalIgnoreCase))
+                            if (itemType.Equals(EventObjectSchema.ODataType.DefaultValue))
                             {
                                 this.subClassConversionSettings.Converters.Add(
                                     new ItemConverter(typeof(Event)));
                             }
                         }
                     }
+                    else
+                    {
+                        this.subClassConversionSettings.Converters.Add(
+                            new ItemConverter(typeof(Message)));
+                    }
 
                     return JsonConvert.DeserializeObject<ItemAttachment>(jsonToken.ToString(), subClassConversionSettings);
                 }
 
-                if (currentAttachmentType.EndsWith("Microsoft.OutlookServices.referenceAttachment", StringComparison.OrdinalIgnoreCase))
+                if (currentAttachmentType.Equals(ReferenceAttachmentObjectSchema.ODataType.DefaultValue))
                 {
                     return JsonConvert.DeserializeObject<ReferenceAttachment>(jsonToken.ToString(), subClassConversionSettings);
                 }

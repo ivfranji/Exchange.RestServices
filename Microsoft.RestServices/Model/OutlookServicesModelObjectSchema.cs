@@ -175,6 +175,11 @@ namespace Microsoft.OutlookServices
         /// </summary>
         public static PropertyDefinition Photos = new PropertyDefinition(nameof(Photos), typeof(IList<Photo>));
 
+
+        /// <summary>
+        /// ODataType
+        /// </summary>
+        public static PropertyDefinition ODataType = new PropertyDefinition("ODataType", typeof(string), "#Microsoft.OutlookServices.User");
     }
 
 
@@ -315,6 +320,11 @@ namespace Microsoft.OutlookServices
         /// </summary>
         public static PropertyDefinition RejectedSenders = new PropertyDefinition(nameof(RejectedSenders), typeof(IList<DirectoryObject>));
 
+
+        /// <summary>
+        /// ODataType
+        /// </summary>
+        public static PropertyDefinition ODataType = new PropertyDefinition("ODataType", typeof(string), "#Microsoft.OutlookServices.Group");
     }
 
 
@@ -367,6 +377,11 @@ namespace Microsoft.OutlookServices
         /// </summary>
         public static PropertyDefinition ResourceData = new PropertyDefinition(nameof(ResourceData), typeof(Entity));
 
+
+        /// <summary>
+        /// ODataType
+        /// </summary>
+        public static PropertyDefinition ODataType = new PropertyDefinition("ODataType", typeof(string), "#Microsoft.OutlookServices.Notification");
     }
 
 
@@ -413,6 +428,11 @@ namespace Microsoft.OutlookServices
         /// </summary>
         public static PropertyDefinition ClientState = new PropertyDefinition(nameof(ClientState), typeof(string));
 
+
+        /// <summary>
+        /// ODataType
+        /// </summary>
+        public static PropertyDefinition ODataType = new PropertyDefinition("ODataType", typeof(string), "#Microsoft.OutlookServices.PushSubscription");
     }
 
 
@@ -451,6 +471,11 @@ namespace Microsoft.OutlookServices
         /// </summary>
         public static PropertyDefinition TaskFolders = new PropertyDefinition(nameof(TaskFolders), typeof(IList<TaskFolder>));
 
+
+        /// <summary>
+        /// ODataType
+        /// </summary>
+        public static PropertyDefinition ODataType = new PropertyDefinition("ODataType", typeof(string), "#Microsoft.OutlookServices.TaskGroup");
     }
 
 
@@ -501,6 +526,11 @@ namespace Microsoft.OutlookServices
         /// </summary>
         public static PropertyDefinition MultiValueExtendedProperties = new PropertyDefinition(nameof(MultiValueExtendedProperties), typeof(IList<MultiValueLegacyExtendedProperty>));
 
+
+        /// <summary>
+        /// ODataType
+        /// </summary>
+        public static PropertyDefinition ODataType = new PropertyDefinition("ODataType", typeof(string), "#Microsoft.OutlookServices.TaskFolder");
     }
 
 
@@ -521,6 +551,11 @@ namespace Microsoft.OutlookServices
         /// </summary>
         public static PropertyDefinition PropertyId = new PropertyDefinition(nameof(PropertyId), typeof(string));
 
+
+        /// <summary>
+        /// ODataType
+        /// </summary>
+        public static PropertyDefinition ODataType = new PropertyDefinition("ODataType", typeof(string), "#Microsoft.OutlookServices.SingleValueLegacyExtendedProperty");
     }
 
 
@@ -541,6 +576,11 @@ namespace Microsoft.OutlookServices
         /// </summary>
         public static PropertyDefinition PropertyId = new PropertyDefinition(nameof(PropertyId), typeof(string));
 
+
+        /// <summary>
+        /// ODataType
+        /// </summary>
+        public static PropertyDefinition ODataType = new PropertyDefinition("ODataType", typeof(string), "#Microsoft.OutlookServices.MultiValueLegacyExtendedProperty");
     }
 
 
@@ -689,6 +729,11 @@ namespace Microsoft.OutlookServices
         /// </summary>
         public static PropertyDefinition Attachments = new PropertyDefinition(nameof(Attachments), typeof(IList<Attachment>));
 
+
+        /// <summary>
+        /// ODataType
+        /// </summary>
+        public static PropertyDefinition ODataType = new PropertyDefinition("ODataType", typeof(string), "#Microsoft.OutlookServices.Task");
     }
 
 
@@ -871,6 +916,11 @@ namespace Microsoft.OutlookServices
         /// </summary>
         public static PropertyDefinition Extensions = new PropertyDefinition(nameof(Extensions), typeof(IList<Extension>));
 
+
+        /// <summary>
+        /// ODataType
+        /// </summary>
+        public static PropertyDefinition ODataType = new PropertyDefinition("ODataType", typeof(string), "#Microsoft.OutlookServices.Message");
     }
 
 
@@ -891,6 +941,11 @@ namespace Microsoft.OutlookServices
         /// </summary>
         public static PropertyDefinition Event = new PropertyDefinition(nameof(Event), typeof(Event));
 
+
+        /// <summary>
+        /// ODataType
+        /// </summary>
+        public static PropertyDefinition ODataType = new PropertyDefinition("ODataType", typeof(string), "#Microsoft.OutlookServices.EventMessage");
     }
 
 
@@ -959,6 +1014,11 @@ namespace Microsoft.OutlookServices
         /// </summary>
         public static PropertyDefinition ChildFolders = new PropertyDefinition(nameof(ChildFolders), typeof(IList<MailFolder>));
 
+
+        /// <summary>
+        /// ODataType
+        /// </summary>
+        public static PropertyDefinition ODataType = new PropertyDefinition("ODataType", typeof(string), "#Microsoft.OutlookServices.MailFolder");
     }
 
 
@@ -1033,6 +1093,11 @@ namespace Microsoft.OutlookServices
         /// </summary>
         public static PropertyDefinition CalendarView = new PropertyDefinition(nameof(CalendarView), typeof(IList<Event>));
 
+
+        /// <summary>
+        /// ODataType
+        /// </summary>
+        public static PropertyDefinition ODataType = new PropertyDefinition("ODataType", typeof(string), "#Microsoft.OutlookServices.Calendar");
     }
 
 
@@ -1065,6 +1130,11 @@ namespace Microsoft.OutlookServices
         /// </summary>
         public static PropertyDefinition Calendars = new PropertyDefinition(nameof(Calendars), typeof(IList<Calendar>));
 
+
+        /// <summary>
+        /// ODataType
+        /// </summary>
+        public static PropertyDefinition ODataType = new PropertyDefinition("ODataType", typeof(string), "#Microsoft.OutlookServices.CalendarGroup");
     }
 
 
@@ -1283,6 +1353,11 @@ namespace Microsoft.OutlookServices
         /// </summary>
         public static PropertyDefinition Extensions = new PropertyDefinition(nameof(Extensions), typeof(IList<Extension>));
 
+
+        /// <summary>
+        /// ODataType
+        /// </summary>
+        public static PropertyDefinition ODataType = new PropertyDefinition("ODataType", typeof(string), "#Microsoft.OutlookServices.Event");
     }
 
 
@@ -1405,6 +1480,11 @@ namespace Microsoft.OutlookServices
         /// </summary>
         public static PropertyDefinition IMAddress = new PropertyDefinition(nameof(IMAddress), typeof(string));
 
+
+        /// <summary>
+        /// ODataType
+        /// </summary>
+        public static PropertyDefinition ODataType = new PropertyDefinition("ODataType", typeof(string), "#Microsoft.OutlookServices.Person");
     }
 
 
@@ -1635,6 +1715,11 @@ namespace Microsoft.OutlookServices
         /// </summary>
         public static PropertyDefinition Extensions = new PropertyDefinition(nameof(Extensions), typeof(IList<Extension>));
 
+
+        /// <summary>
+        /// ODataType
+        /// </summary>
+        public static PropertyDefinition ODataType = new PropertyDefinition("ODataType", typeof(string), "#Microsoft.OutlookServices.Contact");
     }
 
 
@@ -1679,6 +1764,11 @@ namespace Microsoft.OutlookServices
         /// </summary>
         public static PropertyDefinition ChildFolders = new PropertyDefinition(nameof(ChildFolders), typeof(IList<ContactFolder>));
 
+
+        /// <summary>
+        /// ODataType
+        /// </summary>
+        public static PropertyDefinition ODataType = new PropertyDefinition("ODataType", typeof(string), "#Microsoft.OutlookServices.ContactFolder");
     }
 
 
@@ -1699,6 +1789,11 @@ namespace Microsoft.OutlookServices
         /// </summary>
         public static PropertyDefinition Color = new PropertyDefinition(nameof(Color), typeof(CategoryColor));
 
+
+        /// <summary>
+        /// ODataType
+        /// </summary>
+        public static PropertyDefinition ODataType = new PropertyDefinition("ODataType", typeof(string), "#Microsoft.OutlookServices.OutlookCategory");
     }
 
 
@@ -1713,6 +1808,11 @@ namespace Microsoft.OutlookServices
         /// </summary>
         public static PropertyDefinition Overrides = new PropertyDefinition(nameof(Overrides), typeof(IList<InferenceClassificationOverride>));
 
+
+        /// <summary>
+        /// ODataType
+        /// </summary>
+        public static PropertyDefinition ODataType = new PropertyDefinition("ODataType", typeof(string), "#Microsoft.OutlookServices.InferenceClassification");
     }
 
 
@@ -1733,6 +1833,11 @@ namespace Microsoft.OutlookServices
         /// </summary>
         public static PropertyDefinition Width = new PropertyDefinition(nameof(Width), typeof(int));
 
+
+        /// <summary>
+        /// ODataType
+        /// </summary>
+        public static PropertyDefinition ODataType = new PropertyDefinition("ODataType", typeof(string), "#Microsoft.OutlookServices.Photo");
     }
 
 
@@ -1795,6 +1900,11 @@ namespace Microsoft.OutlookServices
         /// </summary>
         public static PropertyDefinition Posts = new PropertyDefinition(nameof(Posts), typeof(IList<Post>));
 
+
+        /// <summary>
+        /// ODataType
+        /// </summary>
+        public static PropertyDefinition ODataType = new PropertyDefinition("ODataType", typeof(string), "#Microsoft.OutlookServices.ConversationThread");
     }
 
 
@@ -1839,6 +1949,11 @@ namespace Microsoft.OutlookServices
         /// </summary>
         public static PropertyDefinition Threads = new PropertyDefinition(nameof(Threads), typeof(IList<ConversationThread>));
 
+
+        /// <summary>
+        /// ODataType
+        /// </summary>
+        public static PropertyDefinition ODataType = new PropertyDefinition("ODataType", typeof(string), "#Microsoft.OutlookServices.Conversation");
     }
 
 
@@ -1903,6 +2018,11 @@ namespace Microsoft.OutlookServices
         /// </summary>
         public static PropertyDefinition ContentBytes = new PropertyDefinition(nameof(ContentBytes), typeof(string));
 
+
+        /// <summary>
+        /// ODataType
+        /// </summary>
+        public static PropertyDefinition ODataType = new PropertyDefinition("ODataType", typeof(string), "#Microsoft.OutlookServices.FileAttachment");
     }
 
 
@@ -1917,6 +2037,11 @@ namespace Microsoft.OutlookServices
         /// </summary>
         public static PropertyDefinition Item = new PropertyDefinition(nameof(Item), typeof(Item));
 
+
+        /// <summary>
+        /// ODataType
+        /// </summary>
+        public static PropertyDefinition ODataType = new PropertyDefinition("ODataType", typeof(string), "#Microsoft.OutlookServices.ItemAttachment");
     }
 
 
@@ -1961,6 +2086,11 @@ namespace Microsoft.OutlookServices
         /// </summary>
         public static PropertyDefinition IsFolder = new PropertyDefinition(nameof(IsFolder), typeof(bool));
 
+
+        /// <summary>
+        /// ODataType
+        /// </summary>
+        public static PropertyDefinition ODataType = new PropertyDefinition("ODataType", typeof(string), "#Microsoft.OutlookServices.ReferenceAttachment");
     }
 
 
@@ -2017,6 +2147,11 @@ namespace Microsoft.OutlookServices
         /// </summary>
         public static PropertyDefinition IsReadOnly = new PropertyDefinition(nameof(IsReadOnly), typeof(bool));
 
+
+        /// <summary>
+        /// ODataType
+        /// </summary>
+        public static PropertyDefinition ODataType = new PropertyDefinition("ODataType", typeof(string), "#Microsoft.OutlookServices.MessageRule");
     }
 
 
@@ -2037,6 +2172,11 @@ namespace Microsoft.OutlookServices
         /// </summary>
         public static PropertyDefinition SenderEmailAddress = new PropertyDefinition(nameof(SenderEmailAddress), typeof(EmailAddress));
 
+
+        /// <summary>
+        /// ODataType
+        /// </summary>
+        public static PropertyDefinition ODataType = new PropertyDefinition("ODataType", typeof(string), "#Microsoft.OutlookServices.InferenceClassificationOverride");
     }
 
 
@@ -2129,6 +2269,11 @@ namespace Microsoft.OutlookServices
         /// </summary>
         public static PropertyDefinition Attachments = new PropertyDefinition(nameof(Attachments), typeof(IList<Attachment>));
 
+
+        /// <summary>
+        /// ODataType
+        /// </summary>
+        public static PropertyDefinition ODataType = new PropertyDefinition("ODataType", typeof(string), "#Microsoft.OutlookServices.Post");
     }
 
 
@@ -2151,6 +2296,11 @@ namespace Microsoft.OutlookServices
         /// </summary>
         public static PropertyDefinition ExtensionName = new PropertyDefinition(nameof(ExtensionName), typeof(string));
 
+
+        /// <summary>
+        /// ODataType
+        /// </summary>
+        public static PropertyDefinition ODataType = new PropertyDefinition("ODataType", typeof(string), "#Microsoft.OutlookServices.OpenTypeExtension");
     }
 
 }

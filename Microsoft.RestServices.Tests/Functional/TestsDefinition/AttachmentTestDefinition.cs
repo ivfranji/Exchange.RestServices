@@ -51,35 +51,27 @@
 
             ItemAttachment attach = new ItemAttachment()
             {
-                Name = "Event Item",
-                Item = new Event()
+                Name = "Attached message",
+                Item = new Message()
                 {
-                    Attendees = new List<Attendee>()
-                    {
-                        new Attendee()
-                        {
-                            EmailAddress = new EmailAddress() { Address = "attendee1@t.com" }
-                        }
-                    },
                     Body = new ItemBody()
                     {
                         ContentType = BodyType.HTML,
                         Content = "Lets meet up"
                     },
-
-                    Start = new DateTimeTimeZone()
+                    ToRecipients = new List<Recipient>()
                     {
-                        DateTime = startTime,
-                        TimeZone = timeZone
-                    },
-
-                    End = new DateTimeTimeZone()
-                    {
-                        DateTime = endTime,
-                        TimeZone = timeZone
+                        new Recipient()
+                        {
+                            EmailAddress = new EmailAddress()
+                            {
+                                Address = "a@a.com"
+                            }
+                        }
                     }
                 }
             };
+
             msg.Attachments.Add(attach);
             msg.Save(WellKnownFolderName.Inbox);
 
@@ -94,21 +86,12 @@
                 attachment, 
                 typeof(ItemAttachment));
 
+            attachment = exchangeService.GetAttachment(attachId,
+                new ExpandQuery("Microsoft.OutlookServices.ItemAttachment/Item"));
+
             ItemAttachment itemAttachment = (ItemAttachment) attachment;
-
-            // TODO: Expand items.
-            //Assert.IsInstanceOfType(
-            //    itemAttachment.Item,
-            //    typeof(Event));
-
-            //Event attachedEvent = (Event) itemAttachment.Item;
-            //Assert.AreEqual(
-            //    startTime,
-            //    attachedEvent.Start.DateTime);
-
-            //Assert.AreEqual(
-            //    endTime,
-            //    attachedEvent.End.DateTime);
+            Assert.IsNotNull(itemAttachment.Item);
+            Assert.IsInstanceOfType(itemAttachment.Item, typeof(Message));
         }
     }
 }

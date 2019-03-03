@@ -48,7 +48,7 @@
         {
             string serializedMessage = @"
                 {
-                      ""@odata.type"": ""#Microsoft.OutlookServices.message"",
+                      ""@odata.type"": ""#Microsoft.OutlookServices.Message"",
                       ""subject"": ""message with attachs"",
                       ""isRead"": ""true"",
                       ""attachments"": [
@@ -74,7 +74,7 @@
                             ""changeKey"": ""ck=="",
                             ""subject"": ""attachment item subject"",
                             ""isRead"": ""true"",
-                            ""@odata.type"": ""#Microsoft.OutlookServices.message""
+                            ""@odata.type"": ""#Microsoft.OutlookServices.Message""
                           }
                         }
                     ]

@@ -749,7 +749,7 @@
             return response?.Value;
         }
 
-        public Attachment GetAttachment(AttachmentId attachmentId)
+        public Attachment GetAttachment(AttachmentId attachmentId, IExpandQuery expandQuery = null)
         {
             ArgumentValidator.ThrowIfNull(
                 attachmentId,
@@ -760,6 +760,11 @@
                 (httpRestUrl) =>
                 {
                     httpRestUrl.RelativePath = $"{attachmentId.IdPath}";
+                    if (null != expandQuery)
+                    {
+                        httpRestUrl.Query = expandQuery;
+                    }
+
                     this.EnsureCorrectEndpoint(
                         httpRestUrl,
                         attachmentId);

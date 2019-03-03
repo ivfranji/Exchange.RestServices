@@ -277,6 +277,17 @@ namespace Microsoft.OutlookServices
         }
 
         /// <summary>
+        /// OData Type
+        /// </summary>
+        [JsonProperty("@odata.type")]
+        public string ODataType
+        {
+            get { return (string)this.propertyBag[UserObjectSchema.ODataType]; }
+            internal set { }
+        }
+
+
+        /// <summary>
         /// SendMail
         /// </summary>
         public void SendMail(Message message, bool saveToSentItems)
@@ -590,6 +601,17 @@ namespace Microsoft.OutlookServices
         }
 
         /// <summary>
+        /// OData Type
+        /// </summary>
+        [JsonProperty("@odata.type")]
+        public string ODataType
+        {
+            get { return (string)this.propertyBag[GroupObjectSchema.ODataType]; }
+            internal set { }
+        }
+
+
+        /// <summary>
         /// SubscribeByMail
         /// </summary>
         public void SubscribeByMail()
@@ -725,6 +747,17 @@ namespace Microsoft.OutlookServices
             get { return (Entity) this.propertyBag[NotificationObjectSchema.ResourceData]; }
             set { this.propertyBag[NotificationObjectSchema.ResourceData] = value; }
         }
+
+        /// <summary>
+        /// OData Type
+        /// </summary>
+        [JsonProperty("@odata.type")]
+        public string ODataType
+        {
+            get { return (string)this.propertyBag[NotificationObjectSchema.ODataType]; }
+            internal set { }
+        }
+
     }
 
 
@@ -791,6 +824,17 @@ namespace Microsoft.OutlookServices
             get { return (string) this.propertyBag[PushSubscriptionObjectSchema.ClientState]; }
             set { this.propertyBag[PushSubscriptionObjectSchema.ClientState] = value; }
         }
+
+        /// <summary>
+        /// OData Type
+        /// </summary>
+        [JsonProperty("@odata.type")]
+        public string ODataType
+        {
+            get { return (string)this.propertyBag[PushSubscriptionObjectSchema.ODataType]; }
+            internal set { }
+        }
+
     }
 
 
@@ -849,6 +893,17 @@ namespace Microsoft.OutlookServices
             get { return (IList<TaskFolder>) this.propertyBag[TaskGroupObjectSchema.TaskFolders]; }
             set { this.propertyBag[TaskGroupObjectSchema.TaskFolders] = value; }
         }
+
+        /// <summary>
+        /// OData Type
+        /// </summary>
+        [JsonProperty("@odata.type")]
+        public string ODataType
+        {
+            get { return (string)this.propertyBag[TaskGroupObjectSchema.ODataType]; }
+            internal set { }
+        }
+
     }
 
 
@@ -927,6 +982,17 @@ namespace Microsoft.OutlookServices
             get { return (IList<MultiValueLegacyExtendedProperty>) this.propertyBag[TaskFolderObjectSchema.MultiValueExtendedProperties]; }
             set { this.propertyBag[TaskFolderObjectSchema.MultiValueExtendedProperties] = value; }
         }
+
+        /// <summary>
+        /// OData Type
+        /// </summary>
+        [JsonProperty("@odata.type")]
+        public string ODataType
+        {
+            get { return (string)this.propertyBag[TaskFolderObjectSchema.ODataType]; }
+            internal set { }
+        }
+
     }
 
 
@@ -955,6 +1021,17 @@ namespace Microsoft.OutlookServices
             get { return (string) this.propertyBag[SingleValueLegacyExtendedPropertyObjectSchema.PropertyId]; }
             set { this.propertyBag[SingleValueLegacyExtendedPropertyObjectSchema.PropertyId] = value; }
         }
+
+        /// <summary>
+        /// OData Type
+        /// </summary>
+        [JsonProperty("@odata.type")]
+        public string ODataType
+        {
+            get { return (string)this.propertyBag[SingleValueLegacyExtendedPropertyObjectSchema.ODataType]; }
+            internal set { }
+        }
+
     }
 
 
@@ -983,6 +1060,17 @@ namespace Microsoft.OutlookServices
             get { return (string) this.propertyBag[MultiValueLegacyExtendedPropertyObjectSchema.PropertyId]; }
             set { this.propertyBag[MultiValueLegacyExtendedPropertyObjectSchema.PropertyId] = value; }
         }
+
+        /// <summary>
+        /// OData Type
+        /// </summary>
+        [JsonProperty("@odata.type")]
+        public string ODataType
+        {
+            get { return (string)this.propertyBag[MultiValueLegacyExtendedPropertyObjectSchema.ODataType]; }
+            internal set { }
+        }
+
     }
 
 
@@ -1219,6 +1307,17 @@ namespace Microsoft.OutlookServices
             get { return (IList<Attachment>) this.propertyBag[TaskObjectSchema.Attachments]; }
             set { this.propertyBag[TaskObjectSchema.Attachments] = value; }
         }
+
+        /// <summary>
+        /// OData Type
+        /// </summary>
+        [JsonProperty("@odata.type")]
+        public string ODataType
+        {
+            get { return (string)this.propertyBag[TaskObjectSchema.ODataType]; }
+            internal set { }
+        }
+
 
         /// <summary>
         /// Complete
@@ -1529,6 +1628,17 @@ namespace Microsoft.OutlookServices
         }
 
         /// <summary>
+        /// OData Type
+        /// </summary>
+        [JsonProperty("@odata.type")]
+        public string ODataType
+        {
+            get { return (string)this.propertyBag[MessageObjectSchema.ODataType]; }
+            internal set { }
+        }
+
+
+        /// <summary>
         /// CreateReply
         /// </summary>
         public Message CreateReply()
@@ -1651,6 +1761,17 @@ namespace Microsoft.OutlookServices
             get { return (Event) this.propertyBag[EventMessageObjectSchema.Event]; }
             set { this.propertyBag[EventMessageObjectSchema.Event] = value; }
         }
+
+        /// <summary>
+        /// OData Type
+        /// </summary>
+        [JsonProperty("@odata.type")]
+        public string ODataType
+        {
+            get { return (string)this.propertyBag[EventMessageObjectSchema.ODataType]; }
+            internal set { }
+        }
+
     }
 
 
@@ -1759,6 +1880,17 @@ namespace Microsoft.OutlookServices
             get { return (IList<MailFolder>) this.propertyBag[MailFolderObjectSchema.ChildFolders]; }
             set { this.propertyBag[MailFolderObjectSchema.ChildFolders] = value; }
         }
+
+        /// <summary>
+        /// OData Type
+        /// </summary>
+        [JsonProperty("@odata.type")]
+        public string ODataType
+        {
+            get { return (string)this.propertyBag[MailFolderObjectSchema.ODataType]; }
+            internal set { }
+        }
+
 
         /// <summary>
         /// Copy
@@ -1899,6 +2031,17 @@ namespace Microsoft.OutlookServices
             get { return (IList<Event>) this.propertyBag[CalendarObjectSchema.CalendarView]; }
             set { this.propertyBag[CalendarObjectSchema.CalendarView] = value; }
         }
+
+        /// <summary>
+        /// OData Type
+        /// </summary>
+        [JsonProperty("@odata.type")]
+        public string ODataType
+        {
+            get { return (string)this.propertyBag[CalendarObjectSchema.ODataType]; }
+            internal set { }
+        }
+
     }
 
 
@@ -1947,6 +2090,17 @@ namespace Microsoft.OutlookServices
             get { return (IList<Calendar>) this.propertyBag[CalendarGroupObjectSchema.Calendars]; }
             set { this.propertyBag[CalendarGroupObjectSchema.Calendars] = value; }
         }
+
+        /// <summary>
+        /// OData Type
+        /// </summary>
+        [JsonProperty("@odata.type")]
+        public string ODataType
+        {
+            get { return (string)this.propertyBag[CalendarGroupObjectSchema.ODataType]; }
+            internal set { }
+        }
+
     }
 
 
@@ -2307,6 +2461,17 @@ namespace Microsoft.OutlookServices
         }
 
         /// <summary>
+        /// OData Type
+        /// </summary>
+        [JsonProperty("@odata.type")]
+        public string ODataType
+        {
+            get { return (string)this.propertyBag[EventObjectSchema.ODataType]; }
+            internal set { }
+        }
+
+
+        /// <summary>
         /// DismissReminder
         /// </summary>
         public void DismissReminder()
@@ -2560,6 +2725,17 @@ namespace Microsoft.OutlookServices
             get { return (string) this.propertyBag[PersonObjectSchema.IMAddress]; }
             set { this.propertyBag[PersonObjectSchema.IMAddress] = value; }
         }
+
+        /// <summary>
+        /// OData Type
+        /// </summary>
+        [JsonProperty("@odata.type")]
+        public string ODataType
+        {
+            get { return (string)this.propertyBag[PersonObjectSchema.ODataType]; }
+            internal set { }
+        }
+
     }
 
 
@@ -2938,6 +3114,17 @@ namespace Microsoft.OutlookServices
             get { return (IList<Extension>) this.propertyBag[ContactObjectSchema.Extensions]; }
             set { this.propertyBag[ContactObjectSchema.Extensions] = value; }
         }
+
+        /// <summary>
+        /// OData Type
+        /// </summary>
+        [JsonProperty("@odata.type")]
+        public string ODataType
+        {
+            get { return (string)this.propertyBag[ContactObjectSchema.ODataType]; }
+            internal set { }
+        }
+
     }
 
 
@@ -3006,6 +3193,17 @@ namespace Microsoft.OutlookServices
             get { return (IList<ContactFolder>) this.propertyBag[ContactFolderObjectSchema.ChildFolders]; }
             set { this.propertyBag[ContactFolderObjectSchema.ChildFolders] = value; }
         }
+
+        /// <summary>
+        /// OData Type
+        /// </summary>
+        [JsonProperty("@odata.type")]
+        public string ODataType
+        {
+            get { return (string)this.propertyBag[ContactFolderObjectSchema.ODataType]; }
+            internal set { }
+        }
+
     }
 
 
@@ -3034,6 +3232,17 @@ namespace Microsoft.OutlookServices
             get { return (CategoryColor) this.propertyBag[OutlookCategoryObjectSchema.Color]; }
             set { this.propertyBag[OutlookCategoryObjectSchema.Color] = value; }
         }
+
+        /// <summary>
+        /// OData Type
+        /// </summary>
+        [JsonProperty("@odata.type")]
+        public string ODataType
+        {
+            get { return (string)this.propertyBag[OutlookCategoryObjectSchema.ODataType]; }
+            internal set { }
+        }
+
     }
 
 
@@ -3052,6 +3261,17 @@ namespace Microsoft.OutlookServices
             get { return (IList<InferenceClassificationOverride>) this.propertyBag[InferenceClassificationObjectSchema.Overrides]; }
             set { this.propertyBag[InferenceClassificationObjectSchema.Overrides] = value; }
         }
+
+        /// <summary>
+        /// OData Type
+        /// </summary>
+        [JsonProperty("@odata.type")]
+        public string ODataType
+        {
+            get { return (string)this.propertyBag[InferenceClassificationObjectSchema.ODataType]; }
+            internal set { }
+        }
+
     }
 
 
@@ -3080,6 +3300,17 @@ namespace Microsoft.OutlookServices
             get { return (int) this.propertyBag[PhotoObjectSchema.Width]; }
             set { this.propertyBag[PhotoObjectSchema.Width] = value; }
         }
+
+        /// <summary>
+        /// OData Type
+        /// </summary>
+        [JsonProperty("@odata.type")]
+        public string ODataType
+        {
+            get { return (string)this.propertyBag[PhotoObjectSchema.ODataType]; }
+            internal set { }
+        }
+
     }
 
 
@@ -3180,6 +3411,17 @@ namespace Microsoft.OutlookServices
         }
 
         /// <summary>
+        /// OData Type
+        /// </summary>
+        [JsonProperty("@odata.type")]
+        public string ODataType
+        {
+            get { return (string)this.propertyBag[ConversationThreadObjectSchema.ODataType]; }
+            internal set { }
+        }
+
+
+        /// <summary>
         /// Reply
         /// </summary>
         public void Reply(Post post)
@@ -3257,6 +3499,17 @@ namespace Microsoft.OutlookServices
             get { return (IList<ConversationThread>) this.propertyBag[ConversationObjectSchema.Threads]; }
             set { this.propertyBag[ConversationObjectSchema.Threads] = value; }
         }
+
+        /// <summary>
+        /// OData Type
+        /// </summary>
+        [JsonProperty("@odata.type")]
+        public string ODataType
+        {
+            get { return (string)this.propertyBag[ConversationObjectSchema.ODataType]; }
+            internal set { }
+        }
+
     }
 
 
@@ -3353,6 +3606,17 @@ namespace Microsoft.OutlookServices
             get { return (string) this.propertyBag[FileAttachmentObjectSchema.ContentBytes]; }
             set { this.propertyBag[FileAttachmentObjectSchema.ContentBytes] = value; }
         }
+
+        /// <summary>
+        /// OData Type
+        /// </summary>
+        [JsonProperty("@odata.type")]
+        public string ODataType
+        {
+            get { return (string)this.propertyBag[FileAttachmentObjectSchema.ODataType]; }
+            internal set { }
+        }
+
     }
 
 
@@ -3371,6 +3635,17 @@ namespace Microsoft.OutlookServices
             get { return (Item) this.propertyBag[ItemAttachmentObjectSchema.Item]; }
             set { this.propertyBag[ItemAttachmentObjectSchema.Item] = value; }
         }
+
+        /// <summary>
+        /// OData Type
+        /// </summary>
+        [JsonProperty("@odata.type")]
+        public string ODataType
+        {
+            get { return (string)this.propertyBag[ItemAttachmentObjectSchema.ODataType]; }
+            internal set { }
+        }
+
     }
 
 
@@ -3439,6 +3714,17 @@ namespace Microsoft.OutlookServices
             get { return (bool) this.propertyBag[ReferenceAttachmentObjectSchema.IsFolder]; }
             set { this.propertyBag[ReferenceAttachmentObjectSchema.IsFolder] = value; }
         }
+
+        /// <summary>
+        /// OData Type
+        /// </summary>
+        [JsonProperty("@odata.type")]
+        public string ODataType
+        {
+            get { return (string)this.propertyBag[ReferenceAttachmentObjectSchema.ODataType]; }
+            internal set { }
+        }
+
     }
 
 
@@ -3527,6 +3813,17 @@ namespace Microsoft.OutlookServices
             get { return (bool) this.propertyBag[MessageRuleObjectSchema.IsReadOnly]; }
             set { this.propertyBag[MessageRuleObjectSchema.IsReadOnly] = value; }
         }
+
+        /// <summary>
+        /// OData Type
+        /// </summary>
+        [JsonProperty("@odata.type")]
+        public string ODataType
+        {
+            get { return (string)this.propertyBag[MessageRuleObjectSchema.ODataType]; }
+            internal set { }
+        }
+
     }
 
 
@@ -3555,6 +3852,17 @@ namespace Microsoft.OutlookServices
             get { return (EmailAddress) this.propertyBag[InferenceClassificationOverrideObjectSchema.SenderEmailAddress]; }
             set { this.propertyBag[InferenceClassificationOverrideObjectSchema.SenderEmailAddress] = value; }
         }
+
+        /// <summary>
+        /// OData Type
+        /// </summary>
+        [JsonProperty("@odata.type")]
+        public string ODataType
+        {
+            get { return (string)this.propertyBag[InferenceClassificationOverrideObjectSchema.ODataType]; }
+            internal set { }
+        }
+
     }
 
 
@@ -3705,6 +4013,17 @@ namespace Microsoft.OutlookServices
         }
 
         /// <summary>
+        /// OData Type
+        /// </summary>
+        [JsonProperty("@odata.type")]
+        public string ODataType
+        {
+            get { return (string)this.propertyBag[PostObjectSchema.ODataType]; }
+            internal set { }
+        }
+
+
+        /// <summary>
         /// Reply
         /// </summary>
         public void Reply()
@@ -3751,6 +4070,17 @@ namespace Microsoft.OutlookServices
             get { return (string) this.propertyBag[OpenTypeExtensionObjectSchema.ExtensionName]; }
             set { this.propertyBag[OpenTypeExtensionObjectSchema.ExtensionName] = value; }
         }
+
+        /// <summary>
+        /// OData Type
+        /// </summary>
+        [JsonProperty("@odata.type")]
+        public string ODataType
+        {
+            get { return (string)this.propertyBag[OpenTypeExtensionObjectSchema.ODataType]; }
+            internal set { }
+        }
+
     }
 
 
