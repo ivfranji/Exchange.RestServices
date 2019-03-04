@@ -168,5 +168,25 @@
         }
 
         #endregion
+
+        #region Tasks tests
+
+        [TestMethod]
+        public void Test_CreateUpdateReadDeleteTasks()
+        {
+            this.Run_TestCase_As_Mailbox_A(TasksTestDefinition.CreateUpdateReadDeleteTasks);
+        }
+
+        #endregion
+
+        #region Contacts tests
+
+        [TestMethod]
+        public void Test_CreateReadUpdateDeleteContact()
+        {
+            this.Run_TestCase_As_Mailbox_A(ContactTestDefinition.CreateReadUpdateDeleteContact);
+        }
+
+        #endregion
     }
 }

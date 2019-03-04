@@ -1,29 +1,28 @@
 ﻿namespace Microsoft.RestServices.Exchange
 {
     using Microsoft.OutlookServices;
-    using Service.QueryAndView;
 
     /// <summary>
     /// Outlook task view.
     /// </summary>
-    public class OutlookTaskView : ViewBase
+    public class TaskView : ViewBase
     {
         /// <summary>
-        /// Create new instance of <see cref="OutlookTaskView"/>
+        /// Create new instance of <see cref="TaskView"/>
         /// </summary>
         /// <param name="pageSize"></param>
-        public OutlookTaskView(int pageSize)
+        public TaskView(int pageSize)
             : this(pageSize, 0)
         {
         }
 
         /// <summary>
-        /// Create new instance of <see cref="OutlookTaskView"/>
+        /// Create new instance of <see cref="TaskView"/>
         /// </summary>
         /// <param name="pageSize">Page size.</param>
         /// <param name="offset">Offset.</param>
-        public OutlookTaskView(int pageSize, int offset)
-            : base(pageSize, offset, typeof(Task), new OutlookTaskPropertySet())
+        public TaskView(int pageSize, int offset)
+            : base(pageSize, offset, typeof(Task), new TaskPropertySet())
         {
         }
     }

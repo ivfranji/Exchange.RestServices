@@ -35,14 +35,27 @@
         /// <summary>
         /// Outlook task type name.
         /// </summary>
-        private const string OutlookTaskTypeName = "OutlookTask";
+        private const string TaskTypeName = "Task";
 
         /// <summary>
         /// Outlook task folder type name.
         /// </summary>
-        private const string OutlookTaskFolderName = "OutlookTaskFolder";
+        private const string TaskFolderTypeName = "TaskFolder";
 
+        /// <summary>
+        /// Inference classification.
+        /// </summary>
         private const string InferenceClassificationName = "InferenceClassification";
+
+        /// <summary>
+        /// Contacts folder
+        /// </summary>
+        private const string ContactFolderTypeName = "ContactFolder";
+
+        /// <summary>
+        /// Contacts folder
+        /// </summary>
+        private const string ContactsTypeName = "Contact";
 
         /// <summary>
         /// Create new instance of <see cref="EntityId"/>
@@ -87,16 +100,24 @@
                     this.RootContainer = "events";
                     break;
 
-                case EntityId.OutlookTaskTypeName:
+                case EntityId.TaskTypeName:
                     this.RootContainer = "tasks";
                     break;
 
-                case EntityId.OutlookTaskFolderName:
+                case EntityId.TaskFolderTypeName:
                     this.RootContainer = "tasksFolders";
                     break;
 
                 case EntityId.InferenceClassificationName:
                     this.RootContainer = "inferenceClassification";
+                    break;
+
+                case EntityId.ContactFolderTypeName:
+                    this.RootContainer = "contactfolders";
+                    break;
+
+                case EntityId.ContactsTypeName:
+                    this.RootContainer = "contacts";
                     break;
 
                 default:

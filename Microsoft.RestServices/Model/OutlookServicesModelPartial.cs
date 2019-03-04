@@ -283,6 +283,57 @@
     }
 
     /// <summary>
+    /// Calendar folder.
+    /// </summary>
+    public partial class Calendar
+    {
+        /// <summary>
+        /// Create new instance of <see cref="Calendar"/>
+        /// </summary>
+        internal Calendar()
+            : base()
+        {
+        }
+
+        /// <summary>
+        /// Create new instance of <see cref="Calendar"/>
+        /// </summary>
+        /// <param name="exchangeService"></param>
+        public Calendar(ExchangeService exchangeService)
+            : base(exchangeService)
+        {
+        }
+
+        /// <summary>
+        /// Calendar FolderId.
+        /// </summary>
+        internal FolderId FolderId
+        {
+            get
+            {
+                if (this.IsNew)
+                {
+                    return null;
+                }
+
+                if (string.IsNullOrEmpty(this.Id))
+                {
+                    return null;
+                }
+
+                if (this.MailboxId == null)
+                {
+                    return new CalendarFolderId(this.Id);
+                }
+
+                return new CalendarFolderId(
+                    this.Id,
+                    this.MailboxId.Id);
+            }
+        }
+    }
+
+    /// <summary>
     /// Outlook item partial.
     /// </summary>
     public abstract partial class Item
@@ -499,7 +550,7 @@
         /// </summary>
         protected override Type IdType
         {
-            get { return typeof(OutlookTaskId); }
+            get { return typeof(TaskId); }
         }
     }
 
@@ -508,6 +559,14 @@
     /// </summary>
     public partial class Contact
     {
+        /// <summary>
+        /// Create new instance of <see cref="Contact"/>
+        /// </summary>
+        internal Contact()
+            : base()
+        {
+        }
+
         /// <summary>
         /// Create new instance of <see cref="Contact"/>
         /// </summary>
@@ -520,7 +579,10 @@
         /// <summary>
         /// Id type.
         /// </summary>
-        protected override Type IdType { get; }
+        protected override Type IdType
+        {
+            get { return typeof(ContactId); }
+        }
     }
 
     /// <summary>

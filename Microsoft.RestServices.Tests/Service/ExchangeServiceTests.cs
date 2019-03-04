@@ -894,5 +894,74 @@
 
             HttpWebRequestClientProvider.Instance.Reset();
         }
+
+        [TestMethod]
+        public void TestContactsWellKnownFolderQuery()
+        {
+            MockHttpClient mock = new MockHttpClient(HttpStatusCode.OK, "{}");
+            HttpWebRequestClientProvider.Instance.RegisterHttpClientProvider(mock.MockClient);
+
+            mock.InlineAssertation = (httpRequestMessage) =>
+            {
+                Assert.AreEqual(
+                    "https://outlook.office365.com/api/beta/users/a@a.com/contacts?$top=10&$skip=0",
+                    httpRequestMessage.RequestUri.ToString());
+            };
+
+            ExchangeService service = new ExchangeService(
+                "abc",
+                "a@a.com",
+                RestEnvironment.OutlookBeta);
+
+            service.FindItems(WellKnownFolderName.Contacts, new ContactView(10));
+
+            HttpWebRequestClientProvider.Instance.Reset();
+        }
+
+        [TestMethod]
+        public void TestContactCustomFolderQuery()
+        {
+            MockHttpClient mock = new MockHttpClient(HttpStatusCode.OK, "{}");
+            HttpWebRequestClientProvider.Instance.RegisterHttpClientProvider(mock.MockClient);
+
+            mock.InlineAssertation = (httpRequestMessage) =>
+            {
+                Assert.AreEqual(
+                    "https://outlook.office365.com/api/beta/users/a@a.com/contactfolders/id==/contacts?$top=10&$skip=0",
+                    httpRequestMessage.RequestUri.ToString());
+            };
+
+            ExchangeService service = new ExchangeService(
+                "abc",
+                "a@a.com",
+                RestEnvironment.OutlookBeta);
+
+            service.FindItems(new ContactFolderId("id==", "me"), new ContactView(10));
+
+            HttpWebRequestClientProvider.Instance.Reset();
+        }
+
+        [TestMethod]
+        public void TestTasksQuery()
+        {
+            MockHttpClient mock = new MockHttpClient(HttpStatusCode.OK, "{}");
+            HttpWebRequestClientProvider.Instance.RegisterHttpClientProvider(mock.MockClient);
+
+            mock.InlineAssertation = (httpRequestMessage) =>
+            {
+                Assert.AreEqual(
+                    "https://outlook.office365.com/api/beta/users/a@a.com/tasks?$top=10&$skip=0",
+                    httpRequestMessage.RequestUri.ToString());
+            };
+
+            ExchangeService service = new ExchangeService(
+                "abc",
+                "a@a.com",
+                RestEnvironment.OutlookBeta);
+
+            service.FindItems(WellKnownFolderName.Tasks, new TaskView(10));
+
+            HttpWebRequestClientProvider.Instance.Reset();
+        }
     }
 }

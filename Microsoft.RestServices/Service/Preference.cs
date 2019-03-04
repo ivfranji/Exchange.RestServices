@@ -9,7 +9,7 @@
         /// Create new instance of <see cref="Preference"/>
         /// </summary>
         /// <param name="prefer"></param>
-        internal Preference(string prefer)
+        public Preference(string prefer)
         {
             ArgumentValidator.ThrowIfNullOrEmpty(prefer, nameof(prefer));
             this.Prefer = prefer;

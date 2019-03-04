@@ -54,11 +54,12 @@
     <Compile Include="Service\ActionMapper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Service\Entity\AttachmentId.cs" />
+    <Compile Include="Service\Entity\ContactId.cs" />
     <Compile Include="Service\Entity\EntityId.cs" />
     <Compile Include="Service\Entity\EventId.cs" />
     <Compile Include="Service\Entity\ItemId.cs" />
     <Compile Include="Service\Entity\MessageId.cs" />
-    <Compile Include="Service\Entity\OutlookTaskId.cs" />
+    <Compile Include="Service\Entity\TaskId.cs" />
     <Compile Include="Service\ErrorHandling\Error.cs" />
     <Compile Include="Service\ErrorHandling\ErrorWrapper.cs" />
     <Compile Include="Service\ErrorHandling\InnerError.cs" />
@@ -99,6 +100,8 @@
     <Compile Include="Service\PropertyChangeTracking\PropertyBag.cs" />
     <Compile Include="Service\PropertyChangeTracking\PropertyDefinition.cs" />
     <Compile Include="Service\QueryAndView\CompositeQuery.cs" />
+    <Compile Include="Service\QueryAndView\ContactPropertySet.cs" />
+    <Compile Include="Service\QueryAndView\ContactView.cs" />
     <Compile Include="Service\QueryAndView\EventPropertySet.cs" />
     <Compile Include="Service\QueryAndView\EventView.cs" />
     <Compile Include="Service\QueryAndView\ExpandExtendedPropertyQuery.cs" />
@@ -119,8 +122,8 @@
     <Compile Include="Service\QueryAndView\MailFolderPropertySet.cs" />
     <Compile Include="Service\QueryAndView\MessagePropertySet.cs" />
     <Compile Include="Service\QueryAndView\MessageView.cs" />
-    <Compile Include="Service\QueryAndView\OutlookTaskPropertySet.cs" />
-    <Compile Include="Service\QueryAndView\OutlookTaskView.cs" />
+    <Compile Include="Service\QueryAndView\TaskPropertySet.cs" />
+    <Compile Include="Service\QueryAndView\TaskView.cs" />
     <Compile Include="Service\QueryAndView\PageQuery.cs" />
     <Compile Include="Service\QueryAndView\PropertySet.cs" />
     <Compile Include="Service\QueryAndView\SearchFilter.cs" />

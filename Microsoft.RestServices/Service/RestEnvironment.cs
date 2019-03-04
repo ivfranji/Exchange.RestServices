@@ -9,14 +9,6 @@
     public class RestEnvironment
     {
         /// <summary>
-        /// Graph beta.
-        /// </summary>
-        private static RestEnvironment graphBeta = new RestEnvironment(
-            new Uri("https://graph.microsoft.com/beta"),
-            "Graph Beta", 
-            true);
-
-        /// <summary>
         /// Outlook prod.
         /// </summary>
         private static RestEnvironment outlookProd = new RestEnvironment(
@@ -53,15 +45,7 @@
         /// Indicate if environment is beta.
         /// </summary>
         public bool IsBeta { get; }
-
-        /// <summary>
-        /// Graph beta environment.
-        /// </summary>
-        public static RestEnvironment GraphBeta
-        {
-            get { return RestEnvironment.graphBeta; }
-        }
-
+        
         /// <summary>
         /// Outlook Prod environment.
         /// </summary>

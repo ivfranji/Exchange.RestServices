@@ -3,10 +3,58 @@
     using System;
     using Microsoft.OutlookServices;
 
+    public sealed class ContactFolderId : FolderId
+    {
+        /// <summary>
+        /// Tasks.
+        /// </summary>
+        private const string Contacts = "contacts";
+
+        public ContactFolderId(string mailboxId) 
+            : this(ContactFolderId.Contacts, mailboxId)
+        {
+            this.RootContainer = "contacts";
+            this.Id = string.Empty;
+        }
+
+        public ContactFolderId(string id, string mailbox) 
+            : base(id, mailbox, typeof(ContactFolder))
+        {
+        }
+
+        /// <summary>
+        /// Child folders container.
+        /// </summary>
+        public override string ChildFoldersContainer
+        {
+            get
+            {
+                return this.IdPath;
+            }
+        }
+
+        /// <summary>
+        /// Messages (Contacts) container.
+        /// </summary>
+        public override string MessagesContainer
+        {
+            get
+            {
+                // Contacts can be stored in /contacts and /contactfolders/id/contacts
+                if (this.IdPath == ContactFolderId.Contacts)
+                {
+                    return this.IdPath;
+                }
+
+                return $"{this.IdPath}/{ContactFolderId.Contacts}";
+            }
+        }
+    }
+
     /// <summary>
     /// Outlook task folder id.
     /// </summary>
-    public class OutlookTaskFolderId : FolderId
+    public class TaskFolderId : FolderId
     {
         /// <summary>
         /// Tasks.
@@ -14,11 +62,11 @@
         private const string Tasks = "tasks";
 
         /// <summary>
-        /// Create new instance of <see cref="OutlookTaskFolderId"/>
+        /// Create new instance of <see cref="TaskFolderId"/>
         /// </summary>
         /// <param name="id"></param>
         /// <param name="mailboxId"></param>
-        public OutlookTaskFolderId(string id, string mailboxId)
+        public TaskFolderId(string id, string mailboxId)
             : base(id, mailboxId, typeof(TaskFolder))
         {
         }
@@ -27,10 +75,10 @@
         /// Create default task folders id.
         /// </summary>
         /// <param name="mailbox"></param>
-        public OutlookTaskFolderId(string mailbox)
-            : base("taskFolders", mailbox)
+        public TaskFolderId(string mailbox)
+            : this(TaskFolderId.Tasks, mailbox)
         {
-            this.RootContainer = "outlook";
+            this.RootContainer = TaskFolderId.Tasks;
             this.Id = string.Empty;
         }
 
@@ -49,7 +97,12 @@
         {
             get
             {
-                return $"{this.IdPath}/{OutlookTaskFolderId.Tasks}";
+                if (this.IdPath == TaskFolderId.Tasks)
+                {
+                    return this.IdPath;
+                }
+
+                return $"{this.IdPath}/{TaskFolderId.Tasks}";
             }
         }
     }

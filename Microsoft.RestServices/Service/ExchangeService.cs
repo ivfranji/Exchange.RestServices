@@ -105,7 +105,7 @@
             this.TraceEnabled = false;
             this.actionMapper = new ActionMapper(this.GetType());
             this.userAgent = ExchangeService.defaultUserAgent;
-            this.restEnvironment = restEnvironment ?? RestEnvironment.GraphBeta;
+            this.restEnvironment = restEnvironment ?? RestEnvironment.OutlookBeta;
             this.Preferences = new List<Preference>();
         }
 
@@ -490,6 +490,16 @@
             if (wellKnownFolderName == WellKnownFolderName.Calendar)
             {
                 parentFolderId = new CalendarFolderId("me");
+            }
+
+            if (wellKnownFolderName == WellKnownFolderName.Contacts)
+            {
+                parentFolderId = new ContactFolderId("me");
+            }
+
+            if (wellKnownFolderName == WellKnownFolderName.Tasks)
+            {
+                parentFolderId = new TaskFolderId("me");
             }
 
             return this.FindItems(

@@ -15,7 +15,7 @@
         /// Create new instance of <see cref="TestAuthenticationProvider"/>
         /// </summary>
         /// <param name="resourceUri">Resource uri. Default Microsoft.OutlookServices api.</param>
-        internal TestAuthenticationProvider(string resourceUri = AppConfig.GraphResourceUri)
+        internal TestAuthenticationProvider(string resourceUri = AppConfig.OutlookResourceUri)
         {
             this.ResourceUri = resourceUri;
         }

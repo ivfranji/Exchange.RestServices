@@ -1,16 +1,16 @@
-﻿namespace Microsoft.RestServices.Exchange.Service.QueryAndView
+﻿namespace Microsoft.RestServices.Exchange
 {
     using Microsoft.OutlookServices;
 
     /// <summary>
     /// Outlook task property set.
     /// </summary>
-    public class OutlookTaskPropertySet : PropertySet
+    public class TaskPropertySet : PropertySet
     {
         /// <summary>
-        /// Create new instance of <see cref="OutlookTaskPropertySet"/>
+        /// Create new instance of <see cref="TaskPropertySet"/>
         /// </summary>
-        public OutlookTaskPropertySet()
+        public TaskPropertySet()
             : base(typeof(Task))
         {
             this.FirstClassProperties.Add(nameof(Task.CreatedDateTime));

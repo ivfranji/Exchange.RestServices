@@ -64,6 +64,7 @@
     <Compile Include="AppConfig.cs" />
     <Compile Include="Functional\TestHelpers.cs" />
     <Compile Include="Functional\TestsDefinition\AttachmentTestDefinition.cs" />
+    <Compile Include="Functional\TestsDefinition\ContactTestDefinition.cs" />
     <Compile Include="Functional\TestsDefinition\EventTestDefinition.cs" />
     <Compile Include="Functional\TestsDefinition\InboxRuleTestDefinition.cs" />
     <Compile Include="Functional\TestsDefinition\InferenceClassificationTestDefinition.cs" />
@@ -71,6 +72,7 @@
     <Compile Include="Functional\FunctionalTestRunner.cs" />
     <Compile Include="Functional\OutlookFunctionalTests.cs" />
     <Compile Include="Functional\TestsDefinition\MailMessageTestDefinition.cs" />
+    <Compile Include="Functional\TestsDefinition\TasksTestDefinition.cs" />
     <Compile Include="Mocks\Helper.cs" />
     <Compile Include="Mocks\MockHttpClients.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -79,6 +81,7 @@
     <Compile Include="Service\Entity\FolderIdTests.cs" />
     <Compile Include="Service\Entity\ItemIdTests.cs" />
     <Compile Include="Service\Entity\MailboxIdTests.cs" />
+    <Compile Include="Service\Entity\TaskFolderIdTests.cs" />
     <Compile Include="Service\ExchangeServiceRequestRoutingTests.cs" />
     <Compile Include="Service\ExchangeServiceTests.cs" />
     <Compile Include="Service\ExtendedProperties\SingleValueExtendedPropertiesTest.cs" />

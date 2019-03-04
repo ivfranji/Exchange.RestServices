@@ -272,12 +272,30 @@
 
                 if (this.type == typeof(Message))
                 {
-                    return JsonConvert.DeserializeObject<Message>(jsonToken.ToString(), subClassConversionSettings);
+                    return JsonConvert.DeserializeObject<Message>(
+                        jsonToken.ToString(), 
+                        subClassConversionSettings);
                 }
 
                 if (this.type == typeof(Event))
                 {
-                    return JsonConvert.DeserializeObject<Event>(jsonToken.ToString(), subClassConversionSettings);
+                    return JsonConvert.DeserializeObject<Event>(
+                        jsonToken.ToString(), 
+                        subClassConversionSettings);
+                }
+
+                if (this.type == typeof(Task))
+                {
+                    return JsonConvert.DeserializeObject<Task>(
+                        jsonToken.ToString(), 
+                        subClassConversionSettings);
+                }
+
+                if (this.type == typeof(Contact))
+                {
+                    return JsonConvert.DeserializeObject<Contact>(
+                        jsonToken.ToString(), 
+                        subClassConversionSettings);
                 }
 
                 throw new NotImplementedException($"Type not implemented: {this.type.FullName}");

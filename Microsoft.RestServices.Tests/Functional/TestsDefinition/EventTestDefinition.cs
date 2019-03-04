@@ -71,6 +71,7 @@
                 1,
                 items.TotalCount);
 
+
             Event meeting = (Event) items.Items[0];
             meeting.Decline(
                 true,
@@ -78,6 +79,11 @@
 
             exchangeService.MailboxId = new MailboxId(AppConfig.MailboxB);
             calendarEvent.Delete();
+        }
+
+        public static void CreateReadUpdateDeleteCalendar(ExchangeService exchangeService)
+        {
+            //Calendar
         }
     }
 }
