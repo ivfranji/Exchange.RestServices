@@ -259,6 +259,40 @@
             }
         }
 
+        /// <summary>
+        /// Extended property filter.
+        /// </summary>
+        public class ExtendedPropertyFilter : SearchFilter
+        {
+            public ExtendedPropertyFilter(FilterOperator filterOperator, ExtendedPropertyDefinition extendedProperty, string value) 
+                : base(filterOperator)
+            {
+                ArgumentValidator.ThrowIfNull(extendedProperty, nameof(extendedProperty));
+                this.ExtendedProperty = extendedProperty;
+                this.Value = value;
+            }
+
+            /// <summary>
+            /// Value.
+            /// </summary>
+            public string Value { get; set; }
+
+            /// <summary>
+            /// Extended property.
+            /// </summary>
+            public ExtendedPropertyDefinition ExtendedProperty { get; }
+
+            /// <inheritdoc cref="SearchFilter.ToString(StringBuilder)"/>
+            protected internal sealed override void ToString(StringBuilder sb)
+            {
+                sb.AppendFormat("{0}/Any(ep: ep/PropertyId {1} '{2}' and ep/Value eq '{3}')",
+                    this.ExtendedProperty.PropertyValueType,
+                    this.FilterOperator,
+                    this.ExtendedProperty.Definition,
+                    this.Value);
+            }
+        }
+
         #endregion
 
         /// <summary>

@@ -176,5 +176,55 @@
                 MessageObjectSchema.ToRecipients,
                 "A B");
         }
+
+        [TestMethod]
+        public void Test_ExtendedPropertyFilter()
+        {
+            SearchFilter.ExtendedPropertyFilter extendedPropertyFilter = new SearchFilter.ExtendedPropertyFilter(
+                FilterOperator.eq,
+                new ExtendedPropertyDefinition(MapiPropertyType.String, 0x001A), 
+                "IPM.Note");
+
+            Assert.AreEqual(
+                "$filter=SingleValueExtendedProperties/Any(ep: ep/PropertyId eq 'String 0x001A' and ep/Value eq 'IPM.Note')",
+                extendedPropertyFilter.Query);
+
+            extendedPropertyFilter = new SearchFilter.ExtendedPropertyFilter(
+                FilterOperator.eq,
+                new ExtendedPropertyDefinition(MapiPropertyType.Boolean, "CustomProp", new Guid("12f8e471-c941-4b2a-8216-8ad844533aa3")),
+                "true");
+
+            Assert.AreEqual(
+                "$filter=SingleValueExtendedProperties/Any(ep: ep/PropertyId eq 'Boolean {12f8e471-c941-4b2a-8216-8ad844533aa3} Name CustomProp' and ep/Value eq 'true')",
+                extendedPropertyFilter.Query);
+
+            SearchFilter fromFilter = new SearchFilter.IsEqualTo(MessageObjectSchema.From, new Recipient()
+            {
+                EmailAddress = new EmailAddress()
+                {
+                    Address = "a@a.com"
+                }
+            });
+
+            SearchFilter.SearchFilterCollection filterCollection1 = new SearchFilter.SearchFilterCollection(
+                FilterOperator.and, 
+                extendedPropertyFilter, 
+                fromFilter);
+
+            Assert.AreEqual(
+                "$filter=SingleValueExtendedProperties/Any(ep: ep/PropertyId eq 'Boolean {12f8e471-c941-4b2a-8216-8ad844533aa3} Name CustomProp' and ep/Value eq 'true') and From/EmailAddress/Address eq 'a@a.com'",
+                filterCollection1.Query);
+
+            SearchFilter.SearchFilterCollection filterCollection2 = new SearchFilter.SearchFilterCollection(
+                FilterOperator.or, 
+                filterCollection1,
+                new SearchFilter.NotEqualTo(
+                    MessageObjectSchema.IsRead, 
+                    "false"));
+
+            Assert.AreEqual(
+                "$filter=SingleValueExtendedProperties/Any(ep: ep/PropertyId eq 'Boolean {12f8e471-c941-4b2a-8216-8ad844533aa3} Name CustomProp' and ep/Value eq 'true') and From/EmailAddress/Address eq 'a@a.com' or IsRead ne false",
+                filterCollection2.Query);
+        }
     }
 }
