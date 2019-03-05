@@ -5,10 +5,10 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Exchange.RestServices")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("Exchange REST Client Library")]
+[assembly: AssemblyDescription("Client library provide programatic access to Exchange Server through REST Api")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("Ivan Franjic")]
 [assembly: AssemblyProduct("Exchange.RestServices")]
 [assembly: AssemblyCopyright("Copyright ©  2019")]
 [assembly: AssemblyTrademark("")]
