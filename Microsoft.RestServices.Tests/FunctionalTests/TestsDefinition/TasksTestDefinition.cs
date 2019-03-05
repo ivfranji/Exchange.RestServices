@@ -1,6 +1,7 @@
 ﻿namespace Microsoft.RestServices.Tests.Functional.TestsDefinition
 {
     using System;
+    using System.Collections.Generic;
     using Exchange;
     using OutlookServices;
     using VisualStudio.TestTools.UnitTesting;
@@ -63,6 +64,11 @@
             Assert.AreEqual(
                 1,
                 tasks.TotalCount);
+
+            IList<Task> completedTasks = task.Complete();
+            Assert.AreEqual(
+                1, 
+                completedTasks.Count);
 
             task.Delete();
             Assert.IsNull(task.Id);

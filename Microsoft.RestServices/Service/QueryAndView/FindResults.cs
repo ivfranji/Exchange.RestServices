@@ -31,6 +31,12 @@
             {
                 this.responseCollection = responseCollection;
             }
+
+            if (null == this.responseCollection.Value)
+            {
+                // prevent nullrefs
+                this.responseCollection.Value = new List<TItem>();
+            }
         }
 
         /// <summary>

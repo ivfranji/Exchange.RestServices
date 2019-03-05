@@ -1,6 +1,7 @@
 ﻿namespace Microsoft.RestServices.Exchange
 {
     using System;
+    using System.Net;
 
     /// <summary>
     /// Base class for all requests.
@@ -120,7 +121,7 @@
         /// Throws rest exception if server returns error.
         /// </summary>
         /// <param name="error">Error string.</param>
-        protected void ThrowRestException(string error)
+        protected void ThrowRestException(string error, HttpStatusCode httpStatusCode)
         {
             ErrorWrapper deserializedError = null;
             try
@@ -133,10 +134,15 @@
 
             if (deserializedError?.Error != null)
             {
-                throw new RestResponseException(deserializedError.Error);
+                throw new RestResponseException(
+                    deserializedError.Error, 
+                    httpStatusCode);
             }
 
-            throw new RestResponseException(error);
+            // Ideally we shouldn't be reaching this one.
+            throw new RestResponseException(
+                error, 
+                httpStatusCode);
         }
 
         /// <summary>

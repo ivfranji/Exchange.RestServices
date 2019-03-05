@@ -62,7 +62,6 @@
     <Compile Include="Service\Entity\TaskId.cs" />
     <Compile Include="Service\ErrorHandling\Error.cs" />
     <Compile Include="Service\ErrorHandling\ErrorWrapper.cs" />
-    <Compile Include="Service\ErrorHandling\InnerError.cs" />
     <Compile Include="Service\ErrorHandling\RestResponseException.cs" />
     <Compile Include="Service\ExchangeService.cs" />
     <Compile Include="Service\Extensions\ExtendedPropertyDefinition.cs" />

@@ -15,23 +15,9 @@
         private List<IQuery> queries;
 
         /// <summary>
-        /// Property set.
-        /// </summary>
-        private SelectablePropertyList selectablePropertyList;
-
-        /// <summary>
         /// Select properties.
         /// </summary>
         private List<string> selectProperties;
-
-        /// <summary>
-        /// Create new instance of <see cref="Search.ViewBase{T}"/>
-        /// </summary>
-        /// <param name="pageSize">Page size.</param>
-        protected ViewBase(int pageSize, Type type, PropertySet propertySet)
-            : this(pageSize, 0, type, propertySet)
-        {
-        }
 
         /// <summary>
         /// Create new instance of <see cref="ViewBase{T}"/>.
@@ -40,11 +26,11 @@
         /// <param name="offset">Offset.</param>
         protected ViewBase(int pageSize, int offset, Type type, PropertySet propertySet)
         {
+            // TODO: Filter on itemclass per view to limit what is being retrieved.
             ArgumentValidator.ThrowIfNull(type, nameof(type));
             this.PageQuery = new PageQuery(offset, pageSize);
             this.queries = new List<IQuery>();
             this.queries.Add(this.PageQuery);
-            this.selectablePropertyList = new SelectablePropertyList(type);
             this.selectProperties = new List<string>();
             this.Type = type;
             this.PropertySet = propertySet;

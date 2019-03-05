@@ -105,7 +105,7 @@
                     break;
 
                 case EntityId.TaskFolderTypeName:
-                    this.RootContainer = "tasksFolders";
+                    this.RootContainer = "taskfolders";
                     break;
 
                 case EntityId.InferenceClassificationName:

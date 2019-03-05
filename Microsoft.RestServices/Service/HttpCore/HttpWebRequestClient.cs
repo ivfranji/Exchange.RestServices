@@ -2,6 +2,7 @@
 {
     using System.Net;
     using System.Net.Http;
+    using System.Net.Http.Headers;
     using System.Threading.Tasks;
 
     /// <summary>
@@ -19,7 +20,7 @@
         /// </summary>
         internal HttpWebRequestClient()
         {
-            HttpWebRequestClient.httpClient = new HttpClient();
+            HttpWebRequestClient.httpClient = this.CreateHttpClient(null);
         }
 
         /// <summary>
@@ -47,14 +48,40 @@
                     Proxy = proxyServer
                 };
 
-                HttpWebRequestClient.httpClient = new HttpClient(
-                    httpClientHandler, 
+                HttpWebRequestClient.httpClient = this.CreateHttpClient(httpClientHandler);
+            }
+            else
+            {
+                HttpWebRequestClient.httpClient = this.CreateHttpClient(null);
+            }
+        }
+
+        /// <summary>
+        /// Create http client.
+        /// </summary>
+        /// <param name="httpClientHandler"></param>
+        /// <returns></returns>
+        private HttpClient CreateHttpClient(HttpClientHandler httpClientHandler)
+        {
+            HttpClient httpClient;
+            if (httpClientHandler != null)
+            {
+                httpClient = new HttpClient(
+                    httpClientHandler,
                     true);
             }
             else
             {
-                HttpWebRequestClient.httpClient = new HttpClient();
+                httpClient = new HttpClient();
             }
+
+            httpClient.DefaultRequestHeaders.CacheControl = new CacheControlHeaderValue()
+            {
+                NoCache = true,
+                NoStore = true
+            };
+
+            return httpClient;
         }
 
         /// <summary>

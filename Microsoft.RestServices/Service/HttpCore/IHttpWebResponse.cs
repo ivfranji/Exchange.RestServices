@@ -12,7 +12,7 @@
         /// <summary>
         /// Throw exception if response invalid or error.
         /// </summary>
-        void ThrowIfNeeded(Action<string> errorHandlerAction = null);
+        void ThrowIfNeeded(Action<string, HttpStatusCode> errorHandlerAction = null);
 
         /// <summary>
         /// Status code.

@@ -62,19 +62,21 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AppConfig.cs" />
-    <Compile Include="Functional\TestHelpers.cs" />
-    <Compile Include="Functional\TestsDefinition\AttachmentTestDefinition.cs" />
-    <Compile Include="Functional\TestsDefinition\ContactTestDefinition.cs" />
-    <Compile Include="Functional\TestsDefinition\EventTestDefinition.cs" />
-    <Compile Include="Functional\TestsDefinition\InboxRuleTestDefinition.cs" />
-    <Compile Include="Functional\TestsDefinition\InferenceClassificationTestDefinition.cs" />
-    <Compile Include="Functional\TestsDefinition\MailFolderTestDefinition.cs" />
-    <Compile Include="Functional\FunctionalTestRunner.cs" />
-    <Compile Include="Functional\OutlookFunctionalTests.cs" />
-    <Compile Include="Functional\TestsDefinition\MailMessageTestDefinition.cs" />
-    <Compile Include="Functional\TestsDefinition\TasksTestDefinition.cs" />
+    <Compile Include="FunctionalTests\TestHelpers.cs" />
+    <Compile Include="FunctionalTests\TestsDefinition\AttachmentTestDefinition.cs" />
+    <Compile Include="FunctionalTests\TestsDefinition\ContactTestDefinition.cs" />
+    <Compile Include="FunctionalTests\TestsDefinition\EventTestDefinition.cs" />
+    <Compile Include="FunctionalTests\TestsDefinition\InboxRuleTestDefinition.cs" />
+    <Compile Include="FunctionalTests\TestsDefinition\InferenceClassificationTestDefinition.cs" />
+    <Compile Include="FunctionalTests\TestsDefinition\MailFolderTestDefinition.cs" />
+    <Compile Include="FunctionalTests\FunctionalTestRunner.cs" />
+    <Compile Include="FunctionalTests\OutlookFunctionalTests.cs" />
+    <Compile Include="FunctionalTests\TestsDefinition\MailMessageTestDefinition.cs" />
+    <Compile Include="FunctionalTests\TestsDefinition\TasksTestDefinition.cs" />
     <Compile Include="Mocks\Helper.cs" />
     <Compile Include="Mocks\MockHttpClients.cs" />
+    <Compile Include="MockTests\MockTestRunner.cs" />
+    <Compile Include="MockTests\OutlookMockTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Service\Entity\AttachmentIdTests.cs" />
     <Compile Include="Service\Entity\CalendarIdTests.cs" />
@@ -82,8 +84,6 @@
     <Compile Include="Service\Entity\ItemIdTests.cs" />
     <Compile Include="Service\Entity\MailboxIdTests.cs" />
     <Compile Include="Service\Entity\TaskFolderIdTests.cs" />
-    <Compile Include="Service\ExchangeServiceRequestRoutingTests.cs" />
-    <Compile Include="Service\ExchangeServiceTests.cs" />
     <Compile Include="Service\ExtendedProperties\SingleValueExtendedPropertiesTest.cs" />
     <Compile Include="Service\Extensions\ExtendedPropertyTests.cs" />
     <Compile Include="Service\FilterFormatter\FilterFormattersTests.cs" />
@@ -113,7 +113,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Service\ServiceRequest\" />
+    <Folder Include="MockTests\TestDefinition\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Microsoft.RestServices\Microsoft.RestServices.csproj">

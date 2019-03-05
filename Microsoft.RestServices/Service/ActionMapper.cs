@@ -45,6 +45,11 @@
         internal const string DeclineEventAction = "Decline~Event";
 
         /// <summary>
+        /// Decline event action.
+        /// </summary>
+        internal const string CompleteTaskAction = "Complete~Task";
+
+        /// <summary>
         /// Method mapper.
         /// </summary>
         private Dictionary<string, MethodInfo> mapper;

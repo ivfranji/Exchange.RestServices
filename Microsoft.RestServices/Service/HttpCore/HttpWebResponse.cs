@@ -56,11 +56,11 @@
         /// <summary>
         /// Throws if wasn't successful.
         /// </summary>
-        public void ThrowIfNeeded(Action<string> errorHandlerAction = null)
+        public void ThrowIfNeeded(Action<string, HttpStatusCode> errorHandlerAction = null)
         {
             if (!this.Success)
             {
-                errorHandlerAction?.Invoke(this.Error);
+                errorHandlerAction?.Invoke(this.Error, this.StatusCode);
             }
         }
 

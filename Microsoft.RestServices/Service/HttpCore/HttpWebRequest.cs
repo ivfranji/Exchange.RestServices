@@ -5,6 +5,7 @@
     using System.Net.Http;
     using System.Net.Http.Headers;
     using System.Text;
+    using System.Threading.Tasks;
     using Utilities;
 
     /// <summary>
@@ -12,6 +13,11 @@
     /// </summary>
     internal class HttpWebRequest : IHttpWebRequest
     {
+        /// <summary>
+        /// Lock object.
+        /// </summary>
+        private static object lockObject = new object();
+
         /// <summary>
         /// X-AnchorMailbox header name.
         /// </summary>
@@ -95,7 +101,13 @@
         public AuthenticationHeaderValue Authorization
         {
             get { return this.httpRequestMessage.Headers.Authorization; }
-            set { this.httpRequestMessage.Headers.Authorization = value; }
+            set
+            {
+                lock (HttpWebRequest.lockObject)
+                {
+                    this.httpRequestMessage.Headers.Authorization = value;
+                }
+            }
         }
 
         /// <summary>
@@ -116,34 +128,36 @@
             }
 
             IHttpWebRequestClient httpClient = HttpWebRequestClientProvider.Instance.GetClient();
-            HttpResponseMessage response = httpClient.SendAsync(this.httpRequestMessage).Result;
-            bool requestSuccessful = false;
-            string error = string.Empty;
-            string content = string.Empty;
-
-            if (response.Content != null)
+            using (HttpResponseMessage response = httpClient.SendAsync(this.httpRequestMessage).GetAwaiter().GetResult())
             {
-                content = response.Content.ReadAsStringAsync().Result;
-                if (response.IsSuccessStatusCode)
+                bool requestSuccessful = false;
+                string error = string.Empty;
+                string content = string.Empty;
+
+                if (response.Content != null)
                 {
-                    requestSuccessful = true;
+                    content = response.Content.ReadAsStringAsync().Result;
+                    if (response.IsSuccessStatusCode)
+                    {
+                        requestSuccessful = true;
+                    }
+                    else
+                    {
+                        error = content;
+                    }
                 }
                 else
                 {
-                    error = content;
+                    error = "Http content empty.";
                 }
+
+                return new HttpWebResponse(
+                    content,
+                    requestSuccessful,
+                    error,
+                    response.Headers,
+                    response.StatusCode);
             }
-            else
-            {
-                error = "Http content empty.";
-            }
-            
-            return new HttpWebResponse(
-                content, 
-                requestSuccessful, 
-                error, 
-                response.Headers,
-                response.StatusCode);
         }
 
         /// <inheritdoc cref="IHttpWebRequest.SetRequestHeader"/>

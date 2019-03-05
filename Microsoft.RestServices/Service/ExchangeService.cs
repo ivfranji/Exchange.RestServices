@@ -460,6 +460,32 @@
             request.Execute();
         }
 
+        [Action(ActionMapper.CompleteTaskAction)]
+        internal IList<Task> CompleteTask(Task task, Dictionary<string, object> additionalParameters)
+        {
+            ArgumentValidator.ThrowIfNull(
+                task,
+                nameof(task));
+
+            PostRequestBase request = new PostRequestBase(
+                this,
+                string.Empty,
+                (httpRestUrl) =>
+                {
+                    httpRestUrl.RelativePath = $"{task.ItemId.IdPath}/complete";
+                    this.EnsureCorrectEndpoint(
+                        httpRestUrl, 
+                        task.ItemId);
+                });
+
+            ResponseCollection<Task> response = request.Execute<ResponseCollection<Task>>();
+            response.RegisterServiceAndResetChangeTracking(
+                this, 
+                task.MailboxId);
+
+            return response.Value;
+        }
+
         #endregion
 
         #region Message operations
@@ -524,7 +550,7 @@
             {
                 searchQuery = new CompositeQuery(new[] {searchFilter, itemView.ViewQuery});
             }
-
+            
             GetRequestBase<ResponseCollection<Item>> request = new GetRequestBase<ResponseCollection<Item>>(
                 this,
                 (httpRestUrl) =>

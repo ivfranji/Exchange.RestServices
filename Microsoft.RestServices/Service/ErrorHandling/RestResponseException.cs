@@ -1,6 +1,7 @@
 ﻿namespace Microsoft.RestServices.Exchange
 {
     using System;
+    using System.Net;
 
     /// <summary>
     /// Rest exception.
@@ -11,8 +12,8 @@
         /// Create new instance of <see cref="RestResponseException"/>
         /// </summary>
         /// <param name="error">Error.</param>
-        internal RestResponseException(Error error)
-            : this(error.Message)
+        internal RestResponseException(Error error, HttpStatusCode httpStatusCode)
+            : this(error.ToString(), httpStatusCode)
         {
             this.Error = error;
         }
@@ -21,15 +22,20 @@
         /// Create new instance of <see cref="RestResponseException"/>
         /// </summary>
         /// <param name="error">Error.</param>
-        internal RestResponseException(string error)
+        internal RestResponseException(string error, HttpStatusCode httpStatusCode)
             : base(error)
         {
+            this.HttpStatusCode = httpStatusCode;
         }
-
 
         /// <summary>
         /// Error.
         /// </summary>
         public Error Error { get; }
+
+        /// <summary>
+        /// Http status code.
+        /// </summary>
+        public HttpStatusCode HttpStatusCode { get; }
     }
 }

@@ -1,5 +1,7 @@
 ﻿namespace Microsoft.RestServices.Exchange
 {
+    using System.Collections.Generic;
+    using System.Text;
     using Newtonsoft.Json;
 
     /// <summary>
@@ -8,32 +10,69 @@
     public class Error
     {
         /// <summary>
-        /// Create new instance of <see cref="Error"/>
-        /// </summary>
-        [JsonConstructor]
-        internal Error(string code, string message, InnerError innerError)
-        {
-            this.Code = code;
-            this.Message = message;
-            this.InnerError = innerError;
-        }
-
-        /// <summary>
         /// Error code.
         /// </summary>
         [JsonProperty("code")]
-        public string Code { get; private set; }
+        public string Code { get; set; }
 
         /// <summary>
         /// Error message.
         /// </summary>
         [JsonProperty("message")]
-        public string Message { get; private set; }
+        public string Message { get; set; }
 
         /// <summary>
         /// Inner error.
         /// </summary>
         [JsonProperty("innerError")]
-        public InnerError InnerError { get; private set; }
+        public Error InnerError { get; set; }
+
+        /// <summary>
+        /// Custom error data.
+        /// </summary>
+        [JsonExtensionData(ReadData = true)]
+        public Dictionary<string, object> CustomErrorData { get; set; }
+
+        /// <summary>
+        /// Create string representation of the error.
+        /// </summary>
+        /// <param name="sb"></param>
+        protected internal void ToString(StringBuilder sb)
+        {
+            if (!string.IsNullOrEmpty(this.Code))
+            {
+                sb.AppendLine($"Code: {this.Code}");
+            }
+
+            if (!string.IsNullOrEmpty(this.Message))
+            {
+                sb.AppendLine($"Message: {this.Message}");
+            }
+
+            if (null != this.CustomErrorData)
+            {
+                foreach (KeyValuePair<string, object> pair in this.CustomErrorData)
+                {
+                    sb.AppendLine($"{pair.Key}: {pair.Value}");
+                }
+            }
+
+            if (this.InnerError != null)
+            {
+                sb.AppendLine("=== InnerError ===");
+                this.InnerError.ToString(sb);
+            }
+        }
+
+        /// <summary>
+        /// ToString impl.
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            StringBuilder sb = new StringBuilder();
+            this.ToString(sb);
+            return sb.ToString();
+        }
     }
 }
