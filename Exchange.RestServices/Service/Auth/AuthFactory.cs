@@ -21,10 +21,7 @@
         /// <returns></returns>
         internal static IAuthorizationTokenProvider GetTokenProvider()
         {
-            lock (AuthFactory.lockObject)
-            {
-                return AuthFactory.tokenProvider;
-            }
+            return AuthFactory.tokenProvider;
         }
 
         /// <summary>
@@ -34,10 +31,7 @@
         internal static void SetTokenProvider(IAuthorizationTokenProvider tokenProvider)
         {
             ArgumentValidator.ThrowIfNull(tokenProvider, nameof(tokenProvider));
-            lock (AuthFactory.lockObject)
-            {
-                AuthFactory.tokenProvider = tokenProvider;
-            }
+            AuthFactory.tokenProvider = tokenProvider;
         }
     }
 }
