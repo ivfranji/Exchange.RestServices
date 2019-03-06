@@ -4,9 +4,8 @@
     using System.Net;
     using System.Net.Http;
     using System.Net.Http.Headers;
-    using System.Threading;
-    using System.Threading.Tasks;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using Mocks;
 
     /// <summary>
     /// Throttling handler test.
@@ -126,44 +125,11 @@
                     Content = new StringContent("Response content")
                 };
             }
+
             ThrottlingHttpHandler throttlingHttp = new ThrottlingHttpHandler(new RetryOptions(3, 2));
             throttlingHttp.InnerHandler = new MockHttpMessageHandler(responseMessage);
             HttpClient httpClient = new HttpClient(throttlingHttp);
             return httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Get, "https://localhost:1234")).Result;
-        }
-
-        /// <summary>
-        /// Mock handler for testing throttling delegate handler.
-        /// </summary>
-        private class MockHttpMessageHandler : HttpMessageHandler
-        {
-            private HttpResponseMessage responseMessageToReturn;
-
-            public MockHttpMessageHandler(HttpResponseMessage responseMessageToReturn)
-            {
-                this.responseMessageToReturn = responseMessageToReturn;
-            }
-
-            /// <summary>
-            /// Sends request async.
-            /// </summary>
-            /// <param name="request"></param>
-            /// <param name="cancellationToken"></param>
-            /// <returns></returns>
-            protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
-            {
-                return this.Invoke();
-            }
-
-            /// <summary>
-            /// Override method in base class.
-            /// </summary>
-            /// <param name="requestMessage"></param>
-            /// <returns></returns>
-            protected virtual async Task<HttpResponseMessage> Invoke()
-            {
-                return this.responseMessageToReturn;
-            }
         }
     }
 }

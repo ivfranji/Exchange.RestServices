@@ -85,6 +85,7 @@
     <Compile Include="Service\HttpCore\Extensions\RetryHttpHandler.cs" />
     <Compile Include="Service\HttpCore\Extensions\ThrottlingHttpHandler.cs" />
     <Compile Include="Service\HttpCore\Extensions\RetryOptions.cs" />
+    <Compile Include="Service\HttpCore\Extensions\TraceListenerHttpHandler.cs" />
     <Compile Include="Service\HttpCore\GetRequestBase.cs" />
     <Compile Include="Service\HttpCore\HttpRestUrl.cs" />
     <Compile Include="Service\HttpCore\HttpWebRequest.cs" />
@@ -149,6 +150,7 @@
     <Compile Include="Service\QueryAndView\ResponseCollection.cs" />
     <Compile Include="Service\QueryAndView\ItemChange.cs" />
     <Compile Include="Service\QueryAndView\SyncFolderItemsCollection.cs" />
+    <Compile Include="Service\HttpCore\HttpRequestContext.cs" />
     <Compile Include="Service\RestEnvironment.cs" />
     <Compile Include="Service\Auth\SimpleAuthorizationTokenProvider.cs" />
     <Compile Include="Service\Tracing\DefaultTraceListener.cs" />

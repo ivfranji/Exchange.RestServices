@@ -81,6 +81,7 @@
             this.PreProcessHttpWebRequestInternal(httpWebRequest);
             this.PreferHeaderSetter?.Invoke(httpWebRequest);
 
+            httpWebRequest.SetRequestContext(this.exchangeService);
             IHttpWebResponse httpWebResponse = httpWebRequest.GetResponse();
             this.ProcessHttpWebResponseInternal(httpWebResponse);
             return httpWebResponse;
@@ -160,8 +161,6 @@
         {
             this.PreProcessHttpWebRequest(httpWebRequest);
             this.exchangeService.PrepareHttpWebRequest(httpWebRequest);
-            this.exchangeService.TraceHttpWebRequest(httpWebRequest);
-            this.exchangeService.TraceHttpRequestHeaders(httpWebRequest.Headers);
         }
     }
 }

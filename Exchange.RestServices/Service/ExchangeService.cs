@@ -256,34 +256,7 @@
         public List<Preference> Preferences { get; }
 
         #endregion
-
-        #region Tracing
-
-        /// <inheritdoc cref="IExchangeService.Trace"/>
-        public void Trace(TraceFlags traceFlags, string message)
-        {
-            if (this.ShouldTrace(traceFlags))
-            {
-                this.TraceListener.Trace(traceFlags.ToString(), message);
-            }
-        }
-
-        /// <summary>
-        /// Trace http web request.
-        /// </summary>
-        /// <param name="webRequest"></param>
-        internal void TraceHttpWebRequest(IHttpWebRequest webRequest)
-        {
-            if (null != webRequest)
-            {
-                this.Trace(
-                    TraceFlags.HttpRequest,
-                    webRequest.ToString());
-            }
-        }
-
-        #endregion
-
+        
         #region Actions
 
         /// <summary>
@@ -1443,87 +1416,17 @@
         /// <param name="webResponse"></param>
         internal void ProcessHttpWebResponse(IHttpWebResponse webResponse)
         {
-            this.httpResponseHeaders = webResponse.HttpResponseHeaders;
-            this.TraceHttpWebHeaders(
-                TraceFlags.HttpResponseHeaders,
-                webResponse.HttpResponseHeaders);
-
-            if (webResponse.Success)
-            {
-                this.Trace(TraceFlags.HttpResponse, webResponse.Content);
-            }
-            else
-            {
-                this.Trace(TraceFlags.HttpResponse, webResponse.Error);
-            }
-        }
-
-        /// <summary>
-        /// Trace request headers.
-        /// </summary>
-        /// <param name="headers">Headers to trace.</param>
-        internal void TraceHttpRequestHeaders(HttpRequestHeaders headers)
-        {
-            if (this.ShouldTrace(TraceFlags.HttpRequestHeaders))
-            {
-                IDictionary<string, string> httpHeaders = new Dictionary<string, string>();
-                foreach (KeyValuePair<string, IEnumerable<string>> header in headers)
-                {
-                    httpHeaders.Add(header.Key, this.FormatHttpHeaderValue(header.Value));
-                }
-
-                this.TraceHttpWebHeaders(
-                    TraceFlags.HttpRequestHeaders,
-                    httpHeaders);
-            }
         }
 
         #endregion
 
         #region Private methods
-
+        
         /// <summary>
-        /// Indicate should tracing occur.
+        /// Ensure request are sent to correct endpoint - /me or /users/email@domain.com
         /// </summary>
-        /// <param name="tracegFlags">Trace flag to check.</param>
-        /// <returns></returns>
-        private bool ShouldTrace(TraceFlags traceFlags)
-        {
-            return this.TraceEnabled &&
-                   (traceFlags & this.TraceFlags) == traceFlags;
-        }
-
-        /// <summary>
-        /// Trace headers.
-        /// </summary>
-        /// <param name="traceTag">Trace tag.</param>
-        /// <param name="headers">Http headers.</param>
-        private void TraceHttpWebHeaders(TraceFlags traceTag, IDictionary<string, string> headers)
-        {
-            if (this.ShouldTrace(traceTag))
-            {
-                string httpHeaders = string.Join(
-                    Environment.NewLine, headers.Select(x => x.Key + ": " + x.Value));
-
-                this.Trace(traceTag, httpHeaders);
-            }
-        }
-
-        /// <summary>
-        /// Joins header values and separate them by comma ','
-        /// </summary>
-        /// <param name="value">Header value.</param>
-        /// <returns></returns>
-        private string FormatHttpHeaderValue(IEnumerable<string> value)
-        {
-            if (null == value)
-            {
-                return string.Empty;
-            }
-
-            return string.Join(", ", value);
-        }
-
+        /// <param name="restUrl"></param>
+        /// <param name="entity"></param>
         private void EnsureCorrectEndpoint(HttpRestUrl restUrl, EntityId entity)
         {
             restUrl.MailboxId = this.GetMailboxId(entity);

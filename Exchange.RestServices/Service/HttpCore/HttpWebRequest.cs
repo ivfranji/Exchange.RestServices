@@ -171,6 +171,18 @@
             this.Headers.Add(headerName, headerValue);
         }
 
+        public void SetRequestContext(ExchangeService exchangeService)
+        {
+            if (this.httpRequestMessage.Properties.ContainsKey(nameof(HttpRequestContext)))
+            {
+                this.httpRequestMessage.Properties.Remove(nameof(HttpRequestContext));
+            }
+
+            this.httpRequestMessage.Properties.Add(
+                nameof(HttpRequestContext), 
+                new HttpRequestContext(exchangeService));
+        }
+
         /// <summary>
         /// Disposes web request.
         /// </summary>

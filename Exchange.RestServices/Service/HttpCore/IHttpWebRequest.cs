@@ -45,5 +45,11 @@
         /// <param name="headerName">Header name.</param>
         /// <param name="headerValue">Header value.</param>
         void SetRequestHeader(string headerName, string headerValue);
+
+        /// <summary>
+        /// Set request context.
+        /// </summary>
+        /// <param name="exchangeService"></param>
+        void SetRequestContext(ExchangeService exchangeService);
     }
 }

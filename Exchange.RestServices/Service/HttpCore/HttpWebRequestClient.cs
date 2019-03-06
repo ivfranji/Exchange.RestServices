@@ -70,6 +70,7 @@
             {
                 new ThrottlingHttpHandler(),
                 new AuthZHttpHandler(), 
+                new TraceListenerHttpHandler()
             };
 
             HttpClient httpClient = new HttpClient(
