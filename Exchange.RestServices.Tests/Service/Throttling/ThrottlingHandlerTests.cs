@@ -2,80 +2,135 @@
 {
     using System;
     using System.Net;
-    using Exchange;
+    using System.Net.Http;
+    using System.Threading;
+    using System.Threading.Tasks;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
-    using HttpWebRequest = Exchange.RestServices.HttpWebRequest;
 
+    /// <summary>
+    /// Throttling handler test.
+    /// </summary>
     [TestClass]
     public class ThrottlingHandlerTests
     {
+        /// <summary>
+        /// Test throttling behavior with status code 429.
+        /// </summary>
         [TestMethod]
-        public void TestThrottlingHandlerBehavior()
+        [ExpectedException(typeof(AggregateException))]
+        public void TestThrottling429Behavior()
         {
-            MockHttpClient mock = new MockHttpClient((HttpStatusCode)429, "");
-            HttpWebRequestClientProvider.Instance.RegisterHttpClientProvider(mock.MockClient);
-
-            mock.InlineAssertation = (httpRequestMessage) =>
+            try
             {
-            };
+                this.TestThrottlingBehaviorWithCustomStatusCode((HttpStatusCode) 429);
+                Assert.Fail("We shouldn't be here...");
+            }
+            catch (AggregateException e)
+            {
+                CallThrottledException throttledException = (CallThrottledException) e.InnerException;
+                Assert.IsNotNull(throttledException);
+                Assert.AreEqual(
+                    3,
+                    throttledException.RetryCount);
 
-            IHttpWebRequest request = HttpWebRequest.Get(new HttpRestUrl(new Uri("https://outlook.office365.com/api/beta")));
+                Assert.AreEqual(
+                    6,
+                    throttledException.TotalDelayApplied);
 
-            IHttpWebResponse httpWebResponse = ThrottlingHandler.ExecuteRequestUnderThrottlingGuard(
-                request.GetResponse,
-                1,
-                null);
+                throw;
+            }
+        }
 
-            Assert.IsTrue(httpWebResponse.StatusCode == (HttpStatusCode)429);
+        /// <summary>
+        /// Test throttling behavior with status code 503.
+        /// </summary>
+        [TestMethod]
+        [ExpectedException(typeof(AggregateException))]
+        public void TestThrottling503Behavior()
+        {
+            try
+            {
+                this.TestThrottlingBehaviorWithCustomStatusCode(HttpStatusCode.ServiceUnavailable);
+                Assert.Fail("We shouldn't be here...");
+            }
+            catch (AggregateException e)
+            {
+                CallThrottledException throttledException = (CallThrottledException) e.InnerException;
+                Assert.IsNotNull(throttledException);
+                Assert.AreEqual(
+                    3,
+                    throttledException.RetryCount);
+
+                Assert.AreEqual(
+                    6,
+                    throttledException.TotalDelayApplied);
+
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// No throttling should be applied on HTTP 200
+        /// </summary>
+        [TestMethod]
+        public void TestThrottling200Behavior()
+        {
+            HttpResponseMessage responseMessage = this.TestThrottlingBehaviorWithCustomStatusCode(HttpStatusCode.OK);
             Assert.AreEqual(
-                1, 
-                mock.RetryCount);
+                "Response content",
+                responseMessage.Content.ReadAsStringAsync().Result);
+        }
 
-            mock.ResetRetryCount();
+        /// <summary>
+        /// Test throttling with custom status code.
+        /// </summary>
+        /// <param name="statusCode"></param>
+        /// <returns></returns>
+        private HttpResponseMessage TestThrottlingBehaviorWithCustomStatusCode(HttpStatusCode statusCode)
+        {
+            RetryDelegatingHandler retryDelegating = new RetryDelegatingHandler(new RetryOptions(3, 2));
+            retryDelegating.InnerHandler = new MockHttpMessageHandler(
+                new HttpResponseMessage(statusCode)
+                {
+                    Content = new StringContent("Response content")
+                });
 
-            httpWebResponse = ThrottlingHandler.ExecuteRequestUnderThrottlingGuard(
-                request.GetResponse,
-                6,
-                null);
-            
-            Assert.AreEqual(
-                6,
-                mock.RetryCount);
+            HttpClient httpClient = new HttpClient(retryDelegating);
+            return httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Get, "https://localhost:1234")).Result;
+        }
 
-            mock = new MockHttpClient(
-                (HttpStatusCode)429, 
-                HttpStatusCode.OK, 
-                3, 
-                "{}");
+        /// <summary>
+        /// Mock handler for testing throttling delegate handler.
+        /// </summary>
+        private class MockHttpMessageHandler : HttpMessageHandler
+        {
+            private HttpResponseMessage responseMessageToReturn;
 
-            HttpWebRequestClientProvider.Instance.RegisterHttpClientProvider(mock.MockClient);
-            
-            httpWebResponse = ThrottlingHandler.ExecuteRequestUnderThrottlingGuard(
-                request.GetResponse,
-                15,
-                null);
+            public MockHttpMessageHandler(HttpResponseMessage responseMessageToReturn)
+            {
+                this.responseMessageToReturn = responseMessageToReturn;
+            }
 
-            Assert.AreEqual(
-            3, 
-            mock.RetryCount);
+            /// <summary>
+            /// Sends request async.
+            /// </summary>
+            /// <param name="request"></param>
+            /// <param name="cancellationToken"></param>
+            /// <returns></returns>
+            protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+            {
+                return this.Invoke();
+            }
 
-            Assert.AreEqual(
-                HttpStatusCode.OK, 
-                httpWebResponse.StatusCode);
-
-            mock = new MockHttpClient(HttpStatusCode.OK, "{}");
-            HttpWebRequestClientProvider.Instance.RegisterHttpClientProvider(mock.MockClient);
-
-            httpWebResponse = ThrottlingHandler.ExecuteRequestUnderThrottlingGuard(
-                request.GetResponse,
-                6,
-                null);
-
-            Assert.AreEqual(
-                1,
-                mock.RetryCount);
-
-            HttpWebRequestClientProvider.Instance.Reset();
+            /// <summary>
+            /// Override method in base class.
+            /// </summary>
+            /// <param name="requestMessage"></param>
+            /// <returns></returns>
+            protected virtual async Task<HttpResponseMessage> Invoke()
+            {
+                return this.responseMessageToReturn;
+            }
         }
     }
 }

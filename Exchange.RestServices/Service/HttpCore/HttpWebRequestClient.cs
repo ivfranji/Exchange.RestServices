@@ -1,5 +1,7 @@
 ﻿namespace Exchange.RestServices
 {
+    using System;
+    using System.Linq;
     using System.Net;
     using System.Net.Http;
     using System.Net.Http.Headers;
@@ -63,17 +65,13 @@
         /// <returns></returns>
         private HttpClient CreateHttpClient(HttpClientHandler httpClientHandler)
         {
-            HttpClient httpClient;
-            if (httpClientHandler != null)
+            DelegatingHandler[] delegatingHandlers = new DelegatingHandler[]
             {
-                httpClient = new HttpClient(
-                    httpClientHandler,
-                    true);
-            }
-            else
-            {
-                httpClient = new HttpClient();
-            }
+                new RetryDelegatingHandler(), 
+            };
+
+            HttpClient httpClient = new HttpClient(
+                this.CreateHttpPipeline(delegatingHandlers, httpClientHandler));
 
             httpClient.DefaultRequestHeaders.CacheControl = new CacheControlHeaderValue()
             {
@@ -82,6 +80,44 @@
             };
 
             return httpClient;
+        }
+
+        /// <summary>
+        /// Create http pipeline.
+        /// </summary>
+        /// <param name="delegatingHandlers">Delegating handlers.</param>
+        /// <param name="innerHandler">Inner handler.</param>
+        /// <returns></returns>
+        private HttpMessageHandler CreateHttpPipeline(DelegatingHandler[] delegatingHandlers, HttpMessageHandler innerHandler = null)
+        {
+            if (innerHandler == null)
+            {
+                innerHandler = new HttpClientHandler();
+            }
+
+            if (delegatingHandlers == null)
+            {
+                return innerHandler;
+            }
+
+            HttpMessageHandler httpPipeline = innerHandler;
+
+            for (int i = delegatingHandlers.Length - 1; i >= 0; i--)
+            {
+                if (delegatingHandlers[i] == null)
+                {
+                    throw new ArgumentNullException(nameof(delegatingHandlers));
+                }
+                if (delegatingHandlers[i].InnerHandler != null)
+                {
+                    throw new InvalidOperationException("Delegating handler already has inner handler.");
+                }
+
+                delegatingHandlers[i].InnerHandler = httpPipeline;
+                httpPipeline = delegatingHandlers[i];
+            }
+
+            return httpPipeline;
         }
 
         /// <summary>

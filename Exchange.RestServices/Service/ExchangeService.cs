@@ -1454,17 +1454,6 @@
             }
         }
 
-        /// <summary>
-        /// Trace throttling in case it occurs.
-        /// </summary>
-        /// <param name="webResponse"></param>
-        /// <param name="retryCount"></param>
-        internal void TraceThrottling(IHttpWebResponse webResponse, int retryCount)
-        {
-            this.Trace(TraceFlags.Throttling, $"Throttling retry count: '{retryCount}'");
-            this.TraceHttpWebHeaders(TraceFlags.Throttling, webResponse.HttpResponseHeaders);
-        }
-
         #endregion
 
         #region Private methods

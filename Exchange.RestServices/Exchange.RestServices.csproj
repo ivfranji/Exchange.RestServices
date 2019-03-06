@@ -60,8 +60,10 @@
     <Compile Include="Service\Entity\ItemId.cs" />
     <Compile Include="Service\Entity\MessageId.cs" />
     <Compile Include="Service\Entity\TaskId.cs" />
+    <Compile Include="Service\ErrorHandling\CallThrottledException.cs" />
     <Compile Include="Service\ErrorHandling\Error.cs" />
     <Compile Include="Service\ErrorHandling\ErrorWrapper.cs" />
+    <Compile Include="Service\ErrorHandling\RestException.cs" />
     <Compile Include="Service\ErrorHandling\RestResponseException.cs" />
     <Compile Include="Service\ExchangeService.cs" />
     <Compile Include="Service\Extensions\ExtendedPropertyDefinition.cs" />
@@ -77,6 +79,7 @@
     <Compile Include="Service\FilterFormatter\RecipientFilterFormatter.cs" />
     <Compile Include="Service\FilterFormatter\StringFilterFormatter.cs" />
     <Compile Include="Service\HttpCore\DeleteRequestBase.cs" />
+    <Compile Include="Service\HttpCore\Extensions\RetryDelegatingHandler.cs" />
     <Compile Include="Service\HttpCore\GetRequestBase.cs" />
     <Compile Include="Service\HttpCore\HttpRestUrl.cs" />
     <Compile Include="Service\HttpCore\HttpWebRequest.cs" />
@@ -143,7 +146,6 @@
     <Compile Include="Service\QueryAndView\SyncFolderItemsCollection.cs" />
     <Compile Include="Service\RestEnvironment.cs" />
     <Compile Include="Service\Auth\SimpleAuthorizationTokenProvider.cs" />
-    <Compile Include="Service\Throttling\ThrottlingHandler.cs" />
     <Compile Include="Service\Tracing\DefaultTraceListener.cs" />
     <Compile Include="Service\Tracing\ITraceListener.cs" />
     <Compile Include="Service\Tracing\TraceFlags.cs" />

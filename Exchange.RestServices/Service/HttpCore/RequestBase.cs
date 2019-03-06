@@ -81,12 +81,7 @@
             this.PreProcessHttpWebRequestInternal(httpWebRequest);
             this.PreferHeaderSetter?.Invoke(httpWebRequest);
 
-            IHttpWebResponse httpWebResponse =
-                ThrottlingHandler.ExecuteRequestUnderThrottlingGuard(
-                    httpWebRequest.GetResponse, 
-                    3,
-                    this.exchangeService.TraceThrottling);
-
+            IHttpWebResponse httpWebResponse = httpWebRequest.GetResponse();
             this.ProcessHttpWebResponseInternal(httpWebResponse);
             return httpWebResponse;
         }
