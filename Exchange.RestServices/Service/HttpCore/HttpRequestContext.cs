@@ -10,8 +10,22 @@
         /// </summary>
         /// <param name="exchangeService">Exchange service.</param>
         public HttpRequestContext(ExchangeService exchangeService)
+            : this(new TraceContext(exchangeService))
         {
             this.TraceContext = new TraceContext(exchangeService);
+        }
+
+        /// <summary>
+        /// Create new instance of <see cref="HttpRequestContext"/>
+        /// </summary>
+        /// <param name="traceContext"></param>
+        public HttpRequestContext(TraceContext traceContext)
+        {
+            ArgumentValidator.ThrowIfNull(
+                traceContext, 
+                nameof(traceContext));
+
+            this.TraceContext = traceContext;
         }
 
         /// <summary>
@@ -30,10 +44,21 @@
         /// </summary>
         /// <param name="exchangeService"></param>
         public TraceContext(ExchangeService exchangeService)
+            : this(exchangeService.TraceEnabled, exchangeService.TraceFlags, exchangeService.TraceListener)
         {
-            this.TraceEnabled = exchangeService.TraceEnabled;
-            this.TraceFlags = exchangeService.TraceFlags;
-            this.TraceListener = exchangeService.TraceListener;
+        }
+
+        /// <summary>
+        /// Create new instance of <see cref="TraceContext"/>
+        /// </summary>
+        /// <param name="traceEnabled"></param>
+        /// <param name="traceFlags"></param>
+        /// <param name="traceListener"></param>
+        public TraceContext(bool traceEnabled, TraceFlags traceFlags, ITraceListener traceListener)
+        {
+            this.TraceEnabled = traceEnabled;
+            this.TraceFlags = traceFlags;
+            this.TraceListener = traceListener;
         }
         
         /// <summary>

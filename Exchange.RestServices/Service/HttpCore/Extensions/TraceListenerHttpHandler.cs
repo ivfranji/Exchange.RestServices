@@ -20,7 +20,7 @@
         protected async override Task<HttpResponseMessage> SendAsync(HttpRequestMessage httpRequest,CancellationToken cancellationToken)
         {
             HttpRequestContext requestContext = this.GetRequestContext(httpRequest);
-            if (null == requestContext && !requestContext.TraceContext.TraceEnabled)
+            if (null == requestContext || !requestContext.TraceContext.TraceEnabled)
             {
                 // logging not enabled, send it do next in pipeline.
                 return await base.SendAsync(httpRequest, cancellationToken);
@@ -88,7 +88,9 @@
                 TraceFlags.HttpResponseHeaders)
             {
                 string formattedHeaders = string.Join(
-                    Environment.NewLine, httpResponseMessage.Headers.Select(x => x.Key + ": " + x.Value));
+                    Environment.NewLine, httpResponseMessage.Headers.Select(
+                        x => x.Key + ": " + this.FormatHttpHeaderValue(x.Value)));
+
                 httpRequestContext.TraceContext.TraceListener.Trace(
                     TraceFlags.HttpResponseHeaders.ToString(),
                     formattedHeaders);
@@ -108,7 +110,7 @@
                 }
 
                 httpRequestContext.TraceContext.TraceListener.Trace(
-                    TraceFlags.HttpResponseHeaders.ToString(),
+                    TraceFlags.HttpResponse.ToString(),
                     traceContent);
             }
         }

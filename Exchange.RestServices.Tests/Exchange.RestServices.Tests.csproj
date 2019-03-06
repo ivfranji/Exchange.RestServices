@@ -74,6 +74,7 @@
     <Compile Include="FunctionalTests\TestsDefinition\MailMessageTestDefinition.cs" />
     <Compile Include="FunctionalTests\TestsDefinition\TasksTestDefinition.cs" />
     <Compile Include="Mocks\Helper.cs" />
+    <Compile Include="Mocks\MockHttpClientHandler.cs" />
     <Compile Include="Mocks\MockHttpClients.cs" />
     <Compile Include="MockTests\MockTestRunner.cs" />
     <Compile Include="MockTests\OutlookMockTests.cs" />
@@ -107,6 +108,7 @@
     <Compile Include="Service\QueryAndView\SyncQueryTests.cs" />
     <Compile Include="Service\QueryAndView\SyncTokenTests.cs" />
     <Compile Include="Service\Throttling\ThrottlingHandlerTests.cs" />
+    <Compile Include="Service\TraceHandler\TraceListenerHttpTests.cs" />
     <Compile Include="TestAuthenticationProvider.cs" />
   </ItemGroup>
   <ItemGroup>
