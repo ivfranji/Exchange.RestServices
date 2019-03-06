@@ -53,6 +53,7 @@
     <Compile Include="Service\ActionAttribute.cs" />
     <Compile Include="Service\ActionMapper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Service\Auth\AuthFactory.cs" />
     <Compile Include="Service\Entity\AttachmentId.cs" />
     <Compile Include="Service\Entity\ContactId.cs" />
     <Compile Include="Service\Entity\EntityId.cs" />
@@ -65,6 +66,7 @@
     <Compile Include="Service\ErrorHandling\ErrorWrapper.cs" />
     <Compile Include="Service\ErrorHandling\RestException.cs" />
     <Compile Include="Service\ErrorHandling\RestResponseException.cs" />
+    <Compile Include="Service\ErrorHandling\RetryCountException.cs" />
     <Compile Include="Service\ExchangeService.cs" />
     <Compile Include="Service\Extensions\ExtendedPropertyDefinition.cs" />
     <Compile Include="Service\Extensions\MapiPropertyType.cs" />
@@ -79,7 +81,10 @@
     <Compile Include="Service\FilterFormatter\RecipientFilterFormatter.cs" />
     <Compile Include="Service\FilterFormatter\StringFilterFormatter.cs" />
     <Compile Include="Service\HttpCore\DeleteRequestBase.cs" />
-    <Compile Include="Service\HttpCore\Extensions\RetryDelegatingHandler.cs" />
+    <Compile Include="Service\HttpCore\Extensions\AuthZHttpHandler.cs" />
+    <Compile Include="Service\HttpCore\Extensions\RetryHttpHandler.cs" />
+    <Compile Include="Service\HttpCore\Extensions\ThrottlingHttpHandler.cs" />
+    <Compile Include="Service\HttpCore\Extensions\RetryOptions.cs" />
     <Compile Include="Service\HttpCore\GetRequestBase.cs" />
     <Compile Include="Service\HttpCore\HttpRestUrl.cs" />
     <Compile Include="Service\HttpCore\HttpWebRequest.cs" />

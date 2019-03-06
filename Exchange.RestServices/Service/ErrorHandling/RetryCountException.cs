@@ -1,23 +1,21 @@
 ﻿namespace Exchange.RestServices
 {
     using System;
-    using System.Net;
 
     /// <summary>
-    /// Exception thrown by retry handler in case call has been throttled more
-    /// time than retry option configured.
+    /// Throws when retry-count exceeded.
     /// </summary>
-    public class CallThrottledException : RestException
+    public class RetryCountException : RestException
     {
         /// <summary>
-        /// Creates new instance of <see cref="CallThrottledException"/>
+        /// Create new instance of <see cref="RetryCountException"/>
         /// </summary>
-        /// <param name="retryCount"></param>
-        /// <param name="totalDelayApplied"></param>
+        /// <param name="retryCount">Retry count.</param>
+        /// <param name="totalDelayApplied">Total delay applied.</param>
         /// <param name="requestUri"></param>
         /// <param name="requestMethod"></param>
-        public CallThrottledException(int retryCount, int totalDelayApplied, Uri requestUri, string requestMethod) 
-            : base("Call throttled.", requestUri, requestMethod)
+        public RetryCountException(int retryCount, int totalDelayApplied, Uri requestUri, string requestMethod) 
+            : base("Retry handler exceeded retry count.", requestUri, requestMethod)
         {
             this.RetryCount = retryCount;
             this.TotalDelayApplied = totalDelayApplied;

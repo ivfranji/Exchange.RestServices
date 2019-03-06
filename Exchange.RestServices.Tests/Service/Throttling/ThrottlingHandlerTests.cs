@@ -3,6 +3,7 @@
     using System;
     using System.Net;
     using System.Net.Http;
+    using System.Net.Http.Headers;
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -69,6 +70,36 @@
             }
         }
 
+        [TestMethod]
+        [ExpectedException(typeof(AggregateException))]
+        public void TestThrottlingWithRetryAfterHeader()
+        {
+            try
+            {
+                HttpResponseMessage responseMessage = new HttpResponseMessage(HttpStatusCode.ServiceUnavailable);
+                responseMessage.Headers.RetryAfter = new RetryConditionHeaderValue(TimeSpan.FromSeconds(4));
+
+                this.TestThrottlingBehaviorWithCustomStatusCode(
+                    HttpStatusCode.ServiceUnavailable,
+                    responseMessage);
+            }
+            catch (AggregateException e)
+            {
+                CallThrottledException throttledException = (CallThrottledException) e.InnerException;
+                Assert.IsNotNull(throttledException);
+                Assert.AreEqual(
+                    3,
+                    throttledException.RetryCount);
+
+                // 3 * 4 seconds retrieved from Retry-After
+                Assert.AreEqual(
+                    12,
+                    throttledException.TotalDelayApplied);
+
+                throw;
+            }
+        }
+
         /// <summary>
         /// No throttling should be applied on HTTP 200
         /// </summary>
@@ -86,16 +117,18 @@
         /// </summary>
         /// <param name="statusCode"></param>
         /// <returns></returns>
-        private HttpResponseMessage TestThrottlingBehaviorWithCustomStatusCode(HttpStatusCode statusCode)
+        private HttpResponseMessage TestThrottlingBehaviorWithCustomStatusCode(HttpStatusCode statusCode, HttpResponseMessage responseMessage = null)
         {
-            RetryDelegatingHandler retryDelegating = new RetryDelegatingHandler(new RetryOptions(3, 2));
-            retryDelegating.InnerHandler = new MockHttpMessageHandler(
-                new HttpResponseMessage(statusCode)
+            if (null == responseMessage)
+            {
+                responseMessage = new HttpResponseMessage(statusCode)
                 {
                     Content = new StringContent("Response content")
-                });
-
-            HttpClient httpClient = new HttpClient(retryDelegating);
+                };
+            }
+            ThrottlingHttpHandler throttlingHttp = new ThrottlingHttpHandler(new RetryOptions(3, 2));
+            throttlingHttp.InnerHandler = new MockHttpMessageHandler(responseMessage);
+            HttpClient httpClient = new HttpClient(throttlingHttp);
             return httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Get, "https://localhost:1234")).Result;
         }
 

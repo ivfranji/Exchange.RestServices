@@ -6,6 +6,7 @@
     using System.Net.Http;
     using System.Net.Http.Headers;
     using System.Threading.Tasks;
+    using Service.HttpCore.Extensions;
 
     /// <summary>
     /// Http web request client.
@@ -67,7 +68,8 @@
         {
             DelegatingHandler[] delegatingHandlers = new DelegatingHandler[]
             {
-                new RetryDelegatingHandler(), 
+                new ThrottlingHttpHandler(),
+                new AuthZHttpHandler(), 
             };
 
             HttpClient httpClient = new HttpClient(

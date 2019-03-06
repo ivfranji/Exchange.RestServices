@@ -8,6 +8,7 @@
     using System.Text;
     using System.Text.RegularExpressions;
     using Microsoft.OutlookServices;
+    using Service.Auth;
 
     /// <summary>
     /// Base service for Exchange operations.
@@ -15,6 +16,11 @@
     public class ExchangeService
     {
         #region Privates
+
+        /// <summary>
+        /// Lock object.
+        /// </summary>
+        private static object lockObject = new object();
 
         /// <summary>
         /// Prefer header name.
@@ -97,6 +103,17 @@
                 this.MailboxId = new MailboxId(mailboxId);
             }
 
+            if (AuthFactory.GetTokenProvider() == null)
+            {
+                lock (ExchangeService.lockObject)
+                {
+                    if (AuthFactory.GetTokenProvider() == null)
+                    {
+                        ExchangeService.SetAuthZProvider(tokenProvider);
+                    }
+                }
+            }
+
             this.AuthorizationTokenProvider = tokenProvider;
             this.TraceListener = new DefaultTraceListener();
             this.TraceFlags = TraceFlags.None;
@@ -125,6 +142,19 @@
         private bool HasPreferences
         {
             get { return this.Preferences.Count > 0; }
+        }
+
+        #endregion
+
+        #region Statics
+
+        /// <summary>
+        /// Set authorization provider.
+        /// </summary>
+        /// <param name="authorizationTokenProvider"></param>
+        public static void SetAuthZProvider(IAuthorizationTokenProvider authorizationTokenProvider)
+        {
+            AuthFactory.SetTokenProvider(authorizationTokenProvider);
         }
 
         #endregion
@@ -1397,12 +1427,6 @@
         /// <param name="webRequest"></param>
         internal void PrepareHttpWebRequest(IHttpWebRequest webRequest)
         {
-            AuthenticationHeaderValue authenticationHeader = this.AuthorizationTokenProvider.GetAuthenticationHeader();
-            ArgumentValidator.ThrowIfNull(
-                authenticationHeader,
-                nameof(authenticationHeader));
-
-            webRequest.Authorization = authenticationHeader;
             webRequest.UserAgent = this.UserAgent;
 
             if (this.HasPreferences)
