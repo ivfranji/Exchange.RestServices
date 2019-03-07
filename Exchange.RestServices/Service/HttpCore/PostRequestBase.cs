@@ -8,12 +8,6 @@
     /// </summary>
     internal class PostRequestBase : RequestBase
     {
-        internal PostRequestBase(ExchangeService exchangeService, string postContent) 
-            : base(exchangeService)
-        {
-            this.PostContent = postContent;
-        }
-
         /// <summary>
         /// Create new instance of <see cref="PostRequestBase"/>
         /// </summary>
@@ -40,7 +34,7 @@
         }
 
         /// <summary>
-        /// Execute and returns result - Async.
+        /// Execute and returns result - ASYNC.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>

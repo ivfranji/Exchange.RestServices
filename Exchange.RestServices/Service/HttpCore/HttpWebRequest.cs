@@ -6,7 +6,7 @@
     using System.Net.Http.Headers;
     using System.Text;
     using System.Threading.Tasks;
-    using Utilities;
+    using Exchange.RestServices.Utilities;
 
     /// <summary>
     /// HttpWebRequest.
@@ -96,20 +96,9 @@
         }
 
         /// <summary>
-        /// Authorization header.
+        /// Submits request to endpoint and get response back - ASYNC.
         /// </summary>
-        public AuthenticationHeaderValue Authorization
-        {
-            get { return this.httpRequestMessage.Headers.Authorization; }
-            set
-            {
-                lock (HttpWebRequest.lockObject)
-                {
-                    this.httpRequestMessage.Headers.Authorization = value;
-                }
-            }
-        }
-
+        /// <returns></returns>
         public async Task<IHttpWebResponse> GetResponseAsync()
         {
             this.PreProcessSetup();
@@ -118,33 +107,15 @@
             try
             {
                 responseMessage = await httpClient.SendAsync(this.httpRequestMessage);
-                bool requestSuccessful = false;
-                string error = string.Empty;
                 string content = string.Empty;
-
                 if (responseMessage.Content != null)
                 {
                     content = await responseMessage.Content.ReadAsStringAsync();
-                    if (responseMessage.IsSuccessStatusCode)
-                    {
-                        requestSuccessful = true;
-                    }
-                    else
-                    {
-                        error = content;
-                    }
-                }
-                else
-                {
-                    error = "Http content empty.";
                 }
 
-                return new HttpWebResponse(
-                    content,
-                    requestSuccessful,
-                    error,
-                    responseMessage.Headers,
-                    responseMessage.StatusCode);
+                return this.ProcessResponse(
+                    responseMessage,
+                    content);
             }
             finally
             {
@@ -162,33 +133,15 @@
             IHttpWebRequestClient httpClient = HttpWebRequestClientProvider.Instance.GetClient();
             using (HttpResponseMessage response = httpClient.SendAsync(this.httpRequestMessage).GetAwaiter().GetResult())
             {
-                bool requestSuccessful = false;
-                string error = string.Empty;
                 string content = string.Empty;
-
                 if (response.Content != null)
                 {
                     content = response.Content.ReadAsStringAsync().Result;
-                    if (response.IsSuccessStatusCode)
-                    {
-                        requestSuccessful = true;
-                    }
-                    else
-                    {
-                        error = content;
-                    }
-                }
-                else
-                {
-                    error = "Http content empty.";
                 }
 
-                return new HttpWebResponse(
-                    content,
-                    requestSuccessful,
-                    error,
-                    response.Headers,
-                    response.StatusCode);
+                return this.ProcessResponse(
+                    response,
+                    content);
             }
         }
 
@@ -327,6 +280,9 @@
                 "application/json");
         }
 
+        /// <summary>
+        /// Initialize request message.
+        /// </summary>
         private void InitializeRequestMessage()
         {
             switch (this.Method)
@@ -376,6 +332,42 @@
                 default:
                     throw new NotImplementedException(this.Method.ToString());
             }
+        }
+
+        /// <summary>
+        /// Process response. Content must come from calling method, not supposed to call
+        /// ReadAsStringAsync() here!
+        /// </summary>
+        /// <param name="responseMessage">Response message.</param>
+        /// <param name="content">Content.</param>
+        /// <returns></returns>
+        private IHttpWebResponse ProcessResponse(HttpResponseMessage responseMessage, string content)
+        {
+            bool requestSuccessful = false;
+            string error = string.Empty;
+
+            if (responseMessage.Content != null)
+            {
+                if (responseMessage.IsSuccessStatusCode)
+                {
+                    requestSuccessful = true;
+                }
+                else
+                {
+                    error = content;
+                }
+            }
+            else
+            {
+                error = "Http content empty.";
+            }
+
+            return new HttpWebResponse(
+                content,
+                requestSuccessful,
+                error,
+                responseMessage.Headers,
+                responseMessage.StatusCode);
         }
     }
 }

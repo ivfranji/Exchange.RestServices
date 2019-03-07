@@ -19,7 +19,7 @@
         }
 
         /// <summary>
-        /// Execute request - Async.
+        /// Execute request - ASYNC.
         /// </summary>
         /// <returns></returns>
         public async Task ExecuteAsync()

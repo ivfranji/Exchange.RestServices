@@ -73,16 +73,13 @@
         }
 
         /// <summary>
-        /// Execute request async.
+        /// Execute request and returns response - ASYNC.
         /// </summary>
         /// <param name="httpWebRequest">Http web request.</param>
         /// <returns></returns>
         protected async Task<IHttpWebResponse> ExecuteRequestAsync(IHttpWebRequest httpWebRequest)
         {
-            this.PreProcessHttpWebRequestInternal(httpWebRequest);
-            this.PreferHeaderSetter?.Invoke(httpWebRequest);
-
-            httpWebRequest.SetRequestContext(this.exchangeService);
+            this.PreExecuteRequest(httpWebRequest);
             IHttpWebResponse httpWebResponse = await httpWebRequest.GetResponseAsync();
             this.ProcessHttpWebResponseInternal(httpWebResponse);
             return httpWebResponse;
@@ -95,10 +92,7 @@
         /// <returns></returns>
         protected IHttpWebResponse ExecuteRequest(IHttpWebRequest httpWebRequest)
         {
-            this.PreProcessHttpWebRequestInternal(httpWebRequest);
-            this.PreferHeaderSetter?.Invoke(httpWebRequest);
-
-            httpWebRequest.SetRequestContext(this.exchangeService);
+            this.PreExecuteRequest(httpWebRequest);
             IHttpWebResponse httpWebResponse = httpWebRequest.GetResponse();
             this.ProcessHttpWebResponseInternal(httpWebResponse);
             return httpWebResponse;
@@ -178,6 +172,17 @@
         {
             this.PreProcessHttpWebRequest(httpWebRequest);
             this.exchangeService.PrepareHttpWebRequest(httpWebRequest);
+        }
+
+        /// <summary>
+        /// Execute logic just before request sent to http pipeline.
+        /// </summary>
+        /// <param name="httpWebRequest"></param>
+        private void PreExecuteRequest(IHttpWebRequest httpWebRequest)
+        {
+            this.PreProcessHttpWebRequestInternal(httpWebRequest);
+            this.PreferHeaderSetter?.Invoke(httpWebRequest);
+            httpWebRequest.SetRequestContext(this.exchangeService);
         }
     }
 }

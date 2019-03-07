@@ -6,11 +6,6 @@
     static class AuthFactory
     {
         /// <summary>
-        /// Lock instance.
-        /// </summary>
-        private static object lockObject = new object();
-
-        /// <summary>
         /// Token provider.
         /// </summary>
         private static IAuthorizationTokenProvider tokenProvider;

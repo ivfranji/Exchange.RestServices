@@ -16,6 +16,13 @@
         /// <param name="exchangeService"></param>
         public static void CreateReadUpdateDeleteInferenceClassificationOverride(ExchangeService exchangeService)
         {
+            // Cleanup.
+            List<InferenceClassificationOverride> overrides = exchangeService.GetInferenceClassificationOverrides();
+            foreach (InferenceClassificationOverride classificationOverride in overrides)
+            {
+                classificationOverride.Delete();
+            }
+
             InferenceClassificationOverride inferenceClassification = new InferenceClassificationOverride(exchangeService);
             inferenceClassification.ClassifyAs = InferenceClassificationType.Focused;
             inferenceClassification.SenderEmailAddress = new EmailAddress()
@@ -61,6 +68,13 @@
         /// <param name="exchangeService"></param>
         public static async System.Threading.Tasks.Task CreateReadUpdateDeleteInferenceClassificationOverrideAsync(ExchangeService exchangeService)
         {
+            // Cleanup.
+            List<InferenceClassificationOverride> overrides = await exchangeService.GetInferenceClassificationOverridesAsync();
+            foreach (InferenceClassificationOverride classificationOverride in overrides)
+            {
+                await classificationOverride.DeleteAsync();
+            }
+
             InferenceClassificationOverride inferenceClassification = new InferenceClassificationOverride(exchangeService);
             inferenceClassification.ClassifyAs = InferenceClassificationType.Focused;
             inferenceClassification.SenderEmailAddress = new EmailAddress()

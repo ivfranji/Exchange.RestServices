@@ -29,7 +29,7 @@
         }
 
         /// <summary>
-        /// Execute request async.
+        /// Execute request - ASYNC.
         /// </summary>
         /// <returns></returns>
         public async Task<T> ExecuteAsync()

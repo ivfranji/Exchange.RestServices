@@ -1,6 +1,7 @@
 ﻿namespace Exchange.RestServices.Tests.Functional
 {
     using System;
+    using System.Diagnostics;
     using TestsDefinition;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Exchange.RestServices;
@@ -243,6 +244,24 @@
                 new FolderId(WellKnownFolderName.Inbox),
                 new MessageView(20));
 
+            var createInferenceClassificationMailboxA = exchangeServiceMailboxA.CreateInferenceClassificationOverrideAsync(new InferenceClassificationOverride()
+                {
+                    ClassifyAs = InferenceClassificationType.Focused,
+                    SenderEmailAddress = new EmailAddress()
+                    {
+                        Address = "a@b.com"
+                    }
+                });
+
+            var createInferenceClassificationMailboxB = exchangeServiceMailboxA.CreateInferenceClassificationOverrideAsync(new InferenceClassificationOverride()
+            {
+                ClassifyAs = InferenceClassificationType.Focused,
+                SenderEmailAddress = new EmailAddress()
+                {
+                    Address = "a@b.com"
+                }
+            });
+
             foreach (MailFolder folder in await exchangeServiceMailboxA.FindFoldersAsync(new FolderId(WellKnownFolderName.MsgFolderRoot),null, new FolderView(10) ))
             {
                 Assert.AreEqual(
@@ -270,6 +289,19 @@
                 }
             }
 
+            InferenceClassificationOverride inferenceClassificationOverrideA =
+                await createInferenceClassificationMailboxA;
+
+            inferenceClassificationOverrideA.SenderEmailAddress = new EmailAddress()
+            {
+                Address = "c@c.com"
+            };
+
+            await inferenceClassificationOverrideA.UpdateAsync();
+            Assert.AreEqual(
+                "c@c.com",
+                inferenceClassificationOverrideA.SenderEmailAddress.Address);
+
             foreach (MailFolder folder in await exchangeServiceMailboxB.FindFoldersAsync(new FolderId(WellKnownFolderName.MsgFolderRoot), null, new FolderView(10)))
             {
                 Assert.AreEqual(
@@ -286,6 +318,15 @@
                         msg.MailboxId.Id);
                 }
             }
+
+            InferenceClassificationOverride inferenceClassificationOverrideB =
+                await createInferenceClassificationMailboxB;
+
+            inferenceClassificationOverrideB.ClassifyAs = InferenceClassificationType.Other;
+            await inferenceClassificationOverrideB.UpdateAsync();
+            Assert.AreEqual(
+                InferenceClassificationType.Other,
+                inferenceClassificationOverrideB.ClassifyAs);
 
             foreach (Item item in await itemsFromSentMailboxB)
             {

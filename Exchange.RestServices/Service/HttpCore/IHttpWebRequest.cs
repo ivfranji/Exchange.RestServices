@@ -18,12 +18,7 @@
         /// Request url.
         /// </summary>
         Uri RequestUrl { get; }
-
-        /// <summary>
-        /// Authorization to be used in the request.
-        /// </summary>
-        AuthenticationHeaderValue Authorization { get; set; }
-
+        
         /// <summary>
         /// User agent to be used for request.
         /// </summary>

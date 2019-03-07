@@ -493,6 +493,57 @@
 
         #region Message operations
 
+        #region Item request create
+
+        /// <summary>
+        /// Create GET FindItems request.
+        /// </summary>
+        /// <param name="parentFolderId"></param>
+        /// <param name="searchFilter"></param>
+        /// <param name="itemView"></param>
+        /// <returns></returns>
+        private GetRequestBase<ResponseCollection<Item>> CreateGetFindItemsRequest(FolderId parentFolderId, SearchFilter searchFilter, ViewBase itemView)
+        {
+            ArgumentValidator.ThrowIfNull(
+                parentFolderId,
+                nameof(parentFolderId));
+
+            ArgumentValidator.ThrowIfNull(
+                itemView,
+                nameof(itemView));
+
+            IQuery searchQuery = itemView.ViewQuery;
+            if (null != searchFilter)
+            {
+                searchQuery = new CompositeQuery(new[] { searchFilter, itemView.ViewQuery });
+            }
+
+            GetRequestBase<ResponseCollection<Item>> request = new GetRequestBase<ResponseCollection<Item>>(
+                this,
+                (httpRestUrl) =>
+                {
+                    if (itemView.FollowODataNextLink &&
+                        !string.IsNullOrEmpty(itemView.ODataNextLink))
+                    {
+                        httpRestUrl.ODataNextUri = itemView.ODataNextLink;
+                    }
+                    else
+                    {
+                        httpRestUrl.RelativePath = parentFolderId.MessagesContainer;
+                        httpRestUrl.Query = searchQuery;
+                        this.EnsureCorrectEndpoint(
+                            httpRestUrl,
+                            parentFolderId);
+                    }
+                });
+
+            request.DeserializationType = itemView.Type;
+
+            return request;
+        }
+
+        #endregion
+
         /// <inheritdoc cref="IExchangeService.FindItems(FolderId,ViewBase)"/>
         public FindItemsResults<Item> FindItems(FolderId parentFolderId, ViewBase itemView)
         {
@@ -549,43 +600,12 @@
         /// <inheritdoc cref="IExchangeService.FindItems(FolderId,SearchFilter,ViewBase)"/>
         public FindItemsResults<Item> FindItems(FolderId parentFolderId, SearchFilter searchFilter, ViewBase itemView)
         {
-            ArgumentValidator.ThrowIfNull(
-                parentFolderId,
-                nameof(parentFolderId));
+            GetRequestBase<ResponseCollection<Item>> request = this.CreateGetFindItemsRequest(
+                parentFolderId, 
+                searchFilter, 
+                itemView);
 
-            ArgumentValidator.ThrowIfNull(
-                itemView,
-                nameof(itemView));
-
-            IQuery searchQuery = itemView.ViewQuery;
-            if (null != searchFilter)
-            {
-                searchQuery = new CompositeQuery(new[] {searchFilter, itemView.ViewQuery});
-            }
-            
-            GetRequestBase<ResponseCollection<Item>> request = new GetRequestBase<ResponseCollection<Item>>(
-                this,
-                (httpRestUrl) =>
-                {
-                    if (itemView.FollowODataNextLink &&
-                        !string.IsNullOrEmpty(itemView.ODataNextLink))
-                    {
-                        httpRestUrl.ODataNextUri = itemView.ODataNextLink;
-                    }
-                    else
-                    {
-                        httpRestUrl.RelativePath = parentFolderId.MessagesContainer;
-                        httpRestUrl.Query = searchQuery;
-                        this.EnsureCorrectEndpoint(
-                            httpRestUrl,
-                            parentFolderId);
-                    }
-                });
-
-            request.DeserializationType = itemView.Type;
             ResponseCollection<Item> response = request.Execute();
-
-
             // for null response return empty collection.
             if (null == response)
             {
@@ -611,40 +631,11 @@
         /// <inheritdoc cref="IExchangeService.FindItems(FolderId,SearchFilter,ViewBase)"/>
         public async Task<FindItemsResults<Item>> FindItemsAsync(FolderId parentFolderId, SearchFilter searchFilter, ViewBase itemView)
         {
-            ArgumentValidator.ThrowIfNull(
-                parentFolderId,
-                nameof(parentFolderId));
+            GetRequestBase<ResponseCollection<Item>> request = this.CreateGetFindItemsRequest(
+                parentFolderId, 
+                searchFilter, 
+                itemView);
 
-            ArgumentValidator.ThrowIfNull(
-                itemView,
-                nameof(itemView));
-
-            IQuery searchQuery = itemView.ViewQuery;
-            if (null != searchFilter)
-            {
-                searchQuery = new CompositeQuery(new[] { searchFilter, itemView.ViewQuery });
-            }
-
-            GetRequestBase<ResponseCollection<Item>> request = new GetRequestBase<ResponseCollection<Item>>(
-                this,
-                (httpRestUrl) =>
-                {
-                    if (itemView.FollowODataNextLink &&
-                        !string.IsNullOrEmpty(itemView.ODataNextLink))
-                    {
-                        httpRestUrl.ODataNextUri = itemView.ODataNextLink;
-                    }
-                    else
-                    {
-                        httpRestUrl.RelativePath = parentFolderId.MessagesContainer;
-                        httpRestUrl.Query = searchQuery;
-                        this.EnsureCorrectEndpoint(
-                            httpRestUrl,
-                            parentFolderId);
-                    }
-                });
-
-            request.DeserializationType = itemView.Type;
             ResponseCollection<Item> response = await request.ExecuteAsync();
 
             // for null response return empty collection.
@@ -961,6 +952,109 @@
 
         #region Folder operations
 
+        #region Folder request creator
+
+        /// <summary>
+        /// Create GET find folders request.
+        /// </summary>
+        /// <param name="parentFolderId">Parent folder id.</param>
+        /// <param name="searchFilter">Search filter.</param>
+        /// <param name="folderView">Folder view.</param>
+        /// <returns></returns>
+        private GetRequestBase<ResponseCollection<MailFolder>> CreateGetFindFoldersRequest(FolderId parentFolderId, SearchFilter searchFilter, FolderView folderView)
+        {
+            ArgumentValidator.ThrowIfNull(
+                parentFolderId,
+                nameof(parentFolderId));
+
+            ArgumentValidator.ThrowIfNull(
+                folderView,
+                nameof(folderView));
+
+            IQuery searchQuery = folderView.ViewQuery;
+            if (null != searchFilter)
+            {
+                searchQuery = new CompositeQuery(new[] { searchFilter, folderView.ViewQuery });
+            }
+
+            GetRequestBase<ResponseCollection<MailFolder>> request = new GetRequestBase<ResponseCollection<MailFolder>>(
+                this,
+                (httpRestUrl) =>
+                {
+                    httpRestUrl.RelativePath = parentFolderId.ChildFoldersContainer;
+                    httpRestUrl.MailboxId = parentFolderId.MailboxId;
+                    httpRestUrl.Query = searchQuery;
+                    this.EnsureCorrectEndpoint(
+                        httpRestUrl,
+                        parentFolderId);
+                });
+
+            return request;
+        }
+
+        /// <summary>
+        /// Create PATCH folder request.
+        /// </summary>
+        /// <param name="folder"></param>
+        /// <returns></returns>
+        private PatchRequestBase CreateUpdateFolderRequest(MailFolder folder)
+        {
+            ArgumentValidator.ThrowIfNull(folder, nameof(folder));
+            ArgumentValidator.ThrowIfNullOrEmpty(folder.Id, nameof(folder.Id));
+
+            string content = this.Serializer.Serialize(
+                folder,
+                null,
+                false);
+
+            PatchRequestBase request = new PatchRequestBase(
+                this,
+                content,
+                (httpResturl) =>
+                {
+                    httpResturl.RelativePath = folder.FolderId.IdPath;
+                    this.EnsureCorrectEndpoint(
+                        httpResturl,
+                        folder.FolderId);
+                });
+
+            return request;
+        }
+
+        /// <summary>
+        /// Create POST folder request.
+        /// </summary>
+        /// <param name="folder">Folder to create.</param>
+        /// <param name="parentFolderId">Parent folder id.</param>
+        /// <returns></returns>
+        private PostRequestBase CreatePostFolderRequest(MailFolder folder, FolderId parentFolderId)
+        {
+            ArgumentValidator.ThrowIfNull(folder, nameof(folder));
+            folder.ResetChangeTracking();
+
+            // only care about display name.
+            folder.DisplayName = folder.DisplayName;
+            string content = this.Serializer.Serialize(
+                folder,
+                null,
+                false);
+
+            PostRequestBase request = new PostRequestBase(
+                this,
+                content,
+                (httpRestUrl) =>
+                {
+                    httpRestUrl.RelativePath = parentFolderId.ChildFoldersContainer;
+                    this.EnsureCorrectEndpoint(
+                        httpRestUrl,
+                        parentFolderId);
+                });
+
+            return request;
+        }
+
+        #endregion
+
         /// <inheritdoc cref="IExchangeService.FindFolders(FolderId,FolderView)"/>
         public FindFoldersResults FindFolders(FolderId parentFolderId, FolderView folderView)
         {
@@ -993,31 +1087,10 @@
         /// <inheritdoc cref="IExchangeService.FindFolders(FolderId,SearchFilter,FolderView)"/>
         public FindFoldersResults FindFolders(FolderId parentFolderId, SearchFilter searchFilter, FolderView folderView)
         {
-            ArgumentValidator.ThrowIfNull(
-                parentFolderId,
-                nameof(parentFolderId));
-
-            ArgumentValidator.ThrowIfNull(
-                folderView,
-                nameof(folderView));
-
-            IQuery searchQuery = folderView.ViewQuery;
-            if (null != searchFilter)
-            {
-                searchQuery = new CompositeQuery(new[] {searchFilter, folderView.ViewQuery});
-            }
-
-            GetRequestBase<ResponseCollection<MailFolder>> request = new GetRequestBase<ResponseCollection<MailFolder>>(
-                this,
-                (httpRestUrl) =>
-                {
-                    httpRestUrl.RelativePath = parentFolderId.ChildFoldersContainer;
-                    httpRestUrl.MailboxId = parentFolderId.MailboxId;
-                    httpRestUrl.Query = searchQuery;
-                    this.EnsureCorrectEndpoint(
-                        httpRestUrl,
-                        parentFolderId);
-                });
+            GetRequestBase<ResponseCollection<MailFolder>> request = this.CreateGetFindFoldersRequest(
+                    parentFolderId, 
+                    searchFilter, 
+                    folderView);
 
             ResponseCollection<MailFolder> response = request.Execute();
             if (null == response)
@@ -1037,31 +1110,10 @@
         /// <inheritdoc cref="IExchangeService.FindFolders(FolderId,SearchFilter,FolderView)"/>
         public async Task<FindFoldersResults> FindFoldersAsync(FolderId parentFolderId, SearchFilter searchFilter, FolderView folderView)
         {
-            ArgumentValidator.ThrowIfNull(
+            GetRequestBase<ResponseCollection<MailFolder>> request = this.CreateGetFindFoldersRequest(
                 parentFolderId,
-                nameof(parentFolderId));
-
-            ArgumentValidator.ThrowIfNull(
-                folderView,
-                nameof(folderView));
-
-            IQuery searchQuery = folderView.ViewQuery;
-            if (null != searchFilter)
-            {
-                searchQuery = new CompositeQuery(new[] { searchFilter, folderView.ViewQuery });
-            }
-
-            GetRequestBase<ResponseCollection<MailFolder>> request = new GetRequestBase<ResponseCollection<MailFolder>>(
-                this,
-                (httpRestUrl) =>
-                {
-                    httpRestUrl.RelativePath = parentFolderId.ChildFoldersContainer;
-                    httpRestUrl.MailboxId = parentFolderId.MailboxId;
-                    httpRestUrl.Query = searchQuery;
-                    this.EnsureCorrectEndpoint(
-                        httpRestUrl,
-                        parentFolderId);
-                });
+                searchFilter,
+                folderView);
 
             ResponseCollection<MailFolder> response = await request.ExecuteAsync();
             if (null == response)
@@ -1205,34 +1257,45 @@
         }
 
         /// <summary>
+        /// Update folder properties - ASYNC.
+        /// </summary>
+        /// <param name="folder"></param>
+        /// <returns></returns>
+        public async Task<MailFolder> UpdateFolderAsync(MailFolder folder)
+        {
+            PatchRequestBase request = this.CreateUpdateFolderRequest(folder);
+            return await this.ProcessMailFolderRequestAsync(
+                request.ExecuteAsync<MailFolder>,
+                folder.FolderId);
+        }
+
+        /// <summary>
         /// Update folder properties.
         /// </summary>
         /// <param name="folder"></param>
         /// <returns></returns>
         internal MailFolder UpdateFolder(MailFolder folder)
         {
-            ArgumentValidator.ThrowIfNull(folder, nameof(folder));
-            ArgumentValidator.ThrowIfNullOrEmpty(folder.Id, nameof(folder.Id));
-
-            string content = this.Serializer.Serialize(
-                folder,
-                null,
-                false);
-
-            PatchRequestBase request = new PatchRequestBase(
-                this,
-                content,
-                (httpResturl) =>
-                {
-                    httpResturl.RelativePath = folder.FolderId.IdPath;
-                    this.EnsureCorrectEndpoint(
-                        httpResturl,
-                        folder.FolderId);
-                });
-
+            PatchRequestBase request = this.CreateUpdateFolderRequest(folder);
             return this.ProcessMailFolderRequest(
                 request.Execute<MailFolder>,
                 folder.FolderId);
+        }
+
+        /// <summary>
+        /// Create mail folder - ASYNC.
+        /// </summary>
+        /// <param name="folder">Folder to create.</param>
+        /// <returns></returns>
+        internal async Task<MailFolder> CreateFolderAsync(MailFolder folder, FolderId parentFolderId)
+        {
+            PostRequestBase request = this.CreatePostFolderRequest(
+                folder,
+                parentFolderId);
+
+            return await this.ProcessMailFolderRequestAsync(
+                request.ExecuteAsync<MailFolder>,
+                parentFolderId);
         }
 
         /// <summary>
@@ -1242,26 +1305,9 @@
         /// <returns></returns>
         internal MailFolder CreateFolder(MailFolder folder, FolderId parentFolderId)
         {
-            ArgumentValidator.ThrowIfNull(folder, nameof(folder));
-            folder.ResetChangeTracking();
-
-            // only care about display name.
-            folder.DisplayName = folder.DisplayName;
-            string content = this.Serializer.Serialize(
-                folder,
-                null,
-                false);
-
-            PostRequestBase request = new PostRequestBase(
-                this,
-                content,
-                (httpRestUrl) =>
-                {
-                    httpRestUrl.RelativePath = parentFolderId.ChildFoldersContainer;
-                    this.EnsureCorrectEndpoint(
-                        httpRestUrl,
-                        parentFolderId);
-                });
+            PostRequestBase request = this.CreatePostFolderRequest(
+                folder, 
+                parentFolderId);
 
             return this.ProcessMailFolderRequest(
                 request.Execute<MailFolder>,
@@ -1278,6 +1324,15 @@
         }
 
         /// <summary>
+        /// Delete folder from the store - ASYNC.
+        /// </summary>
+        /// <param name="folderId">Folder id.</param>
+        public async System.Threading.Tasks.Task DeleteFolderAsync(FolderId folderId)
+        {
+            await this.DeleteEntityAsync(folderId);
+        }
+
+        /// <summary>
         /// Delete folder from the store.
         /// </summary>
         /// <param name="folderId">Folder id.</param>
@@ -1289,6 +1344,98 @@
         #endregion
 
         #region InboxRule operations
+
+        #region Rule request creator
+
+        /// <summary>
+        /// Create update rule request - PATCH request.
+        /// </summary>
+        /// <param name="rule">Rule to update.</param>
+        /// <returns></returns>
+        private PatchRequestBase CreateUpdateRuleRequest(MessageRule rule)
+        {
+            ArgumentValidator.ThrowIfNull(rule, nameof(rule));
+            ArgumentValidator.ThrowIfNullOrEmpty(rule.Id, "ruleId");
+
+            if (rule.IsNew)
+            {
+                throw new ArgumentException("Cannot update non-existing rules. Please create rule first.");
+            }
+
+            FolderId folderId = new FolderId(
+                WellKnownFolderName.Inbox,
+                this.MailboxId.Id);
+            string content = this.Serializer.Serialize(
+                rule,
+                null,
+                false);
+
+            PatchRequestBase request = new PatchRequestBase(
+                this,
+                content,
+                (httpRestUrl) =>
+                {
+                    httpRestUrl.RelativePath = $"{folderId.MessageRules}/{rule.Id}";
+                    this.EnsureCorrectEndpoint(
+                        httpRestUrl,
+                        folderId);
+                });
+
+            return request;
+        }
+
+        /// <summary>
+        /// Create delete rule request - DELETE request.
+        /// </summary>
+        /// <param name="rule"></param>
+        /// <returns></returns>
+        private DeleteRequestBase CreateDeleteRuleRequest(MessageRule rule)
+        {
+            FolderId folderId = new FolderId(WellKnownFolderName.Inbox);
+            DeleteRequestBase request = new DeleteRequestBase(
+                this,
+                (httpRestUrl) =>
+                {
+                    httpRestUrl.RelativePath = $"{folderId.MessageRules}/{rule.Id}";
+                    this.EnsureCorrectEndpoint(
+                        httpRestUrl,
+                        folderId);
+                });
+
+            return request;
+        }
+
+        /// <summary>
+        /// Create post rule request - POST request.
+        /// </summary>
+        /// <param name="rule"></param>
+        /// <returns></returns>
+        private PostRequestBase CreatePostRuleRequest(MessageRule rule)
+        {
+            ArgumentValidator.ThrowIfNull(
+                rule,
+                nameof(rule));
+
+            FolderId folderId = new FolderId(WellKnownFolderName.Inbox);
+            string content = this.Serializer.Serialize(
+                rule,
+                null,
+                false);
+
+            PostRequestBase request = new PostRequestBase(
+                this, content,
+                (httpRestUrl) =>
+                {
+                    httpRestUrl.RelativePath = folderId.MessageRules;
+                    this.EnsureCorrectEndpoint(
+                        httpRestUrl,
+                        folderId);
+                });
+
+            return request;
+        }
+
+        #endregion
 
         /// <summary>
         /// Get inbox rules in async fashion.
@@ -1357,7 +1504,7 @@
         }
 
         /// <summary>
-        /// Get specific inbox rule - Async.
+        /// Get specific inbox rule - ASYNC.
         /// </summary>
         /// <param name="ruleId">Rule id.</param>
         /// <returns></returns>
@@ -1427,39 +1574,13 @@
         }
 
         /// <summary>
-        /// Update inbox rule - Async.
+        /// Update inbox rule - ASYNC.
         /// </summary>
         /// <param name="rule"></param>
         /// <returns></returns>
         internal async Task<MessageRule> UpdateInboxRuleAsync(MessageRule rule)
         {
-            ArgumentValidator.ThrowIfNull(rule, nameof(rule));
-            ArgumentValidator.ThrowIfNullOrEmpty(rule.Id, "ruleId");
-
-            if (rule.IsNew)
-            {
-                throw new ArgumentException("Cannot update non-existing rules. Please create rule first.");
-            }
-
-            FolderId folderId = new FolderId(
-                WellKnownFolderName.Inbox,
-                this.MailboxId.Id);
-            string content = this.Serializer.Serialize(
-                rule,
-                null,
-                false);
-
-            PatchRequestBase request = new PatchRequestBase(
-                this,
-                content,
-                (httpRestUrl) =>
-                {
-                    httpRestUrl.RelativePath = $"{folderId.MessageRules}/{rule.Id}";
-                    this.EnsureCorrectEndpoint(
-                        httpRestUrl,
-                        folderId);
-                });
-
+            PatchRequestBase request = this.CreateUpdateRuleRequest(rule);
             MessageRule updatedRule = await request.ExecuteAsync<MessageRule>();
             updatedRule.Service = this;
             updatedRule.ResetChangeTracking();
@@ -1473,33 +1594,7 @@
         /// <param name="rule"></param>
         internal MessageRule UpdateInboxRule(MessageRule rule)
         {
-            ArgumentValidator.ThrowIfNull(rule, nameof(rule));
-            ArgumentValidator.ThrowIfNullOrEmpty(rule.Id, "ruleId");
-
-            if (rule.IsNew)
-            {
-                throw new ArgumentException("Cannot update non-existing rules. Please create rule first.");
-            }
-
-            FolderId folderId = new FolderId(
-                WellKnownFolderName.Inbox,
-                this.MailboxId.Id);
-            string content = this.Serializer.Serialize(
-                rule,
-                null,
-                false);
-
-            PatchRequestBase request = new PatchRequestBase(
-                this,
-                content,
-                (httpRestUrl) =>
-                {
-                    httpRestUrl.RelativePath = $"{folderId.MessageRules}/{rule.Id}";
-                    this.EnsureCorrectEndpoint(
-                        httpRestUrl,
-                        folderId);
-                });
-
+            PatchRequestBase request = this.CreateUpdateRuleRequest(rule);
             MessageRule updatedRule = request.Execute<MessageRule>();
             updatedRule.Service = this;
             updatedRule.ResetChangeTracking();
@@ -1508,23 +1603,13 @@
         }
 
         /// <summary>
-        /// Delete inbox rule - Async.
+        /// Delete inbox rule - ASYNC.
         /// </summary>
         /// <param name="rule"></param>
         /// <returns></returns>
         internal async System.Threading.Tasks.Task DeleteInboxRuleAsync(MessageRule rule)
         {
-            FolderId folderId = new FolderId(WellKnownFolderName.Inbox);
-            DeleteRequestBase request = new DeleteRequestBase(
-                this,
-                (httpRestUrl) =>
-                {
-                    httpRestUrl.RelativePath = $"{folderId.MessageRules}/{rule.Id}";
-                    this.EnsureCorrectEndpoint(
-                        httpRestUrl,
-                        folderId);
-                });
-
+            DeleteRequestBase request = this.CreateDeleteRuleRequest(rule);
             await request.ExecuteAsync();
         }
 
@@ -1534,47 +1619,18 @@
         /// <param name="rule">Rule to delete.</param>
         internal void DeleteInboxRule(MessageRule rule)
         {
-            FolderId folderId = new FolderId(WellKnownFolderName.Inbox);
-            DeleteRequestBase request = new DeleteRequestBase(
-                this,
-                (httpRestUrl) =>
-                {
-                    httpRestUrl.RelativePath = $"{folderId.MessageRules}/{rule.Id}";
-                    this.EnsureCorrectEndpoint(
-                        httpRestUrl,
-                        folderId);
-                });
-
+            DeleteRequestBase request = this.CreateDeleteRuleRequest(rule);
             request.Execute();
         }
 
         /// <summary>
-        /// Create inbox rule - Async.
+        /// Create inbox rule - ASYNC.
         /// </summary>
         /// <param name="rule"></param>
         /// <returns></returns>
         internal async Task<MessageRule> CreateInboxRuleAsync(MessageRule rule)
         {
-            ArgumentValidator.ThrowIfNull(
-                rule,
-                nameof(rule));
-
-            FolderId folderId = new FolderId(WellKnownFolderName.Inbox);
-            string content = this.Serializer.Serialize(
-                rule,
-                null,
-                false);
-
-            PostRequestBase request = new PostRequestBase(
-                this, content,
-                (httpRestUrl) =>
-                {
-                    httpRestUrl.RelativePath = folderId.MessageRules;
-                    this.EnsureCorrectEndpoint(
-                        httpRestUrl,
-                        folderId);
-                });
-
+            PostRequestBase request = this.CreatePostRuleRequest(rule);
             MessageRule messageRule = await request.ExecuteAsync<MessageRule>();
             messageRule.Service = this;
             messageRule.ResetChangeTracking();
@@ -1589,26 +1645,7 @@
         /// <returns></returns>
         internal MessageRule CreateInboxRule(MessageRule rule)
         {
-            ArgumentValidator.ThrowIfNull(
-                rule,
-                nameof(rule));
-
-            FolderId folderId = new FolderId(WellKnownFolderName.Inbox);
-            string content = this.Serializer.Serialize(
-                rule,
-                null,
-                false);
-
-            PostRequestBase request = new PostRequestBase(
-                this, content,
-                (httpRestUrl) =>
-                {
-                    httpRestUrl.RelativePath = folderId.MessageRules;
-                    this.EnsureCorrectEndpoint(
-                        httpRestUrl,
-                        folderId);
-                });
-
+            PostRequestBase request = this.CreatePostRuleRequest(rule);
             MessageRule messageRule = request.Execute<MessageRule>();
             messageRule.Service = this;
             messageRule.ResetChangeTracking();
@@ -1620,14 +1657,15 @@
 
         #region Inference Classification operations
 
+        #region Inference classification request creator
+
         /// <summary>
-        /// List inference classification overrides in async fasion.
+        /// Create GET inference request.
         /// </summary>
         /// <returns></returns>
-        public async Task<List<InferenceClassificationOverride>> GetInferenceClassificationOverridesAsync()
+        private GetRequestBase<ResponseCollection<InferenceClassificationOverride>> CreateGetInferenceClassificationOverrideRequest()
         {
-            GetRequestBase<ResponseCollection<InferenceClassificationOverride>> request =
-                new GetRequestBase<ResponseCollection<InferenceClassificationOverride>>(
+            return new GetRequestBase<ResponseCollection<InferenceClassificationOverride>>(
                     this,
                     (httpRestUrl) =>
                     {
@@ -1636,7 +1674,102 @@
                             httpRestUrl,
                             null);
                     });
+        }
 
+        /// <summary>
+        /// Create PATCH inference request.
+        /// </summary>
+        /// <param name="inferenceOverride"></param>
+        /// <returns></returns>
+        private PatchRequestBase CreateUpdateInferenceClassificationOverrideRequest(InferenceClassificationOverride inferenceOverride)
+        {
+            ArgumentValidator.ThrowIfNull(
+                inferenceOverride,
+                nameof(inferenceOverride));
+
+            string content = this.Serializer.Serialize(
+                inferenceOverride,
+                null,
+                false);
+
+            PatchRequestBase request = new PatchRequestBase(
+                this,
+                content,
+                (httpRestUrl) =>
+                {
+                    httpRestUrl.RelativePath = $"inferenceClassification/overrides/{inferenceOverride.Id}";
+                    this.EnsureCorrectEndpoint(
+                        httpRestUrl,
+                        null);
+                });
+
+            return request;
+        }
+
+        /// <summary>
+        /// Cerate POST inference request.
+        /// </summary>
+        /// <param name="inferenceOverride"></param>
+        /// <returns></returns>
+        private PostRequestBase CreatePostInferenceClassificationOverrideRequest(InferenceClassificationOverride inferenceOverride)
+        {
+            ArgumentValidator.ThrowIfNull(
+                inferenceOverride,
+                nameof(inferenceOverride));
+
+            string content = this.Serializer.Serialize(
+                inferenceOverride,
+                null,
+                false);
+
+            PostRequestBase request = new PostRequestBase(
+                this,
+                content,
+                (httpRestUrl) =>
+                {
+                    httpRestUrl.RelativePath = "inferenceClassification/overrides";
+                    this.EnsureCorrectEndpoint(
+                        httpRestUrl,
+                        null);
+                });
+
+            return request;
+        }
+
+        /// <summary>
+        /// Create DELETE inference request.
+        /// </summary>
+        /// <param name="inferenceOverride"></param>
+        /// <returns></returns>
+        private DeleteRequestBase CreateDeleteInferenceClassificationOverrideRequest(InferenceClassificationOverride inferenceOverride)
+        {
+            ArgumentValidator.ThrowIfNull(
+                inferenceOverride,
+                nameof(inferenceOverride));
+
+            DeleteRequestBase request = new DeleteRequestBase(
+                this,
+                (httpRestUrl) =>
+                {
+                    httpRestUrl.RelativePath = $"inferenceClassification/overrides/{inferenceOverride.Id}";
+                    this.EnsureCorrectEndpoint(
+                        httpRestUrl,
+                        null);
+                });
+
+            return request;
+        }
+
+        #endregion
+
+        /// <summary>
+        /// List inference classification overrides - ASYNC.
+        /// </summary>
+        /// <returns></returns>
+        public async Task<List<InferenceClassificationOverride>> GetInferenceClassificationOverridesAsync()
+        {
+            GetRequestBase<ResponseCollection<InferenceClassificationOverride>> request =
+                this.CreateGetInferenceClassificationOverrideRequest();
             ResponseCollection<InferenceClassificationOverride> response = await request.ExecuteAsync();
             if (null != response)
             {
@@ -1661,16 +1794,7 @@
         public List<InferenceClassificationOverride> GetInferenceClassificationOverrides()
         {
             GetRequestBase<ResponseCollection<InferenceClassificationOverride>> request =
-                new GetRequestBase<ResponseCollection<InferenceClassificationOverride>>(
-                    this,
-                    (httpRestUrl) =>
-                    {
-                        httpRestUrl.RelativePath = $"{nameof(InferenceClassification)}/overrides";
-                        this.EnsureCorrectEndpoint(
-                            httpRestUrl,
-                            null);
-                    });
-
+                this.CreateGetInferenceClassificationOverrideRequest();
             ResponseCollection<InferenceClassificationOverride> response = request.Execute();
             if (null != response)
             {
@@ -1689,32 +1813,13 @@
         }
 
         /// <summary>
-        /// Update inference classification override.
+        /// Update inference classification override - ASYNC.
         /// </summary>
         /// <param name="inferenceOverride"></param>
         /// <returns></returns>
         internal async Task<InferenceClassificationOverride> UpdateInferenceClassificationOverrideAsync(InferenceClassificationOverride inferenceOverride)
         {
-            ArgumentValidator.ThrowIfNull(
-                inferenceOverride,
-                nameof(inferenceOverride));
-
-            string content = this.Serializer.Serialize(
-                inferenceOverride,
-                null,
-                false);
-
-            PatchRequestBase request = new PatchRequestBase(
-                this,
-                content,
-                (httpRestUrl) =>
-                {
-                    httpRestUrl.RelativePath = $"inferenceClassification/overrides/{inferenceOverride.Id}";
-                    this.EnsureCorrectEndpoint(
-                        httpRestUrl,
-                        null);
-                });
-
+            PatchRequestBase request = this.CreateUpdateInferenceClassificationOverrideRequest(inferenceOverride);
             InferenceClassificationOverride inferenceClassification =
                 await request.ExecuteAsync<InferenceClassificationOverride>();
             inferenceClassification.Service = this;
@@ -1731,26 +1836,7 @@
         internal InferenceClassificationOverride UpdateInferenceClassificationOverride(
             InferenceClassificationOverride inferenceOverride)
         {
-            ArgumentValidator.ThrowIfNull(
-                inferenceOverride,
-                nameof(inferenceOverride));
-
-            string content = this.Serializer.Serialize(
-                inferenceOverride,
-                null,
-                false);
-
-            PatchRequestBase request = new PatchRequestBase(
-                this,
-                content,
-                (httpRestUrl) =>
-                {
-                    httpRestUrl.RelativePath = $"inferenceClassification/overrides/{inferenceOverride.Id}";
-                    this.EnsureCorrectEndpoint(
-                        httpRestUrl,
-                        null);
-                });
-
+            PatchRequestBase request = this.CreateUpdateInferenceClassificationOverrideRequest(inferenceOverride);
             InferenceClassificationOverride inferenceClassification =
                 request.Execute<InferenceClassificationOverride>();
             inferenceClassification.Service = this;
@@ -1760,32 +1846,13 @@
         }
 
         /// <summary>
-        /// Create inference classification override.
+        /// Create inference classification override - ASYNC.
         /// </summary>
         /// <param name="inferenceOverride"></param>
         /// <returns></returns>
         internal async Task<InferenceClassificationOverride> CreateInferenceClassificationOverrideAsync(InferenceClassificationOverride inferenceOverride)
         {
-            ArgumentValidator.ThrowIfNull(
-                inferenceOverride,
-                nameof(inferenceOverride));
-
-            string content = this.Serializer.Serialize(
-                inferenceOverride,
-                null,
-                false);
-
-            PostRequestBase request = new PostRequestBase(
-                this,
-                content,
-                (httpRestUrl) =>
-                {
-                    httpRestUrl.RelativePath = "inferenceClassification/overrides";
-                    this.EnsureCorrectEndpoint(
-                        httpRestUrl,
-                        null);
-                });
-
+            PostRequestBase request = this.CreatePostInferenceClassificationOverrideRequest(inferenceOverride);
             InferenceClassificationOverride inferenceClassification =
                 await request.ExecuteAsync<InferenceClassificationOverride>();
             inferenceClassification.Service = this;
@@ -1802,26 +1869,7 @@
         internal InferenceClassificationOverride CreateInferenceClassificationOverride(
             InferenceClassificationOverride inferenceOverride)
         {
-            ArgumentValidator.ThrowIfNull(
-                inferenceOverride,
-                nameof(inferenceOverride));
-
-            string content = this.Serializer.Serialize(
-                inferenceOverride,
-                null,
-                false);
-
-            PostRequestBase request = new PostRequestBase(
-                this,
-                content,
-                (httpRestUrl) =>
-                {
-                    httpRestUrl.RelativePath = "inferenceClassification/overrides";
-                    this.EnsureCorrectEndpoint(
-                        httpRestUrl,
-                        null);
-                });
-
+            PostRequestBase request = this.CreatePostInferenceClassificationOverrideRequest(inferenceOverride);
             InferenceClassificationOverride inferenceClassification =
                 request.Execute<InferenceClassificationOverride>();
             inferenceClassification.Service = this;
@@ -1831,25 +1879,12 @@
         }
 
         /// <summary>
-        /// Delete inference classification override.
+        /// Delete inference classification override - ASYNC.
         /// </summary>
         /// <param name="inferenceOverride"></param>
         internal async System.Threading.Tasks.Task DeleteInferenceClassificationOverrideAsync(InferenceClassificationOverride inferenceOverride)
         {
-            ArgumentValidator.ThrowIfNull(
-                inferenceOverride,
-                nameof(inferenceOverride));
-
-            DeleteRequestBase request = new DeleteRequestBase(
-                this,
-                (httpRestUrl) =>
-                {
-                    httpRestUrl.RelativePath = $"inferenceClassification/overrides/{inferenceOverride.Id}";
-                    this.EnsureCorrectEndpoint(
-                        httpRestUrl,
-                        null);
-                });
-
+            DeleteRequestBase request = this.CreateDeleteInferenceClassificationOverrideRequest(inferenceOverride);
             await request.ExecuteAsync();
         }
 
@@ -1859,20 +1894,7 @@
         /// <param name="inferenceOverride"></param>
         internal void DeleteInferenceClassificationOverride(InferenceClassificationOverride inferenceOverride)
         {
-            ArgumentValidator.ThrowIfNull(
-                inferenceOverride,
-                nameof(inferenceOverride));
-
-            DeleteRequestBase request = new DeleteRequestBase(
-                this,
-                (httpRestUrl) =>
-                {
-                    httpRestUrl.RelativePath = $"inferenceClassification/overrides/{inferenceOverride.Id}";
-                    this.EnsureCorrectEndpoint(
-                        httpRestUrl,
-                        null);
-                });
-
+            DeleteRequestBase request = this.CreateDeleteInferenceClassificationOverrideRequest(inferenceOverride);
             request.Execute();
         }
 
@@ -2005,11 +2027,9 @@
                 return default(Item);
             }
 
-            outlookItem.Service = this;
-            outlookItem.MailboxId = this.GetMailboxId(entity);
-            outlookItem.ResetChangeTracking();
-
-            return outlookItem;
+            return this.ConfigureItemAndReturn(
+                outlookItem,
+                entity);
         }
 
         /// <summary>
@@ -2028,11 +2048,27 @@
                 return null;
             }
 
-            outlookItem.Service = this;
-            outlookItem.MailboxId = this.GetMailboxId(entity);
-            outlookItem.ResetChangeTracking();
+            return this.ConfigureItemAndReturn(
+                outlookItem, 
+                entity);
+        }
 
-            return outlookItem;
+        /// <summary>
+        /// Process mail folder request.
+        /// </summary>
+        /// <param name="mailFolderRequest"></param>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        private async Task<MailFolder> ProcessMailFolderRequestAsync(Func<Task<MailFolder>> mailFolderRequest, EntityId entity)
+        {
+            ArgumentValidator.ThrowIfNull(mailFolderRequest, nameof(mailFolderRequest));
+            MailFolder mailFolder = await mailFolderRequest();
+            if (null == mailFolder)
+            {
+                return null;
+            }
+
+            return this.ConfigureMailFolderAndReturn(mailFolder, entity);
         }
 
         /// <summary>
@@ -2045,12 +2081,37 @@
         {
             ArgumentValidator.ThrowIfNull(mailFolderRequest, nameof(mailFolderRequest));
             MailFolder mailFolder = mailFolderRequest();
-
             if (null == mailFolder)
             {
                 return null;
             }
 
+            return this.ConfigureMailFolderAndReturn(mailFolder, entity);
+        }
+
+        /// <summary>
+        /// Configure outlook item and returns.
+        /// </summary>
+        /// <param name="outlookItem">Outlook item.</param>
+        /// <param name="entity">Entity Id.</param>
+        /// <returns></returns>
+        private Item ConfigureItemAndReturn(Item outlookItem, EntityId entity)
+        {
+            outlookItem.Service = this;
+            outlookItem.MailboxId = this.GetMailboxId(entity);
+            outlookItem.ResetChangeTracking();
+
+            return outlookItem;
+        }
+
+        /// <summary>
+        /// Configure mail folder and returns.
+        /// </summary>
+        /// <param name="mailFolder">Mail folder.</param>
+        /// <param name="entity">Entity id.</param>
+        /// <returns></returns>
+        private MailFolder ConfigureMailFolderAndReturn(MailFolder mailFolder, EntityId entity)
+        {
             mailFolder.Service = this;
             mailFolder.MailboxId = this.GetMailboxId(entity);
             mailFolder.ResetChangeTracking();
