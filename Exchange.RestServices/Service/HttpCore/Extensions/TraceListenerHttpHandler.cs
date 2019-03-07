@@ -70,7 +70,12 @@
             if ((httpRequestContext.TraceContext.TraceFlags & TraceFlags.HttpRequest) == 
                 TraceFlags.HttpRequest)
             {
-                string requestContent = await httpRequestMessage.Content.ReadAsStringAsync();
+                string requestContent = "Content Empty.";
+                if (null != httpRequestMessage.Content)
+                {
+                    requestContent = await httpRequestMessage.Content.ReadAsStringAsync();
+                }
+                 
                 httpRequestContext.TraceContext.TraceListener.Trace(
                     TraceFlags.HttpRequest.ToString(),
                     requestContent);
@@ -106,7 +111,7 @@
                 }
                 else
                 {
-                    traceContent = "Error: Http content empty.";
+                    traceContent = "Http content empty.";
                 }
 
                 httpRequestContext.TraceContext.TraceListener.Trace(

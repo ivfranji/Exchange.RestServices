@@ -10,6 +10,36 @@
     public class TraceListenerHttpTests
     {
         [TestMethod]
+        public void Test_TracingDoesntCrashOnEmptyContent()
+        {
+            this.RunTest(
+                TraceFlags.All,
+                true,
+                this.GetRequestMessageContentEmpty(),
+                this.GetResponseMessageContentEmpty(),
+                (traceType, traceMessage) =>
+                {
+                    // nothing, just validate that it won't
+                    // crash on empty request content.
+                });
+        }
+
+        [TestMethod]
+        public void Test_TracingDoesntCrashOnEmptyResponseContent()
+        {
+            this.RunTest(
+                TraceFlags.All,
+                true,
+                this.GetRequestMessageContentEmpty(),
+                this.GetResponseMessage(),
+                (traceType, traceMessage) =>
+                {
+                    // nothing, just validate that it won't
+                    // crash on empty request content.
+                });
+        }
+
+        [TestMethod]
         public void Test_HttpRequestHeaderTracing()
         {
             this.RunTest(
@@ -147,6 +177,17 @@
             return requestMessage;
         }
 
+        private HttpRequestMessage GetRequestMessageContentEmpty()
+        {
+            HttpRequestMessage requestMessage = new HttpRequestMessage(
+                HttpMethod.Get,
+                "https://localhost");
+            requestMessage.Headers.Add("TestHeader1", "TestHeaderValue1");
+            requestMessage.Headers.Add("TestHeader2", "TestHeaderValue2");
+
+            return requestMessage;
+        }
+
         private HttpResponseMessage GetResponseMessage()
         {
             HttpResponseMessage responseMessage = new HttpResponseMessage(HttpStatusCode.OK);
@@ -155,6 +196,16 @@
                 new []{"TestValue1", "TestValue2"});
 
             responseMessage.Content = new StringContent("Test response content");
+            return responseMessage;
+        }
+
+        private HttpResponseMessage GetResponseMessageContentEmpty()
+        {
+            HttpResponseMessage responseMessage = new HttpResponseMessage(HttpStatusCode.OK);
+            responseMessage.Headers.Add(
+                "TestResponseHeader",
+                new[] { "TestValue1", "TestValue2" });
+
             return responseMessage;
         }
 

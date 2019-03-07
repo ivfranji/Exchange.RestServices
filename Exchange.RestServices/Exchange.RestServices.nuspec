@@ -2,7 +2,7 @@
 <package>
   <metadata>
     <id>ExchangeRestServices</id>
-    <version>1.0.0.0</version>
+    <version>1.1.0.1</version>
     <title>Exchange RestServices</title>
     <authors>Ivan Franjic</authors>
     <owners>Ivan Franjic</owners>
@@ -11,7 +11,7 @@
     <iconUrl>https://github.com/ivfranji/Exchange.RestServices</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Library for interacting with Exchange REST Api</description>
-    <releaseNotes>Initial version.</releaseNotes>
+    <releaseNotes>Trace listener would crash on empty GET/DELETE content.</releaseNotes>
     <copyright>Copyright 2019</copyright>
     <tags>ExchangeOnline REST RestAPI Exchange-Rest-Managed-Api ExchangeServer</tags>
   </metadata>
