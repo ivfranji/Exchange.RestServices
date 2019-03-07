@@ -1,6 +1,7 @@
 ﻿namespace Exchange.RestServices
 {
     using System;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// Post request base.
@@ -39,6 +40,19 @@
         }
 
         /// <summary>
+        /// Execute and returns result - Async.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        internal async Task<T> ExecuteAsync<T>()
+        {
+            IHttpWebResponse response = await this.ExecuteRequestAsync(this.PostContent);
+            return this.Deserialize<T>(
+                response,
+                this.DeserializationType);
+        }
+
+        /// <summary>
         /// Execute and returns result.
         /// </summary>
         /// <typeparam name="T"></typeparam>
@@ -49,6 +63,20 @@
             return this.Deserialize<T>(
                 response, 
                 this.DeserializationType);
+        }
+
+        /// <summary>
+        /// Execute POST request - Async.
+        /// </summary>
+        /// <param name="content"></param>
+        /// <returns></returns>
+        internal async Task<IHttpWebResponse> ExecuteRequestAsync(string content)
+        {
+            using (IHttpWebRequest httpWebRequest = HttpWebRequest.Post(this.RestUrl, content))
+            {
+                IHttpWebResponse httpWebResponse = await this.ExecuteRequestAsync(httpWebRequest);
+                return httpWebResponse;
+            }
         }
 
         /// <summary>

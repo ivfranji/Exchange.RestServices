@@ -2,7 +2,8 @@
 {
     using System;
     using System.Net.Http.Headers;
-    
+    using System.Threading.Tasks;
+
     /// <summary>
     /// Http web request contract.
     /// </summary>
@@ -32,6 +33,12 @@
         /// Request headers.
         /// </summary>
         HttpRequestHeaders Headers { get; }
+
+        /// <summary>
+        /// Get response async.
+        /// </summary>
+        /// <returns></returns>
+        Task<IHttpWebResponse> GetResponseAsync();
 
         /// <summary>
         /// Invokes request and retrieve response.

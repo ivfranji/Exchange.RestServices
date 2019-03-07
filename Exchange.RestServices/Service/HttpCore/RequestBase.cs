@@ -2,6 +2,7 @@
 {
     using System;
     using System.Net;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// Base class for all requests.
@@ -69,6 +70,22 @@
         protected virtual void ProcessHttpWebResponse(IHttpWebResponse httpWebResponse)
         {
             httpWebResponse.ThrowIfNeeded(this.ThrowRestException);
+        }
+
+        /// <summary>
+        /// Execute request async.
+        /// </summary>
+        /// <param name="httpWebRequest">Http web request.</param>
+        /// <returns></returns>
+        protected async Task<IHttpWebResponse> ExecuteRequestAsync(IHttpWebRequest httpWebRequest)
+        {
+            this.PreProcessHttpWebRequestInternal(httpWebRequest);
+            this.PreferHeaderSetter?.Invoke(httpWebRequest);
+
+            httpWebRequest.SetRequestContext(this.exchangeService);
+            IHttpWebResponse httpWebResponse = await httpWebRequest.GetResponseAsync();
+            this.ProcessHttpWebResponseInternal(httpWebResponse);
+            return httpWebResponse;
         }
 
         /// <summary>

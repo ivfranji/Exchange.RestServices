@@ -1,6 +1,7 @@
 ﻿namespace Exchange.RestServices
 {
     using System;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// Delete request base.
@@ -15,6 +16,18 @@
         internal DeleteRequestBase(ExchangeService exchangeService, Action<HttpRestUrl> httpRestUrlPreProcess) 
             : base(exchangeService, httpRestUrlPreProcess)
         {
+        }
+
+        /// <summary>
+        /// Execute request - Async.
+        /// </summary>
+        /// <returns></returns>
+        public async Task ExecuteAsync()
+        {
+            using (IHttpWebRequest httpWebRequest = HttpWebRequest.Delete(this.RestUrl))
+            {
+                IHttpWebResponse httpWebResponse = await this.ExecuteRequestAsync(httpWebRequest);
+            }
         }
 
         /// <summary>

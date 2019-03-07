@@ -7,8 +7,10 @@
     using System.Net.Http.Headers;
     using System.Text;
     using System.Text.RegularExpressions;
+    using System.Threading.Tasks;
     using Microsoft.OutlookServices;
     using Service.Auth;
+    using Task = Microsoft.OutlookServices.Task;
 
     /// <summary>
     /// Base service for Exchange operations.
@@ -114,7 +116,7 @@
                 }
             }
 
-            this.AuthorizationTokenProvider = tokenProvider;
+            //this.AuthorizationTokenProvider = tokenProvider;
             this.TraceListener = new DefaultTraceListener();
             this.TraceFlags = TraceFlags.None;
             this.TraceEnabled = false;
@@ -500,6 +502,15 @@
                 itemView);
         }
 
+        /// <inheritdoc cref="IExchangeService.FindItems(FolderId,ViewBase)"/>
+        public async Task<FindItemsResults<Item>> FindItemsAsync(FolderId parentFolderId, ViewBase itemView)
+        {
+            return await this.FindItemsAsync(
+                parentFolderId,
+                null,
+                itemView);
+        }
+
         /// <inheritdoc cref="IExchangeService.FindItems(WellKnownFolderName,ViewBase)"/>
         public FindItemsResults<Item> FindItems(WellKnownFolderName wellKnownFolderName, ViewBase itemView)
         {
@@ -574,6 +585,67 @@
             request.DeserializationType = itemView.Type;
             ResponseCollection<Item> response = request.Execute();
 
+
+            // for null response return empty collection.
+            if (null == response)
+            {
+                return new FindItemsResults<Item>(
+                    new ResponseCollection<Item>(),
+                    this,
+                    this.GetMailboxId(parentFolderId));
+            }
+            else
+            {
+                if (itemView.FollowODataNextLink)
+                {
+                    itemView.ODataNextLink = response.ODataNextLink;
+                }
+            }
+
+            return new FindItemsResults<Item>(
+                response,
+                this,
+                this.GetMailboxId(parentFolderId));
+        }
+
+        /// <inheritdoc cref="IExchangeService.FindItems(FolderId,SearchFilter,ViewBase)"/>
+        public async Task<FindItemsResults<Item>> FindItemsAsync(FolderId parentFolderId, SearchFilter searchFilter, ViewBase itemView)
+        {
+            ArgumentValidator.ThrowIfNull(
+                parentFolderId,
+                nameof(parentFolderId));
+
+            ArgumentValidator.ThrowIfNull(
+                itemView,
+                nameof(itemView));
+
+            IQuery searchQuery = itemView.ViewQuery;
+            if (null != searchFilter)
+            {
+                searchQuery = new CompositeQuery(new[] { searchFilter, itemView.ViewQuery });
+            }
+
+            GetRequestBase<ResponseCollection<Item>> request = new GetRequestBase<ResponseCollection<Item>>(
+                this,
+                (httpRestUrl) =>
+                {
+                    if (itemView.FollowODataNextLink &&
+                        !string.IsNullOrEmpty(itemView.ODataNextLink))
+                    {
+                        httpRestUrl.ODataNextUri = itemView.ODataNextLink;
+                    }
+                    else
+                    {
+                        httpRestUrl.RelativePath = parentFolderId.MessagesContainer;
+                        httpRestUrl.Query = searchQuery;
+                        this.EnsureCorrectEndpoint(
+                            httpRestUrl,
+                            parentFolderId);
+                    }
+                });
+
+            request.DeserializationType = itemView.Type;
+            ResponseCollection<Item> response = await request.ExecuteAsync();
 
             // for null response return empty collection.
             if (null == response)
@@ -683,6 +755,40 @@
         }
 
         /// <summary>
+        /// Create Outlook item Async.
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="parentFolderId"></param>
+        /// <param name="deserializationType"></param>
+        /// <returns></returns>
+        internal async Task<Item> CreateItemAsync(Item item, FolderId parentFolderId)
+        {
+            ArgumentValidator.ThrowIfNull(item, nameof(item));
+            ArgumentValidator.ThrowIfNull(parentFolderId, nameof(parentFolderId));
+
+            string content = this.Serializer.Serialize(
+                item,
+                null,
+                false);
+
+            PostRequestBase request = new PostRequestBase(
+                this,
+                content,
+                (httpRestUrl) =>
+                {
+                    httpRestUrl.RelativePath = parentFolderId.MessagesContainer;
+                    this.EnsureCorrectEndpoint(
+                        httpRestUrl,
+                        parentFolderId);
+                });
+
+            request.DeserializationType = item.GetType();
+            return await this.ProcessOutlookItemRequestAsync(
+                request.ExecuteAsync<Item>,
+                parentFolderId);
+        }
+
+        /// <summary>
         /// Create Outlook item.
         /// </summary>
         /// <param name="item"></param>
@@ -717,6 +823,38 @@
         }
 
         /// <summary>
+        /// Update outlook item - Async.
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        internal async Task<Item> UpdateItemAsync(Item item)
+        {
+            ArgumentValidator.ThrowIfNull(item, nameof(item));
+            ArgumentValidator.ThrowIfNullOrEmpty(item.Id, nameof(item.Id));
+
+            string content = this.Serializer.Serialize(
+                item,
+                null,
+                false);
+
+            PatchRequestBase request = new PatchRequestBase(
+                this,
+                content,
+                (httpResturl) =>
+                {
+                    httpResturl.RelativePath = item.ItemId.IdPath;
+                    this.EnsureCorrectEndpoint(
+                        httpResturl,
+                        item.ItemId);
+                });
+
+            request.DeserializationType = item.GetType();
+            return await this.ProcessOutlookItemRequestAsync(
+                request.ExecuteAsync<Item>,
+                item.ItemId);
+        }
+
+        /// <summary>
         /// Update outlook item.
         /// </summary>
         /// <param name="item"></param>
@@ -746,6 +884,15 @@
             return this.ProcessOutlookItemRequest(
                 request.Execute<Item>,
                 item.ItemId);
+        }
+
+        /// <summary>
+        /// Delete item from the store - Async.
+        /// </summary>
+        /// <param name="itemId">Item id.</param>
+        public async System.Threading.Tasks.Task DeleteItemAsync(ItemId itemId)
+        {
+            await this.DeleteEntityAsync(itemId);
         }
 
         /// <summary>
@@ -873,6 +1020,50 @@
                 });
 
             ResponseCollection<MailFolder> response = request.Execute();
+            if (null == response)
+            {
+                response = new ResponseCollection<MailFolder>();
+            }
+            else
+            {
+                response.RegisterServiceAndResetChangeTracking(
+                    this,
+                    this.GetMailboxId(parentFolderId));
+            }
+
+            return new FindFoldersResults(response);
+        }
+
+        /// <inheritdoc cref="IExchangeService.FindFolders(FolderId,SearchFilter,FolderView)"/>
+        public async Task<FindFoldersResults> FindFoldersAsync(FolderId parentFolderId, SearchFilter searchFilter, FolderView folderView)
+        {
+            ArgumentValidator.ThrowIfNull(
+                parentFolderId,
+                nameof(parentFolderId));
+
+            ArgumentValidator.ThrowIfNull(
+                folderView,
+                nameof(folderView));
+
+            IQuery searchQuery = folderView.ViewQuery;
+            if (null != searchFilter)
+            {
+                searchQuery = new CompositeQuery(new[] { searchFilter, folderView.ViewQuery });
+            }
+
+            GetRequestBase<ResponseCollection<MailFolder>> request = new GetRequestBase<ResponseCollection<MailFolder>>(
+                this,
+                (httpRestUrl) =>
+                {
+                    httpRestUrl.RelativePath = parentFolderId.ChildFoldersContainer;
+                    httpRestUrl.MailboxId = parentFolderId.MailboxId;
+                    httpRestUrl.Query = searchQuery;
+                    this.EnsureCorrectEndpoint(
+                        httpRestUrl,
+                        parentFolderId);
+                });
+
+            ResponseCollection<MailFolder> response = await request.ExecuteAsync();
             if (null == response)
             {
                 response = new ResponseCollection<MailFolder>();
@@ -1099,6 +1290,43 @@
 
         #region InboxRule operations
 
+        /// <summary>
+        /// Get inbox rules in async fashion.
+        /// </summary>
+        /// <returns></returns>
+        public async Task<List<MessageRule>> GetInboxRulesAsync()
+        {
+            FolderId folderId = new FolderId(
+                WellKnownFolderName.Inbox,
+                this.MailboxId.Id);
+
+            GetRequestBase<ResponseCollection<MessageRule>> request =
+                new GetRequestBase<ResponseCollection<MessageRule>>(
+                    this,
+                    (httpRestUrl) =>
+                    {
+                        httpRestUrl.RelativePath = folderId.MessageRules;
+                        this.EnsureCorrectEndpoint(
+                            httpRestUrl,
+                            null);
+                    });
+
+            ResponseCollection<MessageRule> response = await request.ExecuteAsync();
+            if (null == response)
+            {
+                return new List<MessageRule>();
+            }
+
+            response.RegisterServiceAndResetChangeTracking(
+                this,
+                this.GetMailboxId(folderId));
+            return response.Value;
+        }
+
+        /// <summary>
+        /// Get inbox rules.
+        /// </summary>
+        /// <returns></returns>
         public List<MessageRule> GetInboxRules()
         {
             FolderId folderId = new FolderId(
@@ -1126,6 +1354,41 @@
                 this,
                 this.GetMailboxId(folderId));
             return response.Value;
+        }
+
+        /// <summary>
+        /// Get specific inbox rule - Async.
+        /// </summary>
+        /// <param name="ruleId">Rule id.</param>
+        /// <returns></returns>
+        public async Task<MessageRule> GetInboxRuleAsync(string ruleId)
+        {
+            ArgumentValidator.ThrowIfNullOrEmpty(
+                ruleId,
+                nameof(ruleId));
+
+            FolderId folderId = new FolderId(
+                WellKnownFolderName.Inbox,
+                this.MailboxId.Id);
+
+            GetRequestBase<MessageRule> request = new GetRequestBase<MessageRule>(
+                this,
+                (httpRestUrl) =>
+                {
+                    httpRestUrl.RelativePath = $"{folderId.MessageRules}/{ruleId}";
+                    this.EnsureCorrectEndpoint(
+                        httpRestUrl,
+                        null);
+                });
+
+            MessageRule rule = await request.ExecuteAsync();
+            if (null != rule)
+            {
+                rule.Service = this;
+                rule.ResetChangeTracking();
+            }
+
+            return rule;
         }
 
         /// <summary>
@@ -1161,6 +1424,47 @@
             }
 
             return rule;
+        }
+
+        /// <summary>
+        /// Update inbox rule - Async.
+        /// </summary>
+        /// <param name="rule"></param>
+        /// <returns></returns>
+        internal async Task<MessageRule> UpdateInboxRuleAsync(MessageRule rule)
+        {
+            ArgumentValidator.ThrowIfNull(rule, nameof(rule));
+            ArgumentValidator.ThrowIfNullOrEmpty(rule.Id, "ruleId");
+
+            if (rule.IsNew)
+            {
+                throw new ArgumentException("Cannot update non-existing rules. Please create rule first.");
+            }
+
+            FolderId folderId = new FolderId(
+                WellKnownFolderName.Inbox,
+                this.MailboxId.Id);
+            string content = this.Serializer.Serialize(
+                rule,
+                null,
+                false);
+
+            PatchRequestBase request = new PatchRequestBase(
+                this,
+                content,
+                (httpRestUrl) =>
+                {
+                    httpRestUrl.RelativePath = $"{folderId.MessageRules}/{rule.Id}";
+                    this.EnsureCorrectEndpoint(
+                        httpRestUrl,
+                        folderId);
+                });
+
+            MessageRule updatedRule = await request.ExecuteAsync<MessageRule>();
+            updatedRule.Service = this;
+            updatedRule.ResetChangeTracking();
+
+            return updatedRule;
         }
 
         /// <summary>
@@ -1204,6 +1508,27 @@
         }
 
         /// <summary>
+        /// Delete inbox rule - Async.
+        /// </summary>
+        /// <param name="rule"></param>
+        /// <returns></returns>
+        internal async System.Threading.Tasks.Task DeleteInboxRuleAsync(MessageRule rule)
+        {
+            FolderId folderId = new FolderId(WellKnownFolderName.Inbox);
+            DeleteRequestBase request = new DeleteRequestBase(
+                this,
+                (httpRestUrl) =>
+                {
+                    httpRestUrl.RelativePath = $"{folderId.MessageRules}/{rule.Id}";
+                    this.EnsureCorrectEndpoint(
+                        httpRestUrl,
+                        folderId);
+                });
+
+            await request.ExecuteAsync();
+        }
+
+        /// <summary>
         /// Delete inbox rule.
         /// </summary>
         /// <param name="rule">Rule to delete.</param>
@@ -1221,6 +1546,40 @@
                 });
 
             request.Execute();
+        }
+
+        /// <summary>
+        /// Create inbox rule - Async.
+        /// </summary>
+        /// <param name="rule"></param>
+        /// <returns></returns>
+        internal async Task<MessageRule> CreateInboxRuleAsync(MessageRule rule)
+        {
+            ArgumentValidator.ThrowIfNull(
+                rule,
+                nameof(rule));
+
+            FolderId folderId = new FolderId(WellKnownFolderName.Inbox);
+            string content = this.Serializer.Serialize(
+                rule,
+                null,
+                false);
+
+            PostRequestBase request = new PostRequestBase(
+                this, content,
+                (httpRestUrl) =>
+                {
+                    httpRestUrl.RelativePath = folderId.MessageRules;
+                    this.EnsureCorrectEndpoint(
+                        httpRestUrl,
+                        folderId);
+                });
+
+            MessageRule messageRule = await request.ExecuteAsync<MessageRule>();
+            messageRule.Service = this;
+            messageRule.ResetChangeTracking();
+
+            return messageRule;
         }
 
         /// <summary>
@@ -1262,6 +1621,40 @@
         #region Inference Classification operations
 
         /// <summary>
+        /// List inference classification overrides in async fasion.
+        /// </summary>
+        /// <returns></returns>
+        public async Task<List<InferenceClassificationOverride>> GetInferenceClassificationOverridesAsync()
+        {
+            GetRequestBase<ResponseCollection<InferenceClassificationOverride>> request =
+                new GetRequestBase<ResponseCollection<InferenceClassificationOverride>>(
+                    this,
+                    (httpRestUrl) =>
+                    {
+                        httpRestUrl.RelativePath = $"{nameof(InferenceClassification)}/overrides";
+                        this.EnsureCorrectEndpoint(
+                            httpRestUrl,
+                            null);
+                    });
+
+            ResponseCollection<InferenceClassificationOverride> response = await request.ExecuteAsync();
+            if (null != response)
+            {
+                foreach (InferenceClassificationOverride inferenceOverride in response.Value)
+                {
+                    inferenceOverride.Service = this;
+                    inferenceOverride.ResetChangeTracking();
+                }
+            }
+            else
+            {
+                response = new ResponseCollection<InferenceClassificationOverride>();
+            }
+
+            return response.Value;
+        }
+
+        /// <summary>
         /// List inference classification overrides.
         /// </summary>
         /// <returns></returns>
@@ -1293,6 +1686,41 @@
             }
 
             return response.Value;
+        }
+
+        /// <summary>
+        /// Update inference classification override.
+        /// </summary>
+        /// <param name="inferenceOverride"></param>
+        /// <returns></returns>
+        internal async Task<InferenceClassificationOverride> UpdateInferenceClassificationOverrideAsync(InferenceClassificationOverride inferenceOverride)
+        {
+            ArgumentValidator.ThrowIfNull(
+                inferenceOverride,
+                nameof(inferenceOverride));
+
+            string content = this.Serializer.Serialize(
+                inferenceOverride,
+                null,
+                false);
+
+            PatchRequestBase request = new PatchRequestBase(
+                this,
+                content,
+                (httpRestUrl) =>
+                {
+                    httpRestUrl.RelativePath = $"inferenceClassification/overrides/{inferenceOverride.Id}";
+                    this.EnsureCorrectEndpoint(
+                        httpRestUrl,
+                        null);
+                });
+
+            InferenceClassificationOverride inferenceClassification =
+                await request.ExecuteAsync<InferenceClassificationOverride>();
+            inferenceClassification.Service = this;
+            inferenceClassification.ResetChangeTracking();
+
+            return inferenceClassification;
         }
 
         /// <summary>
@@ -1336,6 +1764,41 @@
         /// </summary>
         /// <param name="inferenceOverride"></param>
         /// <returns></returns>
+        internal async Task<InferenceClassificationOverride> CreateInferenceClassificationOverrideAsync(InferenceClassificationOverride inferenceOverride)
+        {
+            ArgumentValidator.ThrowIfNull(
+                inferenceOverride,
+                nameof(inferenceOverride));
+
+            string content = this.Serializer.Serialize(
+                inferenceOverride,
+                null,
+                false);
+
+            PostRequestBase request = new PostRequestBase(
+                this,
+                content,
+                (httpRestUrl) =>
+                {
+                    httpRestUrl.RelativePath = "inferenceClassification/overrides";
+                    this.EnsureCorrectEndpoint(
+                        httpRestUrl,
+                        null);
+                });
+
+            InferenceClassificationOverride inferenceClassification =
+                await request.ExecuteAsync<InferenceClassificationOverride>();
+            inferenceClassification.Service = this;
+            inferenceClassification.ResetChangeTracking();
+
+            return inferenceClassification;
+        }
+
+        /// <summary>
+        /// Create inference classification override.
+        /// </summary>
+        /// <param name="inferenceOverride"></param>
+        /// <returns></returns>
         internal InferenceClassificationOverride CreateInferenceClassificationOverride(
             InferenceClassificationOverride inferenceOverride)
         {
@@ -1365,6 +1828,29 @@
             inferenceClassification.ResetChangeTracking();
 
             return inferenceClassification;
+        }
+
+        /// <summary>
+        /// Delete inference classification override.
+        /// </summary>
+        /// <param name="inferenceOverride"></param>
+        internal async System.Threading.Tasks.Task DeleteInferenceClassificationOverrideAsync(InferenceClassificationOverride inferenceOverride)
+        {
+            ArgumentValidator.ThrowIfNull(
+                inferenceOverride,
+                nameof(inferenceOverride));
+
+            DeleteRequestBase request = new DeleteRequestBase(
+                this,
+                (httpRestUrl) =>
+                {
+                    httpRestUrl.RelativePath = $"inferenceClassification/overrides/{inferenceOverride.Id}";
+                    this.EnsureCorrectEndpoint(
+                        httpRestUrl,
+                        null);
+                });
+
+            await request.ExecuteAsync();
         }
 
         /// <summary>
@@ -1458,6 +1944,29 @@
         }
 
         /// <summary>
+        /// Delete specified entity - Async.
+        /// </summary>
+        /// <param name="entityId"></param>
+        private async System.Threading.Tasks.Task DeleteEntityAsync(EntityId entityId)
+        {
+            ArgumentValidator.ThrowIfNull(
+                entityId,
+                nameof(entityId));
+
+            DeleteRequestBase deleteRequest = new DeleteRequestBase(
+                this,
+                (httpRestUrl) =>
+                {
+                    httpRestUrl.RelativePath = entityId.IdPath;
+                    this.EnsureCorrectEndpoint(
+                        httpRestUrl,
+                        entityId);
+                });
+
+            await deleteRequest.ExecuteAsync();
+        }
+
+        /// <summary>
         /// Delete specified entity.
         /// </summary>
         /// <param name="entityId"></param>
@@ -1481,9 +1990,32 @@
         }
 
         /// <summary>
+        /// Process Outlook item request - Async
+        /// </summary>
+        /// <param name="outlookItemRequest"></param>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        private async Task<Item> ProcessOutlookItemRequestAsync(Func<Task<Item>> outlookItemRequest, EntityId entity)
+        {
+            ArgumentValidator.ThrowIfNull(outlookItemRequest, nameof(outlookItemRequest));
+            Item outlookItem = await outlookItemRequest();
+
+            if (null == outlookItem)
+            {
+                return default(Item);
+            }
+
+            outlookItem.Service = this;
+            outlookItem.MailboxId = this.GetMailboxId(entity);
+            outlookItem.ResetChangeTracking();
+
+            return outlookItem;
+        }
+
+        /// <summary>
         /// Process Outlook item request.
         /// </summary>
-        /// <param name="outlookItemFetch"></param>
+        /// <param name="outlookItemRequest"></param>
         /// <param name="entity"></param>
         /// <returns></returns>
         private Item ProcessOutlookItemRequest(Func<Item> outlookItemRequest, EntityId entity)

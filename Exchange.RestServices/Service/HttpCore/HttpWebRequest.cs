@@ -110,23 +110,55 @@
             }
         }
 
+        public async Task<IHttpWebResponse> GetResponseAsync()
+        {
+            this.PreProcessSetup();
+            IHttpWebRequestClient httpClient = HttpWebRequestClientProvider.Instance.GetClient();
+            HttpResponseMessage responseMessage = null;
+            try
+            {
+                responseMessage = await httpClient.SendAsync(this.httpRequestMessage);
+                bool requestSuccessful = false;
+                string error = string.Empty;
+                string content = string.Empty;
+
+                if (responseMessage.Content != null)
+                {
+                    content = await responseMessage.Content.ReadAsStringAsync();
+                    if (responseMessage.IsSuccessStatusCode)
+                    {
+                        requestSuccessful = true;
+                    }
+                    else
+                    {
+                        error = content;
+                    }
+                }
+                else
+                {
+                    error = "Http content empty.";
+                }
+
+                return new HttpWebResponse(
+                    content,
+                    requestSuccessful,
+                    error,
+                    responseMessage.Headers,
+                    responseMessage.StatusCode);
+            }
+            finally
+            {
+                responseMessage?.Dispose();
+            }
+        }
+
         /// <summary>
         /// Submits request to endpoint and get response back.
         /// </summary>
         /// <returns></returns>
-        public virtual IHttpWebResponse GetResponse()
+        public IHttpWebResponse GetResponse()
         {
-            // service can modify request uri before invoking response in a way to
-            // change mailbox id etc., hence initialize url here.
-            this.httpRequestMessage.RequestUri = this.RequestUrl;
-
-            if (!string.IsNullOrEmpty(this.RestUrl.XAnchorMailbox))
-            {
-                this.SetRequestHeader(
-                    HttpWebRequest.XAnchorMailboxHeaderName,
-                    this.RestUrl.XAnchorMailbox);
-            }
-
+            this.PreProcessSetup();
             IHttpWebRequestClient httpClient = HttpWebRequestClientProvider.Instance.GetClient();
             using (HttpResponseMessage response = httpClient.SendAsync(this.httpRequestMessage).GetAwaiter().GetResult())
             {
@@ -221,6 +253,22 @@
             if (null != value)
             {
                 this.httpRequestMessage.Headers.Add("Prefer", value);
+            }
+        }
+
+        /// <summary>
+        /// Pre process setup.
+        /// </summary>
+        private void PreProcessSetup()
+        {
+            // service can modify request uri before invoking response in a way to
+            // change mailbox id etc., hence initialize url here.
+            this.httpRequestMessage.RequestUri = this.RequestUrl;
+            if (!string.IsNullOrEmpty(this.RestUrl.XAnchorMailbox))
+            {
+                this.SetRequestHeader(
+                    HttpWebRequest.XAnchorMailboxHeaderName,
+                    this.RestUrl.XAnchorMailbox);
             }
         }
 

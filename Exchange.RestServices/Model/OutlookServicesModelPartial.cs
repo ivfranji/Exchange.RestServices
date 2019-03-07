@@ -397,6 +397,28 @@
         }
 
         /// <summary>
+        /// Update outlook item - Async.
+        /// </summary>
+        /// <returns></returns>
+        public async System.Threading.Tasks.Task UpdateAsync()
+        {
+            if (this.IsNew)
+            {
+                throw new ArgumentException(
+                    "Cannot perform update on newly created item. Sync item from server and try again.");
+            }
+
+            if (this.propertyBag.GetChangedPropertyNames().Count == 0)
+            {
+                throw new ArgumentException("No changed properties detected.");
+            }
+
+            Item outlookItem = await this.Service.UpdateItemAsync(this);
+            this.propertyBag = outlookItem.propertyBag;
+            this.MailboxId = outlookItem.MailboxId;
+        }
+
+        /// <summary>
         /// Update outlook item.
         /// </summary>
         public void Update()
@@ -413,6 +435,24 @@
             }
 
             Item outlookItem = this.Service.UpdateItem(this);
+            this.propertyBag = outlookItem.propertyBag;
+            this.MailboxId = outlookItem.MailboxId;
+        }
+
+        /// <summary>
+        /// Save item on the server - Async.
+        /// </summary>
+        /// <param name="parentFolderId">Parent folder id.</param>
+        /// <returns></returns>
+        public async System.Threading.Tasks.Task SaveAsync(FolderId parentFolderId)
+        {
+            this.PreValidateSave();
+            ArgumentValidator.ThrowIfNull(parentFolderId, nameof(parentFolderId));
+
+            Item outlookItem = await this.Service.CreateItemAsync(
+                this,
+                parentFolderId);
+
             this.propertyBag = outlookItem.propertyBag;
             this.MailboxId = outlookItem.MailboxId;
         }
@@ -440,10 +480,31 @@
         /// </summary>
         /// <param name="wellKnownFolderName">Well known folder name.</param>
         /// <returns></returns>
+        public async System.Threading.Tasks.Task SaveAsync(WellKnownFolderName wellKnownFolderName)
+        {
+            FolderId parentFolderId = new FolderId(wellKnownFolderName);
+            await this.SaveAsync(parentFolderId);
+        }
+
+        /// <summary>
+        /// Save item on the server.
+        /// </summary>
+        /// <param name="wellKnownFolderName">Well known folder name.</param>
+        /// <returns></returns>
         public void Save(WellKnownFolderName wellKnownFolderName)
         {
             FolderId parentFolderId = new FolderId(wellKnownFolderName);
             this.Save(parentFolderId);
+        }
+
+        /// <summary>
+        /// Delete item - Async.
+        /// </summary>
+        public async System.Threading.Tasks.Task DeleteAsync()
+        {
+            this.PreValidateDelete();
+            await this.Service.DeleteItemAsync(this.ItemId);
+            this.propertyBag.Clear();
         }
 
         /// <summary>
@@ -770,6 +831,17 @@
         }
 
         /// <summary>
+        /// Update inbox rule - Async.
+        /// </summary>
+        public async System.Threading.Tasks.Task UpdateAsync()
+        {
+            this.PreValidateUpdate();
+            MessageRule rule = await this.Service.UpdateInboxRuleAsync(this);
+            this.propertyBag = rule.propertyBag;
+            this.MailboxId = rule.MailboxId;
+        }
+
+        /// <summary>
         /// Update inbox rule.
         /// </summary>
         public void Update()
@@ -778,6 +850,20 @@
             MessageRule rule = this.Service.UpdateInboxRule(this);
             this.propertyBag = rule.propertyBag;
             this.MailboxId = rule.MailboxId;
+        }
+
+        /// <summary>
+        /// Delete inbox rule in async fashion.
+        /// </summary>
+        /// <returns></returns>
+        public async System.Threading.Tasks.Task DeleteAsync()
+        {
+            this.PreValidateDelete();
+            ArgumentValidator.ThrowIfNullOrEmpty(this.Id, nameof(this.Id));
+
+            await this.Service.DeleteInboxRuleAsync(this);
+            this.propertyBag.Clear();
+
         }
 
         /// <summary>
@@ -790,6 +876,18 @@
 
             this.Service.DeleteInboxRule(this);
             this.propertyBag.Clear();
+        }
+
+        /// <summary>
+        /// Save message rule - Async.
+        /// </summary>
+        /// <returns></returns>
+        public async System.Threading.Tasks.Task SaveAsync()
+        {
+            this.PreValidateSave();
+            MessageRule rule = await this.Service.CreateInboxRuleAsync(this);
+            this.propertyBag = rule.propertyBag;
+            this.MailboxId = rule.MailboxId;
         }
 
         /// <summary>
@@ -830,10 +928,27 @@
         /// <summary>
         /// Update override. 
         /// </summary>
+        public async System.Threading.Tasks.Task UpdateAsync()
+        {
+            this.PreValidateUpdate();
+            InferenceClassificationOverride inferenceClassificationOverride = await this.Service.UpdateInferenceClassificationOverrideAsync(this);
+            this.propertyBag = inferenceClassificationOverride.propertyBag;
+        }
+
+        /// <summary>
+        /// Update override. 
+        /// </summary>
         public void Update()
         {
             this.PreValidateUpdate();
             InferenceClassificationOverride inferenceClassificationOverride = this.Service.UpdateInferenceClassificationOverride(this);
+            this.propertyBag = inferenceClassificationOverride.propertyBag;
+        }
+
+        public async System.Threading.Tasks.Task SaveAsync()
+        {
+            this.PreValidateSave();
+            InferenceClassificationOverride inferenceClassificationOverride = await this.Service.CreateInferenceClassificationOverrideAsync(this);
             this.propertyBag = inferenceClassificationOverride.propertyBag;
         }
 
@@ -845,6 +960,13 @@
             this.PreValidateSave();
             InferenceClassificationOverride inferenceClassificationOverride = this.Service.CreateInferenceClassificationOverride(this);
             this.propertyBag = inferenceClassificationOverride.propertyBag;
+        }
+
+        public async System.Threading.Tasks.Task DeleteAsync()
+        {
+            this.PreValidateDelete();
+            await this.Service.DeleteInferenceClassificationOverrideAsync(this);
+            this.propertyBag.Clear();
         }
 
         /// <summary>

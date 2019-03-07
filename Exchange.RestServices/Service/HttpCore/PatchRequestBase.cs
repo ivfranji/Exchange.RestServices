@@ -1,6 +1,7 @@
 ﻿namespace Exchange.RestServices
 {
     using System;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// Base request for HTTP PATCH.
@@ -25,11 +26,16 @@
         protected string PatchContent { get; }
 
         /// <summary>
-        /// Execute request.
+        /// Execute in async fashion.
         /// </summary>
-        internal void Execute()
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        internal async Task<T> ExecuteAsync<T>()
         {
-            IHttpWebResponse response = this.ExecuteRequest(this.PatchContent);
+            IHttpWebResponse response = await this.ExecuteRequestAsync(this.PatchContent);
+            return this.Deserialize<T>(
+                response,
+                this.DeserializationType);
         }
 
         /// <summary>
@@ -43,6 +49,20 @@
             return this.Deserialize<T>(
                 response, 
                 this.DeserializationType);
+        }
+
+        /// <summary>
+        /// Execute POST request - Async
+        /// </summary>
+        /// <param name="content"></param>
+        /// <returns></returns>
+        protected async Task<IHttpWebResponse> ExecuteRequestAsync(string content)
+        {
+            using (IHttpWebRequest httpWebRequest = HttpWebRequest.Patch(this.RestUrl, content))
+            {
+                IHttpWebResponse httpWebResponse = await this.ExecuteRequestAsync(httpWebRequest);
+                return httpWebResponse;
+            }
         }
 
         /// <summary>

@@ -1,6 +1,7 @@
 ﻿namespace Exchange.RestServices
 {
     using System;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// Base class for all GET requests.
@@ -25,6 +26,21 @@
         internal GetRequestBase(ExchangeService exchangeService, Action<HttpRestUrl> httpRestUrlPreProcess)
             : base(exchangeService, httpRestUrlPreProcess)
         {
+        }
+
+        /// <summary>
+        /// Execute request async.
+        /// </summary>
+        /// <returns></returns>
+        public async Task<T> ExecuteAsync()
+        {
+            using (IHttpWebRequest httpWebRequest = HttpWebRequest.Get(this.RestUrl))
+            {
+                IHttpWebResponse httpWebResponse = await this.ExecuteRequestAsync(httpWebRequest);
+                return this.Deserialize<T>(
+                    httpWebResponse,
+                    this.DeserializationType);
+            }
         }
 
         /// <summary>

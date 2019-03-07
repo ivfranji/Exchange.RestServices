@@ -4,9 +4,11 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
+    using System.Threading.Tasks;
     using Exchange;
     using Microsoft.OutlookServices;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using Task = System.Threading.Tasks.Task;
 
     /// <summary>
     /// Test definition for mail message.
@@ -321,6 +323,59 @@
             Assert.IsTrue(changes == 2);
 
             folder.Delete();
+        }
+
+        public static async Task CreateReadUpdateDeleteMessageAsync(ExchangeService exchangeService)
+        {
+            string folderName = "AsyncTestCrudItems";
+            TestHelpers.DeleteFolderIfExist(
+                folderName, 
+                exchangeService, 
+                WellKnownFolderName.MsgFolderRoot);
+
+            MailFolder mailFolder = TestHelpers.CreateFolder(
+                folderName,
+                exchangeService,
+                WellKnownFolderName.MsgFolderRoot);
+
+            for (int i = 0; i < 10; i++)
+            {
+                Message msg = new Message(exchangeService);
+                msg.Subject = Guid.NewGuid().ToString();
+                msg.Body = new ItemBody()
+                {
+                    ContentType = BodyType.HTML,
+                    Content = $"body {Guid.NewGuid().ToString()}"
+                };
+
+                await msg.SaveAsync(mailFolder.FolderId);
+            }
+
+            FindItemsResults<Item> items = await exchangeService.FindItemsAsync(mailFolder.FolderId, new MessageView(12));
+            Assert.AreEqual(
+                10,
+                items.TotalCount);
+
+            foreach (Item item in items)
+            {
+                if (item is Message msg)
+                {
+                    msg.Subject = $"Changed subject - {msg.Subject}";
+                    await msg.UpdateAsync();
+                }
+            }
+
+            items = await exchangeService.FindItemsAsync(mailFolder.FolderId, new MessageView(12));
+            foreach (Item item in items)
+            {
+                if (item is Message msg)
+                {
+                    Assert.IsTrue(
+                        msg.Subject.StartsWith("Changed subject -"));
+
+                    await item.DeleteAsync();
+                }
+            }
         }
     }
 }

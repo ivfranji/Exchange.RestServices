@@ -4,6 +4,8 @@
     using TestsDefinition;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Exchange.RestServices;
+    using Microsoft.OutlookServices;
+    using Task = System.Threading.Tasks.Task;
 
     [TestClass]
     public abstract class OutlookFunctionalTestsBase
@@ -121,6 +123,13 @@
             this.Run_TestCase_As_Mailbox_A(MailMessageTestDefinition.SyncMessages);
         }
 
+        [TestMethod]
+        public async Task Test_CreateReadUpdateDeleteAsync()
+        {
+            await MailMessageTestDefinition.CreateReadUpdateDeleteMessageAsync(
+                this.GetExchangeService(AppConfig.MailboxB));
+        }
+
         #endregion
 
         #region InboxRule tests
@@ -131,6 +140,13 @@
             this.Run_TestCase_As_Mailbox_A(InboxRuleTestDefinition.CreateReadUpdateDeleteInboxRule);
         }
 
+        [TestMethod]
+        public async Task Test_CreateReadUpdateDeleteInboxRuleAsync()
+        {
+            await InboxRuleTestDefinition.CreateReadUpdateDeleteInboxRuleAsync(
+                this.GetExchangeService(AppConfig.MailboxB));
+        }
+
         #endregion
 
         #region Inference classification tests
@@ -139,6 +155,13 @@
         public void Test_CreateReadUpdateDeleteInferenceClassificationOverride()
         {
             this.Run_TestCase_As_Mailbox_A(InferenceClassificationTestDefinition.CreateReadUpdateDeleteInferenceClassificationOverride);
+        }
+
+        [TestMethod]
+        public async Task Test_CreateReadUpdateDeleteInferenceClassificationOverrideAsync()
+        {
+            await InferenceClassificationTestDefinition.CreateReadUpdateDeleteInferenceClassificationOverrideAsync(
+                this.GetExchangeService(AppConfig.MailboxA));
         }
 
         #endregion
@@ -185,6 +208,114 @@
         public void Test_CreateReadUpdateDeleteContact()
         {
             this.Run_TestCase_As_Mailbox_A(ContactTestDefinition.CreateReadUpdateDeleteContact);
+        }
+
+        #endregion
+
+        #region Multithread test
+
+        [TestMethod]
+        public async Task Test_MultiThreadTaskExecution()
+        {
+            ExchangeService exchangeServiceMailboxA = this.GetExchangeService(AppConfig.MailboxA);
+            var itemsFromInbox1MailboxA = exchangeServiceMailboxA.FindItemsAsync(
+                new FolderId(WellKnownFolderName.Inbox), 
+                new MessageView(20));
+
+            var itemsFromSentMailboxA = exchangeServiceMailboxA.FindItemsAsync(
+                new FolderId(WellKnownFolderName.SentItems),
+                new MessageView(20));
+
+            var itemsFromInbox2MailboxA = exchangeServiceMailboxA.FindItemsAsync(
+                new FolderId(WellKnownFolderName.Inbox),
+                new MessageView(20));
+
+            ExchangeService exchangeServiceMailboxB = this.GetExchangeService(AppConfig.MailboxB);
+            var itemsFromInbox1MailboxB = exchangeServiceMailboxB.FindItemsAsync(
+                new FolderId(WellKnownFolderName.Inbox),
+                new MessageView(20));
+
+            var itemsFromSentMailboxB = exchangeServiceMailboxB.FindItemsAsync(
+                new FolderId(WellKnownFolderName.SentItems),
+                new MessageView(20));
+
+            var itemsFromInbox2MailboxB = exchangeServiceMailboxB.FindItemsAsync(
+                new FolderId(WellKnownFolderName.Inbox),
+                new MessageView(20));
+
+            foreach (MailFolder folder in await exchangeServiceMailboxA.FindFoldersAsync(new FolderId(WellKnownFolderName.MsgFolderRoot),null, new FolderView(10) ))
+            {
+                Assert.AreEqual(
+                    AppConfig.MailboxA,
+                    folder.MailboxId.Id);
+            }
+
+            foreach (Item item in await itemsFromInbox1MailboxA)
+            {
+                if (item is Message msg)
+                {
+                    Assert.AreEqual(
+                        AppConfig.MailboxA,
+                        msg.MailboxId.Id);
+                }
+            }
+
+            foreach (Item item in await itemsFromInbox1MailboxB)
+            {
+                if (item is Message msg)
+                {
+                    Assert.AreEqual(
+                        AppConfig.MailboxB,
+                        msg.MailboxId.Id);
+                }
+            }
+
+            foreach (MailFolder folder in await exchangeServiceMailboxB.FindFoldersAsync(new FolderId(WellKnownFolderName.MsgFolderRoot), null, new FolderView(10)))
+            {
+                Assert.AreEqual(
+                    AppConfig.MailboxB,
+                    folder.MailboxId.Id);
+            }
+
+            foreach (Item item in await itemsFromInbox2MailboxA)
+            {
+                if (item is Message msg)
+                {
+                    Assert.AreEqual(
+                        AppConfig.MailboxA,
+                        msg.MailboxId.Id);
+                }
+            }
+
+            foreach (Item item in await itemsFromSentMailboxB)
+            {
+                if (item is Message msg)
+                {
+                    Assert.AreEqual(
+                        AppConfig.MailboxB,
+                        msg.MailboxId.Id);
+                }
+            }
+
+            foreach (Item item in await itemsFromSentMailboxA)
+            {
+                if (item is Message msg)
+                {
+                    Assert.AreEqual(
+                        AppConfig.MailboxA,
+                        msg.MailboxId.Id);
+                }
+            }
+
+            foreach (Item item in await itemsFromInbox2MailboxB)
+            {
+                if (item is Message msg)
+                {
+                    Assert.AreEqual(
+                        AppConfig.MailboxB,
+                        msg.MailboxId.Id);
+                }
+            }
         }
 
         #endregion
