@@ -102,7 +102,7 @@
         public async Task<IHttpWebResponse> GetResponseAsync()
         {
             this.PreProcessSetup();
-            IHttpWebRequestClient httpClient = HttpWebRequestClientProvider.Instance.GetClient();
+            IHttpWebClient httpClient = HttpWebClient.HttpClient;
             HttpResponseMessage responseMessage = null;
             try
             {
@@ -130,7 +130,7 @@
         public IHttpWebResponse GetResponse()
         {
             this.PreProcessSetup();
-            IHttpWebRequestClient httpClient = HttpWebRequestClientProvider.Instance.GetClient();
+            IHttpWebClient httpClient = HttpWebClient.HttpClient;
             using (HttpResponseMessage response = httpClient.SendAsync(this.httpRequestMessage).GetAwaiter().GetResult())
             {
                 string content = string.Empty;

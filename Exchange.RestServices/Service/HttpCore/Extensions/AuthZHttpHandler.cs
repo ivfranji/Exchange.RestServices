@@ -44,9 +44,9 @@
         }
 
         /// <inheritdoc cref="RetryHttpHandler.RetryExceeded"/>
-        protected override void RetryExceeded(int retryCount, int totalDelayApplied, Uri requestUri, string httpMethod)
+        protected override void RetryExceeded(int retryCount, int totalDelayApplied, Uri requestUri, string httpMethod, HttpStatusCode lastHttpStatusCode)
         {
-            // base class will throw.
+            // base will throw.
         }
 
         /// <summary>

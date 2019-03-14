@@ -82,6 +82,8 @@
     <Compile Include="Service\FilterFormatter\StringFilterFormatter.cs" />
     <Compile Include="Service\HttpCore\DeleteRequestBase.cs" />
     <Compile Include="Service\HttpCore\Extensions\AuthZHttpHandler.cs" />
+    <Compile Include="Service\HttpCore\Extensions\ExternalHttpHandler.cs" />
+    <Compile Include="Service\HttpCore\Extensions\IHttpExtension.cs" />
     <Compile Include="Service\HttpCore\Extensions\RetryHttpHandler.cs" />
     <Compile Include="Service\HttpCore\Extensions\ThrottlingHttpHandler.cs" />
     <Compile Include="Service\HttpCore\Extensions\RetryOptions.cs" />
@@ -89,12 +91,11 @@
     <Compile Include="Service\HttpCore\GetRequestBase.cs" />
     <Compile Include="Service\HttpCore\HttpRestUrl.cs" />
     <Compile Include="Service\HttpCore\HttpWebRequest.cs" />
-    <Compile Include="Service\HttpCore\HttpWebRequestClient.cs" />
+    <Compile Include="Service\HttpCore\HttpWebClient.cs" />
     <Compile Include="Service\HttpCore\HttpWebRequestMethod.cs" />
     <Compile Include="Service\HttpCore\HttpWebResponse.cs" />
-    <Compile Include="Service\HttpCore\HttpWebRequestClientProvider.cs" />
     <Compile Include="Service\HttpCore\IHttpWebRequest.cs" />
-    <Compile Include="Service\HttpCore\IHttpWebRequestClient.cs" />
+    <Compile Include="Service\HttpCore\IHttpWebClient.cs" />
     <Compile Include="Service\HttpCore\IHttpWebResponse.cs" />
     <Compile Include="Service\HttpCore\IPreferenceHeaderSetter.cs" />
     <Compile Include="Service\HttpCore\PatchRequestBase.cs" />

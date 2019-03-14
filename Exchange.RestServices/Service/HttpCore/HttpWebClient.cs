@@ -10,7 +10,7 @@
     /// <summary>
     /// Http web request client.
     /// </summary>
-    internal class HttpWebRequestClient : IHttpWebRequestClient
+    internal class HttpWebClient : IHttpWebClient
     {
         /// <summary>
         /// Underlying client.
@@ -18,11 +18,24 @@
         private static HttpClient httpClient;
 
         /// <summary>
-        /// Create new instance of <see cref="HttpWebRequestClient"/>
+        /// Singleton instance.
         /// </summary>
-        internal HttpWebRequestClient()
+        private static readonly HttpWebClient httpWebClient = new HttpWebClient();
+
+        /// <summary>
+        /// Create new instance of <see cref="HttpWebClient"/>
+        /// </summary>
+        private HttpWebClient()
         {
-            HttpWebRequestClient.httpClient = this.CreateHttpClient(null);
+            HttpWebClient.httpClient = this.CreateHttpClient(null);
+        }
+
+        /// <summary>
+        /// Singleton.
+        /// </summary>
+        public static IHttpWebClient HttpClient
+        {
+            get { return HttpWebClient.httpWebClient; }
         }
 
         /// <summary>
@@ -32,15 +45,15 @@
         /// <returns></returns>
         public Task<HttpResponseMessage> SendAsync(HttpRequestMessage requestMessage)
         {
-            return HttpWebRequestClient.httpClient.SendAsync(requestMessage);
+            return HttpWebClient.httpClient.SendAsync(requestMessage);
         }
 
-        /// <inheritdoc cref="IHttpWebRequestClient.SetProxyServer"/>
+        /// <inheritdoc cref="IHttpWebClient.SetProxyServer"/>
         public void SetProxyServer(IWebProxy proxyServer)
         {
-            if (null != HttpWebRequestClient.httpClient)
+            if (null != HttpWebClient.httpClient)
             {
-                HttpWebRequestClient.httpClient.Dispose();
+                HttpWebClient.httpClient.Dispose();
             }
 
             if (null != proxyServer)
@@ -50,11 +63,11 @@
                     Proxy = proxyServer
                 };
 
-                HttpWebRequestClient.httpClient = this.CreateHttpClient(httpClientHandler);
+                HttpWebClient.httpClient = this.CreateHttpClient(httpClientHandler);
             }
             else
             {
-                HttpWebRequestClient.httpClient = this.CreateHttpClient(null);
+                HttpWebClient.httpClient = this.CreateHttpClient(null);
             }
         }
 
@@ -69,7 +82,8 @@
             {
                 new ThrottlingHttpHandler(),
                 new AuthZHttpHandler(), 
-                new TraceListenerHttpHandler()
+                new TraceListenerHttpHandler(),
+                new ExternalHttpHandler(), 
             };
 
             HttpClient httpClient = new HttpClient(
@@ -104,7 +118,6 @@
             }
 
             HttpMessageHandler httpPipeline = innerHandler;
-
             for (int i = delegatingHandlers.Length - 1; i >= 0; i--)
             {
                 if (delegatingHandlers[i] == null)

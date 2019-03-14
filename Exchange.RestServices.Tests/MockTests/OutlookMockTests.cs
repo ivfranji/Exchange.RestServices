@@ -15,8 +15,7 @@
         /// <summary>
         /// Run test case with custom http 400 status.
         /// </summary>
-        protected void RunTestCaseWith400Status(Action<ExchangeService> testCase, Func<string> errorData,
-            HttpStatusCode errorStatusCode)
+        protected void RunTestCaseWith400Status(Action<ExchangeService> testCase, Func<string> errorData, HttpStatusCode errorStatusCode)
         {
             if (errorStatusCode < (HttpStatusCode) 400 && errorStatusCode > (HttpStatusCode) 499)
             {
@@ -25,9 +24,11 @@
 
             MockTestRunner.RunTestCase(
                 testCase,
-                this.GetExchangeServiceAetAProd(),
-                errorStatusCode,
-                errorData(),
+                "a@a.com",
+                new HttpResponseMessage(errorStatusCode)
+                {
+                    Content = new StringContent(errorData())
+                },
                 null);
         }
 
@@ -36,13 +37,15 @@
         /// </summary>
         /// <param name="testCase"></param>
         /// <param name="inlineAssertation"></param>
-        protected void RunHttp200WithEmptyResponseBetaEndpoint(Action<ExchangeService> testCase,
-            Action<HttpRequestMessage> inlineAssertation)
+        protected void RunHttp200WithEmptyResponseBetaEndpoint(Action<ExchangeService> testCase, Action<HttpRequestMessage> inlineAssertation)
         {
             MockTestRunner.RunHttp200TestCase(
                 testCase,
-                this.GetExchangeServiceAetABeta(),
-                "{}",
+                "a@a.com",
+                new HttpResponseMessage(HttpStatusCode.OK)
+                {
+                    Content = new StringContent("{}")
+                }, 
                 inlineAssertation);
         }
 
@@ -51,14 +54,17 @@
         /// </summary>
         /// <param name="testCase"></param>
         /// <param name="inlineAssertation"></param>
-        protected void RunHttp200WithEmptyResponseProdEndpoint(Action<ExchangeService> testCase,
-            Action<HttpRequestMessage> inlineAssertation)
+        protected void RunHttp200WithEmptyResponseProdEndpoint(Action<ExchangeService> testCase, Action<HttpRequestMessage> inlineAssertation)
         {
             MockTestRunner.RunHttp200TestCase(
                 testCase,
-                this.GetExchangeServiceAetAProd(),
-                "{}",
-                inlineAssertation);
+                "a@a.com",
+                new HttpResponseMessage(HttpStatusCode.OK)
+                {
+                    Content = new StringContent("{}")
+                }, 
+                inlineAssertation,
+                Environment.Prod);
         }
 
         /// <summary>
@@ -67,14 +73,17 @@
         /// <param name="testcase"></param>
         /// <param name="customResponse"></param>
         /// <param name="inlineAssertation"></param>
-        protected void RunHttp200WithCustomResponseProdEndpoint(Action<ExchangeService> testcase,
-            Func<string> customResponse, Action<HttpRequestMessage> inlineAssertation)
+        protected void RunHttp200WithCustomResponseProdEndpoint(Action<ExchangeService> testcase, Func<string> customResponse, Action<HttpRequestMessage> inlineAssertation)
         {
             MockTestRunner.RunHttp200TestCase(
                 testcase,
-                this.GetExchangeServiceAetAProd(),
-                customResponse(),
-                inlineAssertation);
+                "a@a.com",
+                new HttpResponseMessage(HttpStatusCode.OK)
+                {
+                    Content = new StringContent(customResponse())
+                }, 
+                inlineAssertation,
+                Environment.Prod);
         }
 
         /// <summary>
@@ -85,7 +94,12 @@
         {
             MockTestRunner.RunTestCase(
                 testCase,
-                this.GetExchangeServiceAetABeta());
+                "a@a.com",
+                new HttpResponseMessage(HttpStatusCode.OK)
+                {
+                    Content = new StringContent("{}")
+                },
+                null);
         }
 
         /// <summary>
@@ -862,11 +876,7 @@
             this.RunHttp200WithEmptyResponseProdEndpoint(
                 (exchangeService) =>
                 {
-                    exchangeService = new ExchangeService(
-                        "abc",
-                        string.Empty,
-                        RestEnvironment.OutlookProd);
-
+                    exchangeService.MailboxId = new MailboxId("me");
                     Assert.IsTrue(exchangeService.MailboxId.IdInMeForm);
 
                     exchangeService.GetItem(new MessageId(
@@ -1003,12 +1013,12 @@
             this.RunTestCaseWith400Status(
                 (exchangeService) =>
                 {
-                    RestResponseException ex = null;
+                    RestException ex = null;
                     try
                     {
                         exchangeService.FindItems(WellKnownFolderName.Inbox, new MessageView(10));
                     }
-                    catch (RestResponseException e)
+                    catch (RestException e)
                     {
                         ex = e;
                     }
@@ -1016,7 +1026,7 @@
                     Assert.IsNotNull(ex);
                     Assert.AreEqual(
                         (HttpStatusCode) 401,
-                        ex.HttpStatusCode);
+                        ex.LastHttpStatusCode);
                 },
                 () => { return ""; },
                 (HttpStatusCode) 401);

@@ -10,7 +10,7 @@
         /// </summary>
         /// <param name="exchangeService">Exchange service.</param>
         public HttpRequestContext(ExchangeService exchangeService)
-            : this(new TraceContext(exchangeService), exchangeService.AuthorizationTokenProvider)
+            : this(new TraceContext(exchangeService), exchangeService.AuthorizationTokenProvider, exchangeService.HttpExtension)
         {
         }
 
@@ -18,7 +18,7 @@
         /// Create new instance of <see cref="HttpRequestContext"/>
         /// </summary>
         /// <param name="traceContext"></param>
-        public HttpRequestContext(TraceContext traceContext, IAuthorizationTokenProvider authorizationProvider)
+        public HttpRequestContext(TraceContext traceContext, IAuthorizationTokenProvider authorizationProvider, IHttpExtension httpExtension = null)
         {
             ArgumentValidator.ThrowIfNull(
                 traceContext, 
@@ -26,6 +26,7 @@
 
             this.TraceContext = traceContext;
             this.AuthorizationProvider = authorizationProvider;
+            this.HttpExtension = httpExtension;
         }
 
         /// <summary>
@@ -37,6 +38,11 @@
         /// Authorization provider. 
         /// </summary>
         public IAuthorizationTokenProvider AuthorizationProvider { get; }
+
+        /// <summary>
+        /// Http extension.
+        /// </summary>
+        public IHttpExtension HttpExtension { get; }
     }
 
     /// <summary>

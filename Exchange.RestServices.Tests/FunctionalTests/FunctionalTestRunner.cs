@@ -22,12 +22,7 @@
             ArgumentValidator.ThrowIfNull(
                 testCase, 
                 nameof(testCase));
-            //HttpWebRequestClientProvider.Instance.EnterLock();
-            //HttpWebRequestClientProvider.Instance.Reset();
-
             testCase(exchangeService);
-
-            //HttpWebRequestClientProvider.Instance.ExitLock();
         }
 
         /// <summary>

@@ -8,7 +8,7 @@
     using Exchange.RestServices;
 
 
-    internal class MockHttpClient : IHttpWebRequestClient
+    internal class MockHttpClient : IHttpWebClient
     {
         private HttpStatusCode statusCodeOnStart;
         private HttpStatusCode statusCodeOnEnd;
@@ -47,7 +47,7 @@
         // <summary>
         /// Mock client instance.
         /// </summary>
-        public Func<IHttpWebRequestClient> MockClient
+        public Func<IHttpWebClient> MockClient
         {
             get { return () => this; }
         }
@@ -90,7 +90,7 @@
             return this.MockInvoke(requestMessage);
         }
 
-        /// <inheritdoc cref="IHttpWebRequestClient.SetProxyServer"/>
+        /// <inheritdoc cref="IHttpWebClient.SetProxyServer"/>
         public void SetProxyServer(IWebProxy proxyServer)
         {
         }

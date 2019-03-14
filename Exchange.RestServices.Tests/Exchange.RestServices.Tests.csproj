@@ -93,6 +93,7 @@
     <Compile Include="Service\Json\DeserializerTests.cs" />
     <Compile Include="Service\Json\SerializerTests.cs" />
     <Compile Include="Service\Preferences\PreferencesTests.cs" />
+    <Compile Include="UnitTestHttpExtensions\SimpleUnitTestHttpExtension.cs" />
     <Compile Include="Service\PropertyChangeTracking\PropertyBagTests.cs" />
     <Compile Include="Service\PropertyChangeTracking\PropertyChangeTests.cs" />
     <Compile Include="Service\PropertyChangeTracking\PropertyDefinitionTests.cs" />

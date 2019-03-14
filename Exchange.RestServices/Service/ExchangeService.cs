@@ -133,6 +133,11 @@
             get { return this.Preferences.Count > 0; }
         }
 
+        /// <summary>
+        /// Http extension.
+        /// </summary>
+        internal IHttpExtension HttpExtension { get; set; }
+
         #endregion
 
         #region Public properties
@@ -199,7 +204,7 @@
         /// </summary>
         public IWebProxy ProxyServer
         {
-            set { HttpWebRequestClientProvider.Instance.ProxyChanged(value); }
+            set { HttpWebClient.HttpClient.SetProxyServer(value); }
         }
 
         /// <summary>

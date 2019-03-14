@@ -16,8 +16,8 @@
         /// <param name="totalDelayApplied"></param>
         /// <param name="requestUri"></param>
         /// <param name="requestMethod"></param>
-        public CallThrottledException(int retryCount, int totalDelayApplied, Uri requestUri, string requestMethod) 
-            : base("Call throttled.", requestUri, requestMethod)
+        public CallThrottledException(int retryCount, int totalDelayApplied, Uri requestUri, string requestMethod, HttpStatusCode lastHttpStatusCode) 
+            : base("Call throttled.", requestUri, requestMethod, lastHttpStatusCode)
         {
             this.RetryCount = retryCount;
             this.TotalDelayApplied = totalDelayApplied;

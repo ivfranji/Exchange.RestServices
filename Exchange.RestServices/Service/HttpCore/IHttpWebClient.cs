@@ -8,7 +8,7 @@
     /// <summary>
     /// Defines contract for IHttpClient.
     /// </summary>
-    internal interface IHttpWebRequestClient : IDisposable
+    internal interface IHttpWebClient : IDisposable
     {
         /// <summary>
         /// Sends message and retrieves entityResponse.

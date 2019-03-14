@@ -1,6 +1,7 @@
 ﻿namespace Exchange.RestServices
 {
     using System;
+    using System.Net;
 
     /// <summary>
     /// Throws when retry-count exceeded.
@@ -14,8 +15,8 @@
         /// <param name="totalDelayApplied">Total delay applied.</param>
         /// <param name="requestUri"></param>
         /// <param name="requestMethod"></param>
-        public RetryCountException(int retryCount, int totalDelayApplied, Uri requestUri, string requestMethod) 
-            : base("Retry handler exceeded retry count.", requestUri, requestMethod)
+        public RetryCountException(int retryCount, int totalDelayApplied, Uri requestUri, string requestMethod, HttpStatusCode lastHttpStatusCode) 
+            : base("Retry handler exceeded retry count.", requestUri, requestMethod, lastHttpStatusCode)
         {
             this.RetryCount = retryCount;
             this.TotalDelayApplied = totalDelayApplied;

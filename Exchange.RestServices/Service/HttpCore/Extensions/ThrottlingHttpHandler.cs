@@ -32,13 +32,14 @@
         }
 
         /// <inheritdoc cref="RetryHttpHandler.RetryExceeded"/>
-        protected override void RetryExceeded(int retryCount, int totalDelayApplied, Uri requestUri, string httpMethod)
+        protected override void RetryExceeded(int retryCount, int totalDelayApplied, Uri requestUri, string httpMethod, HttpStatusCode lastHttpStatusCode)
         {
             throw new CallThrottledException(
                 retryCount,
                 totalDelayApplied,
                 requestUri,
-                httpMethod);
+                httpMethod,
+                lastHttpStatusCode);
         }
 
         /// <summary>

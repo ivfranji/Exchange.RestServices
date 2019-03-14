@@ -1,10 +1,8 @@
 ﻿namespace Exchange.RestServices.Tests.Service.Preferences
 {
-    using System;
     using System.Collections.Generic;
     using System.Net;
     using System.Net.Http;
-    using Exchange;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     [TestClass]
@@ -25,18 +23,13 @@
         [TestMethod]
         public void TestPreferenceAppliedOnHttpWebRequest()
         {
-            MockHttpClient mock = new MockHttpClient(
-                HttpStatusCode.OK,
-                "");
-
-            HttpWebRequestClientProvider.Instance.RegisterHttpClientProvider(mock.MockClient);
-
-            mock.InlineAssertation = (message) =>
+            SimpleUnitTestHttpExtension httpExtension =  new SimpleUnitTestHttpExtension(new HttpResponseMessage(HttpStatusCode.OK){ Content = new StringContent("{}")});
+            httpExtension.InlineAssertation = (httpRequestMessage) =>
             {
-                Assert.IsTrue(message.Headers.Contains("Prefer"));
+                Assert.IsTrue(httpRequestMessage.Headers.Contains("Prefer"));
 
                 IEnumerable<string> value;
-                Assert.IsTrue(message.Headers.TryGetValues("Prefer", out value));
+                Assert.IsTrue(httpRequestMessage.Headers.TryGetValues("Prefer", out value));
 
                 foreach (string s in value)
                 {
@@ -44,15 +37,14 @@
                 }
             };
 
-            
             ExchangeService exchangeService = new ExchangeService(
                 "bearer", 
                 "a@b.com");
 
+            exchangeService.HttpExtension = httpExtension;
+
             exchangeService.Preferences.Add(new Preference("IdType=\"ImmutableId\""));
             exchangeService.GetItem(new MessageId("abc", exchangeService.MailboxId));
-
-            HttpWebRequestClientProvider.Instance.Reset();
         }
     }
 }

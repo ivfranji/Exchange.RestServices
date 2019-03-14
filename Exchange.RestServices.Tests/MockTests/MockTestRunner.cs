@@ -1,9 +1,7 @@
 ﻿namespace Exchange.RestServices.Tests.MockTests
 {
     using System;
-    using System.Net;
     using System.Net.Http;
-    using Exchange;
 
     /// <summary>
     /// Mock test runner.
@@ -13,28 +11,27 @@
         /// <summary>
         /// Run mock test case.
         /// </summary>
-        /// <param name="testCase">Test case.</param>
-        /// <param name="exchangeService">Exchange service.</param>
-        /// <param name="desiredReturnStatusCode">Desired return http status code.</param>
-        /// <param name="httpReturnContent">Return content.</param>
+        /// <param name="testCase">Test case to run.</param>
+        /// <param name="mailboxId">Mailbox Id.</param>
+        /// <param name="mockHttpResponseMessage">Mock response message.</param>
         /// <param name="inlineAssertation">Inline assertation.</param>
+        /// <param name="restEnvironment">Rest environment - Default BETA.</param>
         internal static void RunTestCase(
-            Action<ExchangeService> testCase, 
-            ExchangeService exchangeService, 
-            HttpStatusCode desiredReturnStatusCode,
-            string httpReturnContent,
-            Action<HttpRequestMessage> inlineAssertation)
+            Action<ExchangeService> testCase,
+            string mailboxId,
+            HttpResponseMessage mockHttpResponseMessage,
+            Action<HttpRequestMessage> inlineAssertation,
+            Environment restEnvironment = Environment.Beta)
         {
-            ArgumentValidator.ThrowIfNull(testCase, nameof(testCase));
-            HttpWebRequestClientProvider.Instance.EnterLock();
-            MockHttpClient mock = new MockHttpClient(desiredReturnStatusCode, httpReturnContent);
-            mock.InlineAssertation = inlineAssertation;
-            HttpWebRequestClientProvider.Instance.RegisterHttpClientProvider(mock.MockClient);
+            ExchangeService exchangeService = restEnvironment == Environment.Beta
+                ? MockTestRunner.GetExchangeServiceBeta(mailboxId)
+                : MockTestRunner.GetExchangeServiceProd(mailboxId);
+
+            SimpleUnitTestHttpExtension simpleUnitTestHttpExtension = new SimpleUnitTestHttpExtension(mockHttpResponseMessage);
+            simpleUnitTestHttpExtension.InlineAssertation = inlineAssertation;
+            exchangeService.HttpExtension = simpleUnitTestHttpExtension;
 
             testCase(exchangeService);
-
-            HttpWebRequestClientProvider.Instance.Reset();
-            HttpWebRequestClientProvider.Instance.ExitLock();
         }
 
         /// <summary>
@@ -46,27 +43,52 @@
         /// <param name="inlineAssertation">Inline assertation.</param>
         internal static void RunHttp200TestCase(
             Action<ExchangeService> testCase,
-            ExchangeService exchangeService,
-            string httpReturnContent,
-            Action<HttpRequestMessage> inlineAssertation)
+            string mailboxId,
+            HttpResponseMessage httpResponseMessage,
+            Action<HttpRequestMessage> inlineAssertation,
+            Environment restEnvironment = Environment.Beta)
         {
             MockTestRunner.RunTestCase(
                 testCase,
-                exchangeService,
-                HttpStatusCode.OK,
-                httpReturnContent,
-                inlineAssertation);
+                mailboxId,
+                httpResponseMessage, 
+                inlineAssertation,
+                restEnvironment);
         }
 
         /// <summary>
-        /// Run simple test case with Exchange service.
+        /// Create new <see cref="ExchangeService"/>
         /// </summary>
-        /// <param name="testCase">Test case.</param>
-        /// <param name="exchangeService">Exchange service.</param>
-        internal static void RunTestCase(Action<ExchangeService> testCase, ExchangeService exchangeService)
+        /// <param name="mailboxId">Mailbox id.</param>
+        /// <returns></returns>
+        private static ExchangeService GetExchangeServiceBeta(string mailboxId)
         {
-            ArgumentValidator.ThrowIfNull(testCase, nameof(testCase));
-            testCase(exchangeService);
+            return new ExchangeService(
+                "<bearer>",
+                mailboxId,
+                RestEnvironment.OutlookBeta);
         }
+
+        /// <summary>
+        /// Create new <see cref="ExchangeService"/>
+        /// </summary>
+        /// <param name="mailboxId">Mailbox id.</param>
+        /// <returns></returns>
+        private static ExchangeService GetExchangeServiceProd(string mailboxId)
+        {
+            return new ExchangeService(
+                "<bearer>",
+                mailboxId,
+                RestEnvironment.OutlookProd);
+        }
+    }
+
+    /// <summary>
+    /// Mock environment.
+    /// </summary>
+    internal enum Environment
+    {
+        Beta,
+        Prod
     }
 }

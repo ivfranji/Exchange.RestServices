@@ -1,6 +1,7 @@
 ﻿namespace Exchange.RestServices
 {
     using System;
+    using System.Net;
     using System.Net.Http;
     using System.Threading;
     using System.Threading.Tasks;
@@ -68,14 +69,16 @@
                             retryCount,
                             totalDelayApplied,
                             httpRequest.RequestUri,
-                            httpRequest.Method.Method);
+                            httpRequest.Method.Method,
+                            responseMessage.StatusCode);
 
                         // In case RetryFailed don't throw.
                         throw new RetryCountException(
                             retryCount,
                             totalDelayApplied,
                             httpRequest.RequestUri,
-                            httpRequest.Method.Method);
+                            httpRequest.Method.Method,
+                            responseMessage.StatusCode);
                     }
 
                     this.UpdateRetryCount(
@@ -111,7 +114,7 @@
         /// <param name="totalDelayApplied">Total delay applied.</param>
         /// <param name="requestUri">Request uri.</param>
         /// <param name="httpMethod">Http method.</param>
-        protected abstract void RetryExceeded(int retryCount, int totalDelayApplied, Uri requestUri, string httpMethod);
+        protected abstract void RetryExceeded(int retryCount, int totalDelayApplied, Uri requestUri, string httpMethod, HttpStatusCode lastHttpStatusCode);
 
         /// <summary>
         /// Indicate if it should retry based on entityResponse message.
