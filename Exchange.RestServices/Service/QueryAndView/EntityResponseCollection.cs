@@ -5,28 +5,44 @@
     using Newtonsoft.Json;
 
     /// <summary>
-    /// Contains collection of the elements.
+    /// Response collection. 
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class ResponseCollection<T> where T : Entity
+    public class ResponseCollection<T>
     {
         /// <summary>
         /// OData context.
         /// </summary>
         [JsonProperty("@odata.context")]
-        internal string ODataContext { get; set; }
+        internal string ODataContext
+        {
+            get; set;
+        }
 
         /// <summary>
         /// OData next link.
         /// </summary>
         [JsonProperty("@odata.nextLink")]
-        internal string ODataNextLink { get; set; }
+        internal string ODataNextLink
+        {
+            get; set;
+        }
 
         /// <summary>
         /// List of values.
         /// </summary>
-        public List<T> Value { get; set; }
+        public List<T> Value
+        {
+            get; set;
+        }
+    }
 
+    /// <summary>
+    /// Contains collection of the elements.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    public class EntityResponseCollection<T> : ResponseCollection<T> where T : Entity
+    {
         /// <summary>
         /// More available.
         /// </summary>
@@ -61,10 +77,10 @@
     }
 
     /// <summary>
-    /// Sync response collection.
+    /// Sync entityResponse collection.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class SyncResponseCollection<T> : ResponseCollection<T> where T : Entity
+    public class SyncEntityResponseCollection<T> : EntityResponseCollection<T> where T : Entity
     {
         /// <summary>
         /// Odata delta link.
@@ -73,7 +89,7 @@
         internal string ODataDeltaLink { get; set; }
 
         /// <summary>
-        /// With sync response collection, need to make sure that
+        /// With sync entityResponse collection, need to make sure that
         /// returned collection is empty before it is marked as sync
         /// done.
         /// </summary>
@@ -92,9 +108,9 @@
     }
 
     /// <summary>
-    /// Sync mail folder response collection.
+    /// Sync mail folder entityResponse collection.
     /// </summary>
-    public class SyncMailFolderResponseCollection : ResponseCollection<MailFolder>
+    public class SyncMailFolderEntityResponseCollection : EntityResponseCollection<MailFolder>
     {
         /// <summary>
         /// Odata delta link.
@@ -106,7 +122,7 @@
         }
 
         /// <summary>
-        /// With folder sync response collection, need to make sure that
+        /// With folder sync entityResponse collection, need to make sure that
         /// returned collection is empty before it is marked as sync
         /// done.
         /// </summary>

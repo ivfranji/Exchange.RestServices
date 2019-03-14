@@ -114,7 +114,7 @@
         protected abstract void RetryExceeded(int retryCount, int totalDelayApplied, Uri requestUri, string httpMethod);
 
         /// <summary>
-        /// Indicate if it should retry based on response message.
+        /// Indicate if it should retry based on entityResponse message.
         /// </summary>
         /// <param name="responseMessage">Response message.</param>
         /// <returns></returns>

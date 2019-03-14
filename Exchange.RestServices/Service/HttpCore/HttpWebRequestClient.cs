@@ -1,7 +1,6 @@
 ﻿namespace Exchange.RestServices
 {
     using System;
-    using System.Linq;
     using System.Net;
     using System.Net.Http;
     using System.Net.Http.Headers;
@@ -82,6 +81,7 @@
                 NoStore = true
             };
 
+            httpClient.Timeout = TimeSpan.FromSeconds(30);
             return httpClient;
         }
 

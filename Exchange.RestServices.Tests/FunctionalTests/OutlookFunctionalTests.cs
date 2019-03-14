@@ -1,10 +1,10 @@
 ﻿namespace Exchange.RestServices.Tests.Functional
 {
     using System;
-    using System.Diagnostics;
     using TestsDefinition;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Exchange.RestServices;
+    using FunctionalTests.TestsDefinition;
     using Microsoft.OutlookServices;
     using Task = System.Threading.Tasks.Task;
 
@@ -88,6 +88,12 @@
         public void Test_CreateReadUpdateDeleteMailFolder()
         {
             this.Run_TestCase_As_Mailbox_A(MailFolderTestDefinition.CreateReadUpdateDeleteMailFolder);
+        }
+
+        [TestMethod]
+        public void Test_GetExtendedPropertyFromFolder()
+        {
+            this.Run_TestCase_As_Mailbox_A(MailFolderTestDefinition.GetExtendedPropertyFromFolder);
         }
 
         #endregion
@@ -209,6 +215,16 @@
         public void Test_CreateReadUpdateDeleteContact()
         {
             this.Run_TestCase_As_Mailbox_A(ContactTestDefinition.CreateReadUpdateDeleteContact);
+        }
+
+        #endregion
+
+        #region Room list tests
+
+        [TestMethod]
+        public void Test_FindRoomList()
+        {
+            this.Run_TestCase_As_Mailbox_A(RoomListTestDefinition.FindRoomList);
         }
 
         #endregion

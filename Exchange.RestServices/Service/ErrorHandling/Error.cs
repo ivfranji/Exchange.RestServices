@@ -5,7 +5,7 @@
     using Newtonsoft.Json;
 
     /// <summary>
-    /// Error response from server.
+    /// Error entityResponse from server.
     /// </summary>
     public class Error
     {

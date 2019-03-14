@@ -33,10 +33,10 @@
         }
 
         /// <summary>
-        /// Deserialize http web response. Doesn't perform any validation.
+        /// Deserialize http web entityResponse. Doesn't perform any validation.
         /// </summary>
         /// <typeparam name="T">Type.</typeparam>
-        /// <param name="httpWebResponse">Http web response.</param>
+        /// <param name="httpWebResponse">Http web entityResponse.</param>
         /// <returns></returns>
         public T Deserialize<T>(IHttpWebResponse httpWebResponse, Type type = null)
         {

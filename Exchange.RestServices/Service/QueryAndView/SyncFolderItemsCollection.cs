@@ -16,22 +16,22 @@
         /// <summary>
         /// Create new instance of <see cref="SyncItemCollection{T}"/>
         /// </summary>
-        /// <param name="responseCollection">Response collection.</param>
-        internal SyncFolderItemsCollection(SyncResponseCollection<T> responseCollection, ExchangeService exchangeService, MailboxId mailboxId) 
-            : base(responseCollection)
+        /// <param name="entityResponseCollection">Response collection.</param>
+        internal SyncFolderItemsCollection(SyncEntityResponseCollection<T> entityResponseCollection, ExchangeService exchangeService, MailboxId mailboxId) 
+            : base(entityResponseCollection)
         {
-            if (responseCollection != null)
+            if (entityResponseCollection != null)
             {
                 // if token isn't delta, then it is skip.
-                if (!SyncToken.TryParseFromUrl(responseCollection.ODataDeltaLink, SyncTokenType.DeltaToken, out this.syncToken))
+                if (!SyncToken.TryParseFromUrl(entityResponseCollection.ODataDeltaLink, SyncTokenType.DeltaToken, out this.syncToken))
                 {
-                    SyncToken.TryParseFromUrl(responseCollection.ODataNextLink, SyncTokenType.SkipToken, out this.syncToken);
+                    SyncToken.TryParseFromUrl(entityResponseCollection.ODataNextLink, SyncTokenType.SkipToken, out this.syncToken);
                 }
 
                 // Since property bag will be 'dirty' after loading
                 // properties from JSON, reset change tracking since
                 // latest version is already in the collection.
-                responseCollection.RegisterServiceAndResetChangeTracking(
+                entityResponseCollection.RegisterServiceAndResetChangeTracking(
                     exchangeService, 
                     mailboxId);
             }

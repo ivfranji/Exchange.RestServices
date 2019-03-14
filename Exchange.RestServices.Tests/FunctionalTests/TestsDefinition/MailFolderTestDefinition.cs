@@ -158,5 +158,25 @@
             Assert.IsNull(folder1.DisplayName);
             Assert.IsNull(folder1.Id);
         }
+
+        /// <summary>
+        /// Validate if extended proeprties are pulled from folder.
+        /// </summary>
+        /// <param name="exchangeService"></param>
+        public static void GetExtendedPropertyFromFolder(ExchangeService exchangeService)
+        {
+            exchangeService.TraceFlags = TraceFlags.HttpRequest;
+            exchangeService.TraceEnabled = true;
+            FolderView folderView = new FolderView(20);
+            folderView.PropertySet.Add(new ExtendedPropertyDefinition(MapiPropertyType.Binary, 0x0E3F));
+
+            foreach (MailFolder folder in exchangeService.FindFolders(WellKnownFolderName.MsgFolderRoot, folderView))
+            {
+
+                Assert.AreEqual(
+                    1,
+                    folder.SingleValueExtendedProperties.Count);
+            }
+        }
     }
 }

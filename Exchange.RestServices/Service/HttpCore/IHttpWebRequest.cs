@@ -30,13 +30,13 @@
         HttpRequestHeaders Headers { get; }
 
         /// <summary>
-        /// Get response async.
+        /// Get entityResponse async.
         /// </summary>
         /// <returns></returns>
         Task<IHttpWebResponse> GetResponseAsync();
 
         /// <summary>
-        /// Invokes request and retrieve response.
+        /// Invokes request and retrieve entityResponse.
         /// </summary>
         /// <returns></returns>
         IHttpWebResponse GetResponse();

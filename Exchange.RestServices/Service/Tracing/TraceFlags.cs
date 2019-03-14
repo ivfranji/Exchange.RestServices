@@ -19,7 +19,7 @@
         HttpRequest = 1,
 
         /// <summary>
-        /// Traces http response.
+        /// Traces http entityResponse.
         /// </summary>
         HttpResponse = 2,
 
@@ -29,7 +29,7 @@
         HttpRequestHeaders = 4,
 
         /// <summary>
-        /// Trace http response headers.
+        /// Trace http entityResponse headers.
         /// </summary>
         HttpResponseHeaders = 8,
 

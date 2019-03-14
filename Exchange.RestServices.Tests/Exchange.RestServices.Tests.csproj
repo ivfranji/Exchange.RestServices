@@ -72,6 +72,7 @@
     <Compile Include="FunctionalTests\FunctionalTestRunner.cs" />
     <Compile Include="FunctionalTests\OutlookFunctionalTests.cs" />
     <Compile Include="FunctionalTests\TestsDefinition\MailMessageTestDefinition.cs" />
+    <Compile Include="FunctionalTests\TestsDefinition\RoomListTestDefinition.cs" />
     <Compile Include="FunctionalTests\TestsDefinition\TasksTestDefinition.cs" />
     <Compile Include="Mocks\Helper.cs" />
     <Compile Include="Mocks\MockHttpClientHandler.cs" />

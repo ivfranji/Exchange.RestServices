@@ -5,12 +5,12 @@
     using System.Net;
 
     /// <summary>
-    /// Web response contract.
+    /// Web entityResponse contract.
     /// </summary>
     internal interface IHttpWebResponse
     {
         /// <summary>
-        /// Throw exception if response invalid or error.
+        /// Throw exception if entityResponse invalid or error.
         /// </summary>
         void ThrowIfNeeded(Action<string, HttpStatusCode> errorHandlerAction = null);
 

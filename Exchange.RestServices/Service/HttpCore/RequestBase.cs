@@ -56,7 +56,7 @@
         protected HttpRestUrl RestUrl { get; }
 
         /// <summary>
-        /// Pre-process web request before getting response.
+        /// Pre-process web request before getting entityResponse.
         /// </summary>
         /// <param name="httpWebRequest"></param>
         protected virtual void PreProcessHttpWebRequest(IHttpWebRequest httpWebRequest)
@@ -64,7 +64,7 @@
         }
 
         /// <summary>
-        /// Process web response.
+        /// Process web entityResponse.
         /// </summary>
         /// <param name="httpWebResponse"></param>
         protected virtual void ProcessHttpWebResponse(IHttpWebResponse httpWebResponse)
@@ -73,7 +73,7 @@
         }
 
         /// <summary>
-        /// Execute request and returns response - ASYNC.
+        /// Execute request and returns entityResponse - ASYNC.
         /// </summary>
         /// <param name="httpWebRequest">Http web request.</param>
         /// <returns></returns>
@@ -86,7 +86,7 @@
         }
 
         /// <summary>
-        /// Execute request and returns response.
+        /// Execute request and returns entityResponse.
         /// </summary>
         /// <param name="httpWebRequest">Http web request.</param>
         /// <returns></returns>
@@ -99,7 +99,7 @@
         }
 
         /// <summary>
-        /// Deserialize http web response.
+        /// Deserialize http web entityResponse.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="httpWebResponse"></param>
@@ -153,9 +153,9 @@
         }
 
         /// <summary>
-        /// Process http web response internal.
+        /// Process http web entityResponse internal.
         /// </summary>
-        /// <param name="httpWebResponse">Http web response.</param>
+        /// <param name="httpWebResponse">Http web entityResponse.</param>
         private void ProcessHttpWebResponseInternal(IHttpWebResponse httpWebResponse)
         {
             // since ProcessHttpWebResponse may throw in any child class

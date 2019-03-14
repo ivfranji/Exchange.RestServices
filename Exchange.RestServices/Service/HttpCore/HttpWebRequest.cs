@@ -96,7 +96,7 @@
         }
 
         /// <summary>
-        /// Submits request to endpoint and get response back - ASYNC.
+        /// Submits request to endpoint and get entityResponse back - ASYNC.
         /// </summary>
         /// <returns></returns>
         public async Task<IHttpWebResponse> GetResponseAsync()
@@ -124,7 +124,7 @@
         }
 
         /// <summary>
-        /// Submits request to endpoint and get response back.
+        /// Submits request to endpoint and get entityResponse back.
         /// </summary>
         /// <returns></returns>
         public IHttpWebResponse GetResponse()
@@ -214,7 +214,7 @@
         /// </summary>
         private void PreProcessSetup()
         {
-            // service can modify request uri before invoking response in a way to
+            // service can modify request uri before invoking entityResponse in a way to
             // change mailbox id etc., hence initialize url here.
             this.httpRequestMessage.RequestUri = this.RequestUrl;
             if (!string.IsNullOrEmpty(this.RestUrl.XAnchorMailbox))
@@ -335,7 +335,7 @@
         }
 
         /// <summary>
-        /// Process response. Content must come from calling method, not supposed to call
+        /// Process entityResponse. Content must come from calling method, not supposed to call
         /// ReadAsStringAsync() here!
         /// </summary>
         /// <param name="responseMessage">Response message.</param>

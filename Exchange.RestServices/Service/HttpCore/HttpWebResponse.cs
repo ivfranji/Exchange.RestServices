@@ -6,7 +6,7 @@
     using System.Net.Http.Headers;
 
     /// <summary>
-    /// Defines HTTP web response.
+    /// Defines HTTP web entityResponse.
     /// </summary>
     internal class HttpWebResponse : IHttpWebResponse
     {
@@ -15,8 +15,8 @@
         /// </summary>
         /// <param name="content">Response content.</param>
         /// <param name="success">Response was successful.</param>
-        /// <param name="error">Error if response failed.</param>
-        /// <param name="httpResponseHeaders">Http response headers.</param>
+        /// <param name="error">Error if entityResponse failed.</param>
+        /// <param name="httpResponseHeaders">Http entityResponse headers.</param>
         /// <param name="statusCode">Http status code.</param>
         internal HttpWebResponse(string content, bool success, string error, HttpHeaders httpResponseHeaders, HttpStatusCode statusCode)
         {
@@ -49,7 +49,7 @@
         public string Content { get; }
 
         /// <summary>
-        /// Http response headers.
+        /// Http entityResponse headers.
         /// </summary>
         public IDictionary<string, string> HttpResponseHeaders { get; }
 

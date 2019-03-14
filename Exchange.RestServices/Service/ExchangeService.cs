@@ -4,12 +4,10 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Net;
-    using System.Net.Http.Headers;
     using System.Text;
     using System.Text.RegularExpressions;
     using System.Threading.Tasks;
     using Microsoft.OutlookServices;
-    using Service.Auth;
     using Task = Microsoft.OutlookServices.Task;
 
     /// <summary>
@@ -60,7 +58,7 @@
         private ActionMapper actionMapper;
 
         /// <summary>
-        /// Http response headers.
+        /// Http entityResponse headers.
         /// </summary>
         private IDictionary<string, string> httpResponseHeaders;
 
@@ -105,18 +103,7 @@
                 this.MailboxId = new MailboxId(mailboxId);
             }
 
-            if (AuthFactory.GetTokenProvider() == null)
-            {
-                lock (ExchangeService.lockObject)
-                {
-                    if (AuthFactory.GetTokenProvider() == null)
-                    {
-                        ExchangeService.SetAuthZProvider(tokenProvider);
-                    }
-                }
-            }
-
-            //this.AuthorizationTokenProvider = tokenProvider;
+            this.AuthorizationTokenProvider = tokenProvider;
             this.TraceListener = new DefaultTraceListener();
             this.TraceFlags = TraceFlags.None;
             this.TraceEnabled = false;
@@ -144,19 +131,6 @@
         private bool HasPreferences
         {
             get { return this.Preferences.Count > 0; }
-        }
-
-        #endregion
-
-        #region Statics
-
-        /// <summary>
-        /// Set authorization provider.
-        /// </summary>
-        /// <param name="authorizationTokenProvider"></param>
-        public static void SetAuthZProvider(IAuthorizationTokenProvider authorizationTokenProvider)
-        {
-            AuthFactory.SetTokenProvider(authorizationTokenProvider);
         }
 
         #endregion
@@ -481,12 +455,12 @@
                         task.ItemId);
                 });
 
-            ResponseCollection<Task> response = request.Execute<ResponseCollection<Task>>();
-            response.RegisterServiceAndResetChangeTracking(
+            EntityResponseCollection<Task> entityResponse = request.Execute<EntityResponseCollection<Task>>();
+            entityResponse.RegisterServiceAndResetChangeTracking(
                 this, 
                 task.MailboxId);
 
-            return response.Value;
+            return entityResponse.Value;
         }
 
         #endregion
@@ -502,7 +476,7 @@
         /// <param name="searchFilter"></param>
         /// <param name="itemView"></param>
         /// <returns></returns>
-        private GetRequestBase<ResponseCollection<Item>> CreateGetFindItemsRequest(FolderId parentFolderId, SearchFilter searchFilter, ViewBase itemView)
+        private GetRequestBase<EntityResponseCollection<Item>> CreateGetFindItemsRequest(FolderId parentFolderId, SearchFilter searchFilter, ViewBase itemView)
         {
             ArgumentValidator.ThrowIfNull(
                 parentFolderId,
@@ -518,7 +492,7 @@
                 searchQuery = new CompositeQuery(new[] { searchFilter, itemView.ViewQuery });
             }
 
-            GetRequestBase<ResponseCollection<Item>> request = new GetRequestBase<ResponseCollection<Item>>(
+            GetRequestBase<EntityResponseCollection<Item>> request = new GetRequestBase<EntityResponseCollection<Item>>(
                 this,
                 (httpRestUrl) =>
                 {
@@ -600,17 +574,17 @@
         /// <inheritdoc cref="IExchangeService.FindItems(FolderId,SearchFilter,ViewBase)"/>
         public FindItemsResults<Item> FindItems(FolderId parentFolderId, SearchFilter searchFilter, ViewBase itemView)
         {
-            GetRequestBase<ResponseCollection<Item>> request = this.CreateGetFindItemsRequest(
+            GetRequestBase<EntityResponseCollection<Item>> request = this.CreateGetFindItemsRequest(
                 parentFolderId, 
                 searchFilter, 
                 itemView);
 
-            ResponseCollection<Item> response = request.Execute();
-            // for null response return empty collection.
-            if (null == response)
+            EntityResponseCollection<Item> entityResponse = request.Execute();
+            // for null entityResponse return empty collection.
+            if (null == entityResponse)
             {
                 return new FindItemsResults<Item>(
-                    new ResponseCollection<Item>(),
+                    new EntityResponseCollection<Item>(),
                     this,
                     this.GetMailboxId(parentFolderId));
             }
@@ -618,12 +592,12 @@
             {
                 if (itemView.FollowODataNextLink)
                 {
-                    itemView.ODataNextLink = response.ODataNextLink;
+                    itemView.ODataNextLink = entityResponse.ODataNextLink;
                 }
             }
 
             return new FindItemsResults<Item>(
-                response,
+                entityResponse,
                 this,
                 this.GetMailboxId(parentFolderId));
         }
@@ -631,18 +605,18 @@
         /// <inheritdoc cref="IExchangeService.FindItems(FolderId,SearchFilter,ViewBase)"/>
         public async Task<FindItemsResults<Item>> FindItemsAsync(FolderId parentFolderId, SearchFilter searchFilter, ViewBase itemView)
         {
-            GetRequestBase<ResponseCollection<Item>> request = this.CreateGetFindItemsRequest(
+            GetRequestBase<EntityResponseCollection<Item>> request = this.CreateGetFindItemsRequest(
                 parentFolderId, 
                 searchFilter, 
                 itemView);
 
-            ResponseCollection<Item> response = await request.ExecuteAsync();
+            EntityResponseCollection<Item> entityResponse = await request.ExecuteAsync();
 
-            // for null response return empty collection.
-            if (null == response)
+            // for null entityResponse return empty collection.
+            if (null == entityResponse)
             {
                 return new FindItemsResults<Item>(
-                    new ResponseCollection<Item>(),
+                    new EntityResponseCollection<Item>(),
                     this,
                     this.GetMailboxId(parentFolderId));
             }
@@ -650,12 +624,12 @@
             {
                 if (itemView.FollowODataNextLink)
                 {
-                    itemView.ODataNextLink = response.ODataNextLink;
+                    itemView.ODataNextLink = entityResponse.ODataNextLink;
                 }
             }
 
             return new FindItemsResults<Item>(
-                response,
+                entityResponse,
                 this,
                 this.GetMailboxId(parentFolderId));
         }
@@ -699,8 +673,8 @@
                 syncQuery.SelectedProperties = propertySet.Properties;
             }
 
-            SyncRequestBase<SyncResponseCollection<Item>> request =
-                new SyncRequestBase<SyncResponseCollection<Item>>(
+            SyncRequestBase<SyncEntityResponseCollection<Item>> request =
+                new SyncRequestBase<SyncEntityResponseCollection<Item>>(
                     this,
                     syncQuery,
                     (httpRestUrl) =>
@@ -715,10 +689,10 @@
                     });
 
             request.DeserializationType = propertySet.Type;
-            SyncResponseCollection<Item> response = request.Execute();
-            response.PageSize = maxChangesReturned;
+            SyncEntityResponseCollection<Item> entityResponse = request.Execute();
+            entityResponse.PageSize = maxChangesReturned;
             return new SyncFolderItemsCollection<Item>(
-                response,
+                entityResponse,
                 this,
                 this.GetMailboxId(syncFolderId));
         }
@@ -910,7 +884,7 @@
                 itemId,
                 nameof(itemId));
 
-            GetRequestBase<ResponseCollection<Attachment>> request = new GetRequestBase<ResponseCollection<Attachment>>(
+            GetRequestBase<EntityResponseCollection<Attachment>> request = new GetRequestBase<EntityResponseCollection<Attachment>>(
                 this,
                 (httpRestUrl) =>
                 {
@@ -920,8 +894,8 @@
                         itemId);
                 });
 
-            ResponseCollection<Attachment> response = request.Execute();
-            return response?.Value;
+            EntityResponseCollection<Attachment> entityResponse = request.Execute();
+            return entityResponse?.Value;
         }
 
         public Attachment GetAttachment(AttachmentId attachmentId, IExpandQuery expandQuery = null)
@@ -961,7 +935,7 @@
         /// <param name="searchFilter">Search filter.</param>
         /// <param name="folderView">Folder view.</param>
         /// <returns></returns>
-        private GetRequestBase<ResponseCollection<MailFolder>> CreateGetFindFoldersRequest(FolderId parentFolderId, SearchFilter searchFilter, FolderView folderView)
+        private GetRequestBase<EntityResponseCollection<MailFolder>> CreateGetFindFoldersRequest(FolderId parentFolderId, SearchFilter searchFilter, FolderView folderView)
         {
             ArgumentValidator.ThrowIfNull(
                 parentFolderId,
@@ -977,7 +951,7 @@
                 searchQuery = new CompositeQuery(new[] { searchFilter, folderView.ViewQuery });
             }
 
-            GetRequestBase<ResponseCollection<MailFolder>> request = new GetRequestBase<ResponseCollection<MailFolder>>(
+            GetRequestBase<EntityResponseCollection<MailFolder>> request = new GetRequestBase<EntityResponseCollection<MailFolder>>(
                 this,
                 (httpRestUrl) =>
                 {
@@ -1087,47 +1061,47 @@
         /// <inheritdoc cref="IExchangeService.FindFolders(FolderId,SearchFilter,FolderView)"/>
         public FindFoldersResults FindFolders(FolderId parentFolderId, SearchFilter searchFilter, FolderView folderView)
         {
-            GetRequestBase<ResponseCollection<MailFolder>> request = this.CreateGetFindFoldersRequest(
+            GetRequestBase<EntityResponseCollection<MailFolder>> request = this.CreateGetFindFoldersRequest(
                     parentFolderId, 
                     searchFilter, 
                     folderView);
 
-            ResponseCollection<MailFolder> response = request.Execute();
-            if (null == response)
+            EntityResponseCollection<MailFolder> entityResponse = request.Execute();
+            if (null == entityResponse)
             {
-                response = new ResponseCollection<MailFolder>();
+                entityResponse = new EntityResponseCollection<MailFolder>();
             }
             else
             {
-                response.RegisterServiceAndResetChangeTracking(
+                entityResponse.RegisterServiceAndResetChangeTracking(
                     this,
                     this.GetMailboxId(parentFolderId));
             }
 
-            return new FindFoldersResults(response);
+            return new FindFoldersResults(entityResponse);
         }
 
         /// <inheritdoc cref="IExchangeService.FindFolders(FolderId,SearchFilter,FolderView)"/>
         public async Task<FindFoldersResults> FindFoldersAsync(FolderId parentFolderId, SearchFilter searchFilter, FolderView folderView)
         {
-            GetRequestBase<ResponseCollection<MailFolder>> request = this.CreateGetFindFoldersRequest(
+            GetRequestBase<EntityResponseCollection<MailFolder>> request = this.CreateGetFindFoldersRequest(
                 parentFolderId,
                 searchFilter,
                 folderView);
 
-            ResponseCollection<MailFolder> response = await request.ExecuteAsync();
-            if (null == response)
+            EntityResponseCollection<MailFolder> entityResponse = await request.ExecuteAsync();
+            if (null == entityResponse)
             {
-                response = new ResponseCollection<MailFolder>();
+                entityResponse = new EntityResponseCollection<MailFolder>();
             }
             else
             {
-                response.RegisterServiceAndResetChangeTracking(
+                entityResponse.RegisterServiceAndResetChangeTracking(
                     this,
                     this.GetMailboxId(parentFolderId));
             }
 
-            return new FindFoldersResults(response);
+            return new FindFoldersResults(entityResponse);
         }
 
         /// <summary>
@@ -1201,8 +1175,8 @@
                 syncQuery.SelectedProperties = propertySet.Properties;
             }
 
-            SyncRequestBase<SyncMailFolderResponseCollection> request =
-                new SyncRequestBase<SyncMailFolderResponseCollection>(
+            SyncRequestBase<SyncMailFolderEntityResponseCollection> request =
+                new SyncRequestBase<SyncMailFolderEntityResponseCollection>(
                     this,
                     syncQuery,
                     (httpRestUrl) =>
@@ -1222,9 +1196,9 @@
                             null);
                     });
 
-            SyncMailFolderResponseCollection response = request.Execute();
+            SyncMailFolderEntityResponseCollection entityResponse = request.Execute();
             return new SyncMailFolderHierarchyResponse(
-                response,
+                entityResponse,
                 this,
                 this.GetMailboxId(null));
         }
@@ -1447,8 +1421,8 @@
                 WellKnownFolderName.Inbox,
                 this.MailboxId.Id);
 
-            GetRequestBase<ResponseCollection<MessageRule>> request =
-                new GetRequestBase<ResponseCollection<MessageRule>>(
+            GetRequestBase<EntityResponseCollection<MessageRule>> request =
+                new GetRequestBase<EntityResponseCollection<MessageRule>>(
                     this,
                     (httpRestUrl) =>
                     {
@@ -1458,16 +1432,16 @@
                             null);
                     });
 
-            ResponseCollection<MessageRule> response = await request.ExecuteAsync();
-            if (null == response)
+            EntityResponseCollection<MessageRule> entityResponse = await request.ExecuteAsync();
+            if (null == entityResponse)
             {
                 return new List<MessageRule>();
             }
 
-            response.RegisterServiceAndResetChangeTracking(
+            entityResponse.RegisterServiceAndResetChangeTracking(
                 this,
                 this.GetMailboxId(folderId));
-            return response.Value;
+            return entityResponse.Value;
         }
 
         /// <summary>
@@ -1480,8 +1454,8 @@
                 WellKnownFolderName.Inbox,
                 this.MailboxId.Id);
 
-            GetRequestBase<ResponseCollection<MessageRule>> request =
-                new GetRequestBase<ResponseCollection<MessageRule>>(
+            GetRequestBase<EntityResponseCollection<MessageRule>> request =
+                new GetRequestBase<EntityResponseCollection<MessageRule>>(
                     this,
                     (httpRestUrl) =>
                     {
@@ -1491,16 +1465,16 @@
                             null);
                     });
 
-            ResponseCollection<MessageRule> response = request.Execute();
-            if (null == response)
+            EntityResponseCollection<MessageRule> entityResponse = request.Execute();
+            if (null == entityResponse)
             {
                 return new List<MessageRule>();
             }
 
-            response.RegisterServiceAndResetChangeTracking(
+            entityResponse.RegisterServiceAndResetChangeTracking(
                 this,
                 this.GetMailboxId(folderId));
-            return response.Value;
+            return entityResponse.Value;
         }
 
         /// <summary>
@@ -1663,9 +1637,9 @@
         /// Create GET inference request.
         /// </summary>
         /// <returns></returns>
-        private GetRequestBase<ResponseCollection<InferenceClassificationOverride>> CreateGetInferenceClassificationOverrideRequest()
+        private GetRequestBase<EntityResponseCollection<InferenceClassificationOverride>> CreateGetInferenceClassificationOverrideRequest()
         {
-            return new GetRequestBase<ResponseCollection<InferenceClassificationOverride>>(
+            return new GetRequestBase<EntityResponseCollection<InferenceClassificationOverride>>(
                     this,
                     (httpRestUrl) =>
                     {
@@ -1768,12 +1742,12 @@
         /// <returns></returns>
         public async Task<List<InferenceClassificationOverride>> GetInferenceClassificationOverridesAsync()
         {
-            GetRequestBase<ResponseCollection<InferenceClassificationOverride>> request =
+            GetRequestBase<EntityResponseCollection<InferenceClassificationOverride>> request =
                 this.CreateGetInferenceClassificationOverrideRequest();
-            ResponseCollection<InferenceClassificationOverride> response = await request.ExecuteAsync();
-            if (null != response)
+            EntityResponseCollection<InferenceClassificationOverride> entityResponse = await request.ExecuteAsync();
+            if (null != entityResponse)
             {
-                foreach (InferenceClassificationOverride inferenceOverride in response.Value)
+                foreach (InferenceClassificationOverride inferenceOverride in entityResponse.Value)
                 {
                     inferenceOverride.Service = this;
                     inferenceOverride.ResetChangeTracking();
@@ -1781,10 +1755,10 @@
             }
             else
             {
-                response = new ResponseCollection<InferenceClassificationOverride>();
+                entityResponse = new EntityResponseCollection<InferenceClassificationOverride>();
             }
 
-            return response.Value;
+            return entityResponse.Value;
         }
 
         /// <summary>
@@ -1793,12 +1767,12 @@
         /// <returns></returns>
         public List<InferenceClassificationOverride> GetInferenceClassificationOverrides()
         {
-            GetRequestBase<ResponseCollection<InferenceClassificationOverride>> request =
+            GetRequestBase<EntityResponseCollection<InferenceClassificationOverride>> request =
                 this.CreateGetInferenceClassificationOverrideRequest();
-            ResponseCollection<InferenceClassificationOverride> response = request.Execute();
-            if (null != response)
+            EntityResponseCollection<InferenceClassificationOverride> entityResponse = request.Execute();
+            if (null != entityResponse)
             {
-                foreach (InferenceClassificationOverride inferenceOverride in response.Value)
+                foreach (InferenceClassificationOverride inferenceOverride in entityResponse.Value)
                 {
                     inferenceOverride.Service = this;
                     inferenceOverride.ResetChangeTracking();
@@ -1806,10 +1780,10 @@
             }
             else
             {
-                response = new ResponseCollection<InferenceClassificationOverride>();
+                entityResponse = new EntityResponseCollection<InferenceClassificationOverride>();
             }
 
-            return response.Value;
+            return entityResponse.Value;
         }
 
         /// <summary>
@@ -1900,6 +1874,24 @@
 
         #endregion
 
+        #region Room and RoomList operations
+
+        /// <summary>
+        /// Find room lists.
+        /// </summary>
+        /// <returns></returns>
+        public IList<EmailAddress> FindRoomLists()
+        {
+            GetRequestBase<ResponseCollection<EmailAddress>> request = new GetRequestBase<ResponseCollection<EmailAddress>>(
+                this,
+                (httpRestUrl) => { httpRestUrl.RelativePath = "FindRoomLists"; });
+
+            ResponseCollection<EmailAddress> response = request.Execute();
+            return response.Value;
+        }
+
+        #endregion
+
         #region Request / Response processing
 
         /// <summary>
@@ -1919,7 +1911,7 @@
         }
 
         /// <summary>
-        /// Process web response.
+        /// Process web entityResponse.
         /// </summary>
         /// <param name="webResponse"></param>
         internal void ProcessHttpWebResponse(IHttpWebResponse webResponse)

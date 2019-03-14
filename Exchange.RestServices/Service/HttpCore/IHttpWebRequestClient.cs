@@ -11,7 +11,7 @@
     internal interface IHttpWebRequestClient : IDisposable
     {
         /// <summary>
-        /// Sends message and retrieves response.
+        /// Sends message and retrieves entityResponse.
         /// </summary>
         /// <param name="reqeustMessage"></param>
         /// <returns></returns>

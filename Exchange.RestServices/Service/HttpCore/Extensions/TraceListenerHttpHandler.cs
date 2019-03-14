@@ -83,10 +83,10 @@
         }
 
         /// <summary>
-        /// Trace response.
+        /// Trace entityResponse.
         /// </summary>
         /// <param name="httpRequestContext">Http request context.</param>
-        /// <param name="httpResponseMessage">Http response message.</param>
+        /// <param name="httpResponseMessage">Http entityResponse message.</param>
         private async Task TraceResponse(HttpRequestContext httpRequestContext, HttpResponseMessage httpResponseMessage)
         {
             if ((httpRequestContext.TraceContext.TraceFlags & TraceFlags.HttpResponseHeaders) == 

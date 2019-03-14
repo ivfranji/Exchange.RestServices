@@ -13,29 +13,29 @@
         /// <summary>
         /// Response collection.
         /// </summary>
-        private ResponseCollection<TItem> responseCollection;
+        private EntityResponseCollection<TItem> entityResponseCollection;
 
         /// <summary>
         /// Create new instance of <see cref="FindResults{TItem}"/>.
         /// </summary>
-        /// <param name="responseCollection">Response collection.</param>
-        protected FindResults(ResponseCollection<TItem> responseCollection)
+        /// <param name="entityResponseCollection">Response collection.</param>
+        protected FindResults(EntityResponseCollection<TItem> entityResponseCollection)
         {
-            if (responseCollection == null)
+            if (entityResponseCollection == null)
             {
                 // to prevent null refs.
-                this.responseCollection = new ResponseCollection<TItem>();
-                this.responseCollection.Value = new List<TItem>();
+                this.entityResponseCollection = new EntityResponseCollection<TItem>();
+                this.entityResponseCollection.Value = new List<TItem>();
             }
             else
             {
-                this.responseCollection = responseCollection;
+                this.entityResponseCollection = entityResponseCollection;
             }
 
-            if (null == this.responseCollection.Value)
+            if (null == this.entityResponseCollection.Value)
             {
                 // prevent nullrefs
-                this.responseCollection.Value = new List<TItem>();
+                this.entityResponseCollection.Value = new List<TItem>();
             }
         }
 
@@ -44,7 +44,7 @@
         /// </summary>
         public int TotalCount
         {
-            get { return this.responseCollection.Value.Count; }
+            get { return this.entityResponseCollection.Value.Count; }
         }
 
         /// <summary>
@@ -52,7 +52,7 @@
         /// </summary>
         public List<TItem> Items
         {
-            get { return this.responseCollection.Value; }
+            get { return this.entityResponseCollection.Value; }
         }
 
         /// <summary>
@@ -60,7 +60,7 @@
         /// </summary>
         public bool MoreAvailable
         {
-            get { return this.responseCollection.MoreAvailable; }
+            get { return this.entityResponseCollection.MoreAvailable; }
         }
 
         /// <summary>
@@ -69,7 +69,7 @@
         /// <returns></returns>
         public IEnumerator<TItem> GetEnumerator()
         {
-            return this.responseCollection.Value.GetEnumerator();
+            return this.entityResponseCollection.Value.GetEnumerator();
         }
 
         /// <summary>
@@ -96,23 +96,23 @@
         /// <summary>
         /// Create new instance of <see cref="ChangeResults{TItem}"/>.
         /// </summary>
-        /// <param name="responseCollection">Response collection.</param>
-        protected ChangeResults(ResponseCollection<TItem> responseCollection)
+        /// <param name="entityResponseCollection">Response collection.</param>
+        protected ChangeResults(EntityResponseCollection<TItem> entityResponseCollection)
         {
             // In case of nulls we want to make sure null ref isn't thrown.
-            if (responseCollection == null)
+            if (entityResponseCollection == null)
             {
-                responseCollection = new ResponseCollection<TItem>();
-                responseCollection.Value = new List<TItem>(0);
+                entityResponseCollection = new EntityResponseCollection<TItem>();
+                entityResponseCollection.Value = new List<TItem>(0);
             }
 
-            this.changeItems = new List<ItemChange<TItem>>(responseCollection.Value.Count);
-            foreach (TItem item in responseCollection.Value)
+            this.changeItems = new List<ItemChange<TItem>>(entityResponseCollection.Value.Count);
+            foreach (TItem item in entityResponseCollection.Value)
             {
                 this.changeItems.Add(new ItemChange<TItem>(item));
             }
 
-            this.MoreAvailable = responseCollection.MoreAvailable;
+            this.MoreAvailable = entityResponseCollection.MoreAvailable;
         }
 
         /// <summary>

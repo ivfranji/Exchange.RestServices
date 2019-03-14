@@ -11,9 +11,9 @@
         /// <summary>
         /// Create new instance of <see cref="FindItemsResults{TItem}"/>.
         /// </summary>
-        /// <param name="responseCollection">Response collection.</param>
-        internal FindItemsResults(ResponseCollection<TItem> responseCollection, ExchangeService exchangeService, MailboxId mailboxId)
-            : base(responseCollection)
+        /// <param name="entityResponseCollection">Response collection.</param>
+        internal FindItemsResults(EntityResponseCollection<TItem> entityResponseCollection, ExchangeService exchangeService, MailboxId mailboxId)
+            : base(entityResponseCollection)
         {
             if (this.Items != null)
             {

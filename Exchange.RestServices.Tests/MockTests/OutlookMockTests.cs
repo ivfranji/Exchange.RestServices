@@ -32,7 +32,7 @@
         }
 
         /// <summary>
-        /// Run simple HTTP200 test case with empty response.
+        /// Run simple HTTP200 test case with empty entityResponse.
         /// </summary>
         /// <param name="testCase"></param>
         /// <param name="inlineAssertation"></param>
@@ -47,7 +47,7 @@
         }
 
         /// <summary>
-        /// Run simple HTTP200 test case with empty response.
+        /// Run simple HTTP200 test case with empty entityResponse.
         /// </summary>
         /// <param name="testCase"></param>
         /// <param name="inlineAssertation"></param>
@@ -754,11 +754,11 @@
                         messages.Add(msg);
                     }
 
-                    ResponseCollection<Message> responseCollection = new ResponseCollection<Message>();
-                    responseCollection.ODataContext =
+                    EntityResponseCollection<Message> entityResponseCollection = new EntityResponseCollection<Message>();
+                    entityResponseCollection.ODataContext =
                         "https://outlook.office365.com/api/v2.0/$metadata#users(user)/mailfolders('Inbox')/messages";
-                    responseCollection.Value = messages;
-                    return Serializer.Instance.Serialize(responseCollection);
+                    entityResponseCollection.Value = messages;
+                    return Serializer.Instance.Serialize(entityResponseCollection);
                 },
                 (httpRequestMessage) => { });
         }

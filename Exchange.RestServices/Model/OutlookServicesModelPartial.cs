@@ -173,6 +173,64 @@
     }
 
     /// <summary>
+    /// Directory object.
+    /// </summary>
+    public abstract partial class DirectoryObject
+    {
+        internal DirectoryObject(ExchangeService exchangeService)
+            : base(exchangeService)
+        {
+        }
+    }
+
+    /// <summary>
+    /// User.
+    /// </summary>
+    public partial class User
+    {
+        /// <summary>
+        /// Create new instance of <see cref="User"/>
+        /// </summary>
+        /// <param name="exchangeService"></param>
+        /// <param name="mailboxId"></param>
+        internal User(ExchangeService exchangeService, MailboxId mailboxId)
+            : base(exchangeService)
+        {
+            this.MailboxId = mailboxId;
+        }
+
+        /// <summary>
+        /// MailboxId.
+        /// </summary>
+        internal MailboxId MailboxId { get; }
+    }
+
+    /// <summary>
+    /// Group.
+    /// </summary>
+    public partial class Group
+    {
+        /// <summary>
+        /// Create new instance of <see cref="Group"/>
+        /// </summary>
+        /// <param name="exchangeService"></param>
+        /// <param name="mailboxId"></param>
+        internal Group(ExchangeService exchangeService, MailboxId mailboxId)
+            : base(exchangeService)
+        {
+            this.MailboxId = mailboxId;
+        }
+
+        /// <summary>
+        /// MailboxId.
+        /// </summary>
+        internal MailboxId MailboxId
+        {
+            get;
+        }
+    }
+
+    /// <summary>
     /// Mail folder.
     /// </summary>
     public partial class MailFolder

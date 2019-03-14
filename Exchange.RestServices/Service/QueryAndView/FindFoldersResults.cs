@@ -10,9 +10,9 @@
         /// <summary>
         /// Create new instance of <see cref="FindFoldersResults"/>
         /// </summary>
-        /// <param name="responseCollection"></param>
-        internal FindFoldersResults(ResponseCollection<MailFolder> responseCollection)
-            : base(responseCollection)
+        /// <param name="entityResponseCollection"></param>
+        internal FindFoldersResults(EntityResponseCollection<MailFolder> entityResponseCollection)
+            : base(entityResponseCollection)
         {
         }
     }

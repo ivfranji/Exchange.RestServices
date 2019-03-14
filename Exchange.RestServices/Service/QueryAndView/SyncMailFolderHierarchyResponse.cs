@@ -12,12 +12,12 @@
         /// <summary>
         /// Create new instance of <see cref="SyncMailFolderHierarchyResponse"/>
         /// </summary>
-        /// <param name="responseCollection"></param>
-        public SyncMailFolderHierarchyResponse(SyncMailFolderResponseCollection responseCollection, ExchangeService exchangeService, MailboxId mailboxId) 
-            : base(responseCollection)
+        /// <param name="entityResponseCollection"></param>
+        public SyncMailFolderHierarchyResponse(SyncMailFolderEntityResponseCollection entityResponseCollection, ExchangeService exchangeService, MailboxId mailboxId) 
+            : base(entityResponseCollection)
         {
-            responseCollection.RegisterServiceAndResetChangeTracking(exchangeService, mailboxId);
-            byte[] syncStateBytes = Encoding.UTF8.GetBytes(responseCollection.ODataDeltaLink);
+            entityResponseCollection.RegisterServiceAndResetChangeTracking(exchangeService, mailboxId);
+            byte[] syncStateBytes = Encoding.UTF8.GetBytes(entityResponseCollection.ODataDeltaLink);
             this.SyncState = Convert.ToBase64String(syncStateBytes);
         }
 

@@ -94,7 +94,7 @@
                         traceType);
 
                     Assert.AreEqual(
-                        "Test response content",
+                        "Test entityResponse content",
                         traceMessage);
                 });
         }
@@ -147,7 +147,8 @@
                     new TraceContext(
                         traceEnabled,
                         traceFlags,
-                        traceListener));
+                        traceListener),
+                    new SimpleAuthorizationTokenProvider("abc"));
 
                 httpRequestMessage.Properties.Add(
                     nameof(HttpRequestContext),
@@ -195,7 +196,7 @@
                 "TestResponseHeader", 
                 new []{"TestValue1", "TestValue2"});
 
-            responseMessage.Content = new StringContent("Test response content");
+            responseMessage.Content = new StringContent("Test entityResponse content");
             return responseMessage;
         }
 

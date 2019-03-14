@@ -5,7 +5,6 @@
     using System.Net.Http;
     using System.Threading;
     using System.Threading.Tasks;
-    using Auth;
 
     /// <summary>
     /// Authorization http handler.
@@ -27,7 +26,20 @@
             // Authenticate request before it is sent.
             await Task.Run(() =>
             {
-                httpRequestMessage.Headers.Authorization = AuthFactory.GetTokenProvider().GetAuthenticationHeader();
+                HttpRequestContext requestContext = this.GetRequestContext(httpRequestMessage);
+                if (null == requestContext)
+                {
+                    throw new ArgumentNullException(
+                        nameof(requestContext), 
+                        "Request context isn't set by service.");
+                }
+
+                if (null == requestContext.AuthorizationProvider)
+                {
+                    throw new ArgumentNullException(nameof(requestContext.AuthorizationProvider), "Authorization provider not available.");
+                }
+
+                httpRequestMessage.Headers.Authorization = requestContext.AuthorizationProvider.GetAuthenticationHeader();
             });
         }
 
@@ -51,6 +63,21 @@
         protected override Task<int> ApplyDelay(HttpResponseMessage responseMessage, CancellationToken cancellationToken)
         {
             return Task.FromResult(0);
+        }
+
+        /// <summary>
+        /// Get http request context from request message.
+        /// </summary>
+        /// <param name="httpRequestMessage">Http request message.</param>
+        /// <returns></returns>
+        private HttpRequestContext GetRequestContext(HttpRequestMessage httpRequestMessage)
+        {
+            if (httpRequestMessage.Properties.ContainsKey(nameof(HttpRequestContext)))
+            {
+                return (HttpRequestContext) httpRequestMessage.Properties[nameof(HttpRequestContext)];
+            }
+
+            return null;
         }
     }
 }
