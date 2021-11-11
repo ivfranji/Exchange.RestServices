@@ -1,3 +1,6 @@
+# This project is obsolete due to Outlook REST API being obsolete as well.
+# ------------------------------------------------------------------------
+
 # Exchange.RestServices
 Library for interacting with Exchange REST Api.
 
